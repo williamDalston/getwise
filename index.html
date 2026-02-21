@@ -697,6 +697,7 @@ function nav(t){
   var cur=document.getElementById('screen-'+S.screen);
   var nxt=document.getElementById('screen-'+t);
   if(!nxt)return;
+  if(S.screen===t){S.screen=t;return;}
   if(cur){cur.classList.remove('active');setTimeout(function(){cur.classList.add('gone');},650);}
   nxt.classList.remove('gone');
   requestAnimationFrame(function(){requestAnimationFrame(function(){nxt.classList.add('active');});});
