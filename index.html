@@ -823,7 +823,7 @@ function renderModContent(m){
     +'<div class="mod-div"></div>'
     +'<div class="iact"><p class="iact-lbl">Experiment</p>'+buildIact(m.iact,m.id)+'</div>'
     +'<div class="mod-div"></div>'
-    +'<div><p class="ref-lbl">Reflection</p>'
+    +'<div>'
     +'<p class="ref-prompt">'+m.prompt+'</p>'
     +'<textarea class="ref-area" id="ra-'+m.id+'" placeholder="Write here, or simply sit." oninput="autoSaveRef(\''+m.id+'\')">'+saved+'</textarea>'
     +'<div class="ref-row">'
@@ -832,7 +832,7 @@ function renderModContent(m){
     +'</div></div>'
     +'<div class="mod-foot">'
     +'<span class="mod-continue-txt">Continue when ready.</span>'
-    +'<button class="btn btn-primary" onclick="nextMod()">'+(isLast?'Complete Journey':'Next Module')+'</button>'
+    +'<button class="btn btn-primary" onclick="nextMod()">'+(isLast?'Return':'Next Module')+'</button>'
     +'<button class="btn-link" style="display:block;margin:1rem auto 0" onclick="backToJourneys()">Back to Journeys</button>'
     +'</div>';
   document.getElementById('mod-body').scrollTop=0;
