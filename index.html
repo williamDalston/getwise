@@ -811,7 +811,7 @@ function renderModContent(m){
     +'<div class="mod-div"></div>'
     +'<div><p class="ref-lbl">Reflection</p>'
     +'<p class="ref-prompt">'+m.prompt+'</p>'
-    +'<textarea class="ref-area" id="ra-'+m.id+'" placeholder="Write here, or simply sit.">'+saved+'</textarea>'
+    +'<textarea class="ref-area" id="ra-'+m.id+'" placeholder="Write here, or simply sit." oninput="autoSaveRef(\''+m.id+'\')">'+saved+'</textarea>'
     +'<div class="ref-row">'
     +'<button class="btn btn-ghost btn-sm" onclick="saveRef(\''+m.id+'\')">Save</button>'
     +'<span class="ref-saved" id="rs-'+m.id+'">Saved.</span>'
@@ -1028,6 +1028,12 @@ function saveRef(mid){
   localStorage.setItem('dm_r_'+mid,JSON.stringify({text:txt,title:m?m.title:mid,date:new Date().toLocaleDateString()}));
   var s=document.getElementById('rs-'+mid);
   if(s){s.classList.add('show');setTimeout(function(){s.classList.remove('show');},2500);}
+}
+function autoSaveRef(mid){
+  var area=document.getElementById('ra-'+mid);if(!area)return;
+  var txt=area.value;
+  var j=J[S.journey],m=j?j.mods[S.module]:null;
+  if(txt.trim()){localStorage.setItem('dm_r_'+mid,JSON.stringify({text:txt,title:m?m.title:mid,date:new Date().toLocaleDateString()}));}
 }
 function getSavedRef(mid){
   try{var d=JSON.parse(localStorage.getItem('dm_r_'+mid));return d?d.text:'';}catch{return '';}
