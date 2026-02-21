@@ -194,6 +194,16 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 #pause-overlay.on{opacity:1;pointer-events:all}
 .pause-text{font-size:clamp(1.25rem,3vw,1.75rem);font-weight:300;
   color:var(--dim);line-height:1.7;margin-bottom:2.5rem}
+/* GROUNDING DRAWER */
+#ground-drawer{position:fixed;inset:0;background:rgba(14,15,18,0.96);z-index:210;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  opacity:0;pointer-events:none;transition:opacity 600ms ease;padding:2rem;text-align:center}
+#ground-drawer.on{opacity:1;pointer-events:all}
+.ground-list{list-style:none;margin-bottom:2.5rem}
+.ground-list li{font-size:1.0625rem;font-weight:300;color:var(--dim);
+  padding:.75rem 0;border-bottom:1px solid var(--b);line-height:1.6;max-width:400px}
+.ground-list li:last-child{border-bottom:none}
+.ground-btns{display:flex;gap:1rem}
 /* IMMERSION */
 body.immersion #mod-hdr{opacity:0;pointer-events:none}
 .imm-strip{position:fixed;top:0;left:0;right:0;height:4px;z-index:300;cursor:pointer}
@@ -512,6 +522,7 @@ body.immersion #mod-hdr{opacity:0;pointer-events:none}
       <div class="mod-controls">
         <button class="icon-btn" id="audio-btn" onclick="toggleAudio()" title="Audio">&#9834;</button>
         <button class="icon-btn" id="breath-btn" onclick="toggleBreath()" title="Breath pacer">&#9675;</button>
+        <button class="icon-btn" onclick="showGround()" title="Ground">&#8635;</button>
         <button class="icon-btn" id="imm-btn" onclick="toggleImm()" title="Immersion">&#8865;</button>
       </div>
     </div>
@@ -535,7 +546,24 @@ body.immersion #mod-hdr{opacity:0;pointer-events:none}
 <!-- PAUSE OVERLAY -->
 <div id="pause-overlay">
   <p class="pause-text">Pause.<br>Notice what is here without commentary.</p>
-  <button class="btn btn-ghost" onclick="hidePause()">Continue</button>
+  <div style="display:flex;gap:1rem">
+    <button class="btn btn-ghost" onclick="hidePause()">Return</button>
+    <button class="btn btn-ghost" onclick="hidePause();showGround()">Ground</button>
+  </div>
+</div>
+
+<!-- GROUNDING DRAWER -->
+<div id="ground-drawer">
+  <ul class="ground-list">
+    <li>Look around. Name five things you can see.</li>
+    <li>Feel your feet on the floor.</li>
+    <li>Name three sounds you can hear right now.</li>
+    <li>Take one slow breath.</li>
+  </ul>
+  <div class="ground-btns">
+    <button class="btn btn-ghost" onclick="hideGround()">Return</button>
+    <button class="btn btn-ghost" onclick="hideGround()">Close</button>
+  </div>
 </div>
 <div class="imm-strip" onclick="exitImm()"></div>
 
@@ -833,7 +861,7 @@ function renderModContent(m){
     +'<div class="mod-foot">'
     +'<span class="mod-continue-txt">Continue when ready.</span>'
     +'<button class="btn btn-primary" onclick="nextMod()">'+(isLast?'Return':'Next Module')+'</button>'
-    +'<button class="btn-link" style="display:block;margin:1rem auto 0" onclick="backToJourneys()">Back to Journeys</button>'
+    +'<button class="btn-link" style="display:block;margin:1rem auto 0" onclick="backToJourneys()">Return</button>'
     +'</div>';
   document.getElementById('mod-body').scrollTop=0;
   initIact(m.iact,m.id);
@@ -1134,6 +1162,30 @@ function resetBreath(){
 }
 function showPause(){document.getElementById('pause-overlay').classList.add('on');}
 function hidePause(){document.getElementById('pause-overlay').classList.remove('on');}
+function showGround(){document.getElementById('ground-drawer').classList.add('on');}
+function hideGround(){document.getElementById('ground-drawer').classList.remove('on');}
+
+/* Rapid-interaction detection */
+var _iactTimes=[];
+function trackInteraction(){
+  var now=Date.now();
+  _iactTimes.push(now);
+  _iactTimes=_iactTimes.filter(function(t){return now-t<8000;});
+  if(_iactTimes.length>=7){
+    _iactTimes=[];
+    setTimeout(function(){
+      if(document.getElementById('pause-overlay').classList.contains('on'))return;
+      showPause();
+    },400);
+  }
+}
+document.addEventListener('click',function(e){
+  if(S.screen!=='module')return;
+  var t=e.target;
+  if(t.classList.contains('btn')||t.classList.contains('icon-btn')||
+     t.classList.contains('own-opt')||t.classList.contains('bz')||
+     t.classList.contains('t-opt')){trackInteraction();}
+});
 
 document.addEventListener('DOMContentLoaded',function(){S.deepMode=true;});
 </script>
