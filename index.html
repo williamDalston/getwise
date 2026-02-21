@@ -126,12 +126,9 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
   padding:2rem;cursor:pointer;transition:border-color 400ms,background 400ms;
   margin-bottom:.875rem;max-width:640px}
 .j-card:hover{border-color:var(--b2);background:var(--panel2)}
-.j-label{font-size:.75rem;font-weight:500;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--amber);margin-bottom:.75rem}
-.j-card h2{font-size:1.375rem;margin-bottom:.625rem}
-.j-card p{font-size:.9375rem}
-.j-meta{display:flex;gap:1.5rem;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--b)}
-.j-meta span{font-size:.8125rem;color:var(--dim)}
+.j-card h2{font-size:1.375rem;margin-bottom:.375rem}
+.j-range{font-size:.8125rem;color:var(--dim)}
+.j-random{display:block;margin:1.5rem auto 0}
 .j-dots{display:flex;gap:3px;margin-top:.875rem}
 .jd{width:5px;height:5px;border-radius:50%;background:var(--b2);transition:background 400ms}
 .jd.done{background:rgba(180,138,74,0.45)}
@@ -186,7 +183,8 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 .ref-entry{background:var(--panel);border:1px solid var(--b);border-radius:4px;padding:1.5rem;margin-bottom:.875rem}
 .re-title{font-size:.8125rem;color:var(--amber);font-weight:500;letter-spacing:.04em;margin-bottom:.5rem}
 .re-text{font-size:.9375rem;color:var(--dim);line-height:1.7}
-.re-date{font-size:.75rem;color:var(--dim);opacity:.4;margin-top:.625rem}
+.re-date{font-size:.75rem;color:var(--dim);opacity:0;margin-top:.625rem;transition:opacity 300ms}
+.ref-entry:hover .re-date{opacity:.4}
 .empty-state{display:flex;flex-direction:column;align-items:center;
   justify-content:center;flex:1;text-align:center;padding:3rem;opacity:.4}
 .empty-state p{font-size:.9375rem;margin-top:.75rem}
@@ -422,7 +420,7 @@ body.immersion #mod-hdr{opacity:0;pointer-events:none}
       </div>
     </div>
   </section>
-  <footer class="land-footer"><p>An invitation to direct investigation.</p></footer>
+  <footer class="land-footer"><p>An invitation to direct investigation.</p><button class="btn-link" style="margin-top:1.25rem;font-size:.8125rem;opacity:.45" onclick="replayOnboarding()">Enter slowly</button></footer>
 </div>
 
 <!-- FREE EXPLORE -->
@@ -633,10 +631,9 @@ var J=[
      iact:'idStack',prompt:'What remains if you subtract the roles?'},
     {id:'m14',title:'Mortality Contemplation',
      instr:'Use finitude as a clarity instrument.',
-     steps:['This body will cease.',
-            'Every interaction, object, and relationship will end.',
-            'Notice what this does to what seems important right now.'],
-     iact:'contemp',prompt:'What shifted when you sat with this directly?'},
+     steps:['Consider the possibility that this body will cease.',
+            'Sit with that possibility without resolving it.'],
+     iact:'contemp',prompt:'What, if anything, was present when you sat with this?'},
     {id:'m15',title:'Narrative vs Sensation',
      instr:'Notice the difference between story and direct experience.',
      steps:['Right now, there is raw sensation.',
@@ -654,7 +651,7 @@ var J=[
      steps:['No new concept is introduced here.',
             'Review what you have noticed across these modules.',
             'What, if anything, has shifted in how experience appears?'],
-     iact:'reviewInt',prompt:'What is worth carrying forward?'}
+     iact:'reviewInt',prompt:'What, if anything, stood out?'}
    ]
   },
   {id:'int',title:'Integration Mode',purpose:'Prevent dissociation and spiritual ego.',
@@ -674,9 +671,8 @@ var J=[
     {id:'m20',title:'Relationships Without Superiority',
      instr:'Examine inquiry in the context of ordinary relationships.',
      steps:['These investigations are not achievements.',
-            'They do not make you more awake than those who have not done them.',
-            'The moment insight becomes status, it becomes obstruction.'],
-     iact:'contemp',prompt:'Is there anyone with whom you carry a sense of spiritual superiority? What is that?'},
+            'The moment any investigation becomes status, it becomes obstruction.'],
+     iact:'contemp',prompt:'Is there anyone with whom you carry a sense of superiority about how you see things?'},
     {id:'m21',title:'Curiosity Over Certainty',
      instr:'Maintain inquiry as a way of being, not a conclusion.',
      steps:['Every insight solidified into belief becomes a new limitation.',
@@ -727,6 +723,16 @@ function nav(t){
 })();
 
 function enterDeep(){nav('journey-select');}
+function replayOnboarding(){
+  var sc=document.getElementById('screen-onboarding');
+  var ob1=document.getElementById('ob1'),ob2=document.getElementById('ob2'),cont=document.getElementById('ob-cont');
+  ob1.classList.remove('show');ob2.style.opacity='0';ob2.style.display='none';
+  cont.style.opacity='0';cont.style.display='none';
+  nav('onboarding');
+  setTimeout(function(){ob1.classList.add('show');},400);
+  setTimeout(function(){ob2.style.display='block';requestAnimationFrame(function(){requestAnimationFrame(function(){ob2.style.opacity='1';});});},5000);
+  setTimeout(function(){cont.style.display='inline-flex';requestAnimationFrame(function(){requestAnimationFrame(function(){cont.style.opacity='1';});});},7500);
+}
 
 
 function renderJourneys(){
@@ -739,13 +745,20 @@ function renderJourneys(){
     }).join('');
     var card=document.createElement('div');card.className='j-card';
     card.onclick=function(){startJourney(ji);};
-    card.innerHTML='<p class="j-label">Journey '+(ji+1)+' &middot; '+j.mods.length+' Modules</p>'
-      +'<h2>'+j.title+'</h2><p>'+j.purpose+'</p>'
-      +'<div class="j-dots">'+dots+'</div>'
-      +'<div class="j-meta"><span>'+done+'/'+j.mods.length+' complete</span>'
-      +'<span'+(done>0?' class="amber"':'')+'>'+(done>0?'In progress':'Not started')+'</span></div>';
+    var ranges=['Sessions 1–7','Sessions 8–17','Sessions 18–22'];
+    card.innerHTML='<h2>'+j.title+'</h2>'
+      +'<p class="j-range">'+ranges[ji]+'</p>'
+      +'<div class="j-dots">'+dots+'</div>';
     body.appendChild(card);
   });
+  var rand=document.createElement('button');rand.className='btn btn-ghost btn-sm j-random';
+  rand.textContent='Random session';
+  rand.onclick=function(){
+    var ji=Math.floor(Math.random()*J.length);
+    var j=J[ji];var mi=Math.floor(Math.random()*j.mods.length);
+    S.journey=ji;S.module=mi;loadModule();
+  };
+  body.appendChild(rand);
 }
 
 function startJourney(ji){
@@ -769,6 +782,7 @@ function loadModule(){
     return '<div class="'+c+'"></div>';
   }).join('');
   document.getElementById('mod-pfill').style.width=((S.module/j.mods.length)*100)+'%';
+  document.getElementById('mod-timer').style.visibility=(S.journey===2)?'hidden':'visible';
   var entry=document.getElementById('mod-entry');
   var meText=document.getElementById('me-text');
   var meBtn=document.getElementById('me-btn');
@@ -835,7 +849,7 @@ function nextMod(){
 function backToJourneys(){clearInterval(S.timerInt);document.body.classList.remove('immersion');resetBreath();if(S.audio){toggleAudio();}nav('journey-select');}
 
 function buildIact(type,mid){
-  if(type==='thoughtStream')return '<div class="thought-field" id="tf-'+mid+'"></div><div class="t-row"><input class="t-input" id="ti-'+mid+'" placeholder="Type a thought, press Enter" onkeydown="submitThought(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitThought({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><p class="dim mt2" style="font-size:.8125rem">Watch it drift. Notice who is watching.</p>';
+  if(type==='thoughtStream')return '<div class="thought-field" id="tf-'+mid+'"></div><div class="t-row"><input class="t-input" id="ti-'+mid+'" placeholder="Type a thought, press Enter" onkeydown="submitThought(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitThought({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><p class="dim mt2" style="font-size:.8125rem">Watch it drift.</p>';
   if(type==='ownership')return '<p class="own-q">Think of the last thought you had before reading this sentence.</p><div class="own-opts"><button class="own-opt" onclick="selectOwn(this,\'mine\')">It felt like mine</button><button class="own-opt" onclick="selectOwn(this,\'appeared\')">It simply appeared</button></div><p class="own-resp" id="ownr-'+mid+'"></p>';
   if(type==='locationFinder')return '<p class="dim mb2" style="font-size:.875rem">Click on the exact location of the one who is looking.</p><div class="loc-canvas" onclick="handleLoc(event,this)" id="lc-'+mid+'"><div class="loc-grid"></div><div class="loc-marker" id="lm-'+mid+'"></div></div><div class="loc-resp" id="lr-'+mid+'"></div>';
   if(type==='fieldExp')return '<p class="dim mb2" style="font-size:.875rem">Click anywhere to locate the center of the visual field.</p><div class="field-area" onclick="handleField(\''+mid+'\')" id="fa-'+mid+'"><div class="field-dot"></div><div class="field-ring"></div><div class="field-ring fr2"></div><div class="field-ring fr3"></div></div><div class="field-resp" id="fr-'+mid+'"></div>';
@@ -850,7 +864,7 @@ function buildIact(type,mid){
   if(type==='contemp')return '<div class="contemp"><p>Sit with this for a moment.<br>No analysis required.</p></div>';
   if(type==='narToggle')return '<div class="toggle-pair"><button class="t-opt on" id="nts-'+mid+'" onclick="setNar(\'story\',\''+mid+'\')">Story</button><button class="t-opt" id="ntx-'+mid+'" onclick="setNar(\'sens\',\''+mid+'\')">Sensation</button></div><p class="t-desc dim" id="ntd-'+mid+'">Story: "I felt anxious because of what she said, and now I am worried about tomorrow."</p>';
   if(type==='silSpace')return '<div class="toggle-pair"><button class="t-opt on" id="sss-'+mid+'" onclick="setSil(\'sound\',\''+mid+'\')">Sound</button><button class="t-opt" id="ssl-'+mid+'" onclick="setSil(\'sil\',\''+mid+'\')">Silence</button></div><p class="t-desc dim" id="ssd-'+mid+'">Notice: right now, there is sound. And it appears within something.</p>';
-  if(type==='reviewInt')return '<div>'+['Where did you expect to find the observer?','What was the emotion without the story?','What remained when the layers were removed?','What shifted, if anything?'].map(function(q){return '<p class="review-q">'+q+'</p>';}).join('')+'</div><p class="dim mt3" style="font-size:.8125rem;font-style:italic">Use the reflection field below to write freely.</p>';
+  if(type==='reviewInt')return '<div>'+['Where did you expect to find the observer?','What was the emotion without the story?','What remained when the layers were removed?','What, if anything, stood out?'].map(function(q){return '<p class="review-q">'+q+'</p>';}).join('')+'</div><p class="dim mt3" style="font-size:.8125rem;font-style:italic">Use the reflection field below to write freely.</p>';
   if(type==='emotPres')return '<p class="dim mb2" style="font-size:.875rem">Name what is here, without commentary.</p><div class="body-map">'+['Calm','Uneasy','Tender','Heavy','Alert','Open'].map(function(e){return '<div class="bz" onclick="selEmotion(this,\''+mid+'\')">'+e+'</div>';}).join('')+'</div><div class="bz-note show" id="bzn-'+mid+'">Select what is present. Then stay with it.</div>';
   if(type==='certainty')return '<p class="dim mb2" style="font-size:.875rem">What have you concluded from these modules?</p><input class="sk-input" id="cci-'+mid+'" placeholder="I am now certain that..." onkeydown="checkCert(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="checkCert({key:\'Enter\'},\''+mid+'\')">Examine</button><div class="sk-resp" id="ccr-'+mid+'"></div>';
   if(type==='returnSt')return '<div class="return-text">Nothing special is required.<br><br>The next ordinary moment<br>is the practice.</div>';
@@ -881,7 +895,7 @@ function selectOwn(btn,choice){
   btn.closest('.own-opts').querySelectorAll('.own-opt').forEach(function(b){b.classList.remove('chosen');});
   btn.classList.add('chosen');
   var r=btn.closest('.iact').querySelector('.own-resp');
-  if(r){r.textContent=choice==='mine'?'Even so -- where did the thought come from before it felt like yours?':'If it appeared without being chosen, who was it that received it?';r.classList.add('show');}
+  if(r){r.textContent=choice==='mine'?'What came first — the thought or the label?':'What came first — the thought or the label?';r.classList.add('show');}
 }
 
 var LOC_R=['That location is also an object in awareness. Where is the awareness of it?',
@@ -903,9 +917,9 @@ function handleExpLoc(e,canvas){
   if(r){r.textContent=LOC_R[locC%LOC_R.length];r.classList.add('show');locC++;}
 }
 
-var FIELD_R=['That point is also an object within the field. The field is held by something prior to any center.',
-  'The periphery and center are both in awareness. What holds them both?',
-  'You are looking for the edge of seeing. Does seeing have an edge?'];
+var FIELD_R=['Where is the center?',
+  'Is the center fixed?',
+  'What happens if you stop searching?'];
 var fieldC=0;
 function handleField(mid){
   var r=document.getElementById('fr-'+mid);
@@ -957,7 +971,7 @@ function transformMem(e,mid){
   var inp=document.getElementById('memi-'+mid);if(!inp||!inp.value.trim())return;
   var txt=inp.value.trim();
   var out=document.getElementById('memo-'+mid);
-  if(out){out.textContent='"'+txt+'" -- this is a thought happening now. The past it describes is gone. Only this present mental event remains.';out.classList.add('show');}
+  if(out){out.textContent='"'+txt+'" — this memory is appearing now.';out.classList.add('show');}
 }
 
 var agencyC=0;
@@ -995,7 +1009,7 @@ function setSil(mode,mid){
   var s=document.getElementById('sss-'+mid),l=document.getElementById('ssl-'+mid),d=document.getElementById('ssd-'+mid);
   if(s)s.classList.toggle('on',mode==='sound');
   if(l)l.classList.toggle('on',mode==='sil');
-  if(d)d.textContent=mode==='sound'?'Notice: right now, there is sound. And it appears within something.':'Silence is here between sounds. It was here before the sound. It remains after.';
+  if(d)d.textContent=mode==='sound'?'Notice: right now, there is sound. And it appears within something.':'There is silence between sounds. What is the relationship between sound and silence?';
 }
 
 var CERT_R=['Hold that conclusion lightly. Could the opposite also have something true in it?',
