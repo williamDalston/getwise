@@ -144,8 +144,8 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 #mod-hdr{display:flex;align-items:center;justify-content:space-between;
   padding:1rem 1.5rem;border-bottom:1px solid var(--b);flex-shrink:0;
   transition:opacity 500ms ease;position:relative;z-index:10;background:var(--base)}
-.mod-pbar{position:absolute;top:0;left:0;right:0;height:1px;background:var(--b)}
-.mod-pfill{height:100%;background:var(--amber);transition:width 600ms ease}
+.mod-pbar{display:none}
+.mod-pfill{display:none}
 .mp-dots{display:flex;gap:4px}
 .mpd{width:5px;height:5px;border-radius:50%;background:var(--b2);transition:background 400ms}
 .mpd.done{background:rgba(180,138,74,0.4)}
@@ -705,7 +705,7 @@ var J=[
     {id:'m18',title:'Functioning Without a Center',
      instr:'Examine how ordinary activity continues without a fixed self.',
      steps:['Notice that actions happen -- words appear, hands move, decisions occur.',
-            'These do not require a persistent center to coordinate them.',
+            'Do these require a persistent center to coordinate them?',
             'Ordinary functioning does not depend on a located self.'],
      iact:'contemp',prompt:'What does functioning feel like when the center is not in focus?'},
     {id:'m19',title:'Emotional Grounding',
@@ -1003,7 +1003,7 @@ var SK_R=['And who is the one saying that?','Can that seeker find itself?',
   'Look for the one who just offered that answer.',
   'Before that thought, was there a seeker?',
   'Is the seeker something you find -- or something you assume?',
-  'A self has been looking for itself for several minutes. Notice that.'];
+  'Notice what has been happening for the last few minutes.'];
 var skC=0;
 function submitSeeker(e,mid){
   if(e.key!=='Enter')return;
