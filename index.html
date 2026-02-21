@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorations in Consciousness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0e1a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        
+        .serif {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Ultra-soft breathing background - barely perceptible */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 20% 50%, rgba(251, 191, 36, 0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(244, 63, 94, 0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
+        }
+        
+        @media (prefers-reduced-motion: no-preference) {
+            .animated-bg {
+                animation: breathe 10s ease-in-out infinite;
+            }
+        }
+        
+        @keyframes breathe {
+            0%, 100% { 
+                opacity: 1;
+            }
+            50% { 
+                opacity: 1.02;
+            }
+        }
+        
+        /* Simple cards - no glass morphism theatrics */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Subtle scroll reveal - 8-12px shift, 500ms */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        @media (prefers-reduced-motion: no-preference) {
+            .scroll-reveal.revealed {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            .scroll-reveal {
+                opacity: 1;
+                transform: none;
+            }
+        }
+        
+        /* Progress indicator - thin 2px, muted */
+        .progress-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: rgba(148, 163, 184, 0.4);
+            z-index: 10000;
+            transform-origin: left;
+            transition: transform 0.1s ease;
+        }
+        
+        /* Minimal button ripple */
+        button, a[href^="#"] {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::after, a[href^="#"]::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+            opacity: 0;
+        }
+        
+        button:active::after, a[href^="#"]:active::after {
+            width: 200px;
+            height: 200px;
+            opacity: 1;
+        }
+        
+        /* Text selection - soft, matte */
+        ::selection {
+            background: rgba(251, 191, 36, 0.25);
+            color: #fbbf24;
+        }
+        
+        ::-moz-selection {
+            background: rgba(251, 191, 36, 0.25);
+            color: #fbbf24;
+        }
+        
+        /* Clean focus states */
+        button:focus-visible, a:focus-visible {
+            outline: 2px solid rgba(148, 163, 184, 0.6);
+            outline-offset: 3px;
+        }
+        
+        /* Pause overlay */
+        .pause-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+        
+        .pause-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .pause-content {
+            text-align: center;
+            color: #e2e8f0;
+        }
+        
+        .pause-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .pause-content p {
+            font-size: 1.1rem;
+            color: #94a3b8;
+        }
+        
+        /* Mode transition fade */
+        .mode-transition {
+            transition: opacity 0.6s ease;
+        }
+        
+        /* Custom scrollbar - minimal */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Indicator -->
+    <div class="progress-indicator" id="progress-indicator"></div>
+    
+    <!-- Pause Overlay -->
+    <div class="pause-overlay" id="pause-overlay">
+        <div class="pause-content">
+            <h2>Pause.</h2>
+            <p>Notice what is here.</p>
+        </div>
+    </div>
+    
+    <div class="animated-bg"></div>
+    
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex items-center justify-center px-6 py-24 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/50 to-slate-950"></div>
+        <div class="max-w-6xl mx-auto text-center relative z-10 scroll-reveal">
+            <h1 class="text-6xl md:text-8xl font-black serif mb-8 text-slate-100 leading-tight">
+                Explorations in<br>Consciousness
+            </h1>
+            <p class="text-xl md:text-2xl text-slate-400 mb-12 max-w-3xl mx-auto leading-relaxed">
+                Not a library to tell you what is true, but a space for shared investigation into the nature of your own experience.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-8 text-sm font-mono text-slate-500">
+                <div class="flex items-center gap-2 text-amber-400">
+                    <i class="fas fa-search"></i>
+                    <span>Open Inquiry</span>
+                </div>
+                <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fas fa-eye"></i>
+                    <span>Direct Observation</span>
+                </div>
+                <div class="flex items-center gap-2 text-rose-400">
+                    <i class="fas fa-sparkles"></i>
+                    <span>Shared Curiosity</span>
+                </div>
+            </div>
+            <div class="mt-16">
+                <a href="#explorations" class="inline-block px-8 py-4 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-full transition-colors">
+                    Begin Exploration
+                </a>
+            </div>
+        </div>
+        
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2">
+            <i class="fas fa-chevron-down text-slate-500 text-2xl"></i>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="explorations" class="max-w-6xl mx-auto px-6 pb-32 space-y-32">
+        
+        <!-- Mode Selector -->
+        <section class="pt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl serif font-bold text-slate-100 mb-4">Sessions</h2>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                    Different approaches to inquiry
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <div class="mode-btn glass-card rounded-2xl p-8 scroll-reveal" data-mode="metaphor">
+                    <div class="text-5xl mb-4 text-amber-400">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3 class="text-2xl serif font-bold text-amber-300 mb-3">Metaphor</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Thought experiments and frameworks.
+                    </p>
+                </div>
+                
+                <div class="mode-btn glass-card rounded-2xl p-8 scroll-reveal" data-mode="phenomenology">
+                    <div class="text-5xl mb-4 text-cyan-400">
+                        <i class="fas fa-microscope"></i>
+                    </div>
+                    <h3 class="text-2xl serif font-bold text-cyan-300 mb-3">Experience</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Direct observation of present experience.
+                    </p>
+                </div>
+                
+                <div class="mode-btn glass-card rounded-2xl p-8 scroll-reveal" data-mode="paradox">
+                    <div class="text-5xl mb-4 text-rose-400">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="text-2xl serif font-bold text-rose-300 mb-3">Paradox</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Questions that exhaust conceptual thinking.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Content Area -->
+        <div id="content-area" class="space-y-32">
+            <!-- Content will be dynamically loaded here -->
+        </div>
+
+        <!-- Conclusion -->
+        <section class="py-16 border-t border-slate-800 text-center mt-32">
+            <div class="w-20 h-20 mx-auto mb-8 flex items-center justify-center rounded-full bg-amber-500/10 text-amber-400 text-4xl">
+                <i class="fas fa-sparkles"></i>
+            </div>
+            <h2 class="text-5xl serif font-bold text-slate-100 mb-6">A Space for Curiosity</h2>
+            <p class="text-2xl text-amber-400/90 serif italic mb-8 max-w-3xl mx-auto">
+                "We are not here to acquire a new identity, but to examine the one we have."
+            </p>
+            <p class="text-slate-400 max-w-3xl mx-auto leading-relaxed text-lg">
+                These interactive tools are simply invitations to look closely at perception, awareness, and thought. 
+                There is nothing to fix and no secret to attain.
+            </p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-12 text-center text-slate-500">
+        <p class="text-sm">An invitation to direct investigation</p>
+    </footer>
+
+    <script>
+        // Mode management
+        let currentMode = 'metaphor';
+        
+        const modeButtons = document.querySelectorAll('.mode-btn');
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.dataset.mode;
+                setMode(mode);
+            });
+        });
+        
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Mode transition fade
+            const contentArea = document.getElementById('content-area');
+            contentArea.classList.add('mode-transition');
+            contentArea.style.opacity = '0';
+            
+            setTimeout(() => {
+                loadContent(mode);
+                setTimeout(() => {
+                    contentArea.style.opacity = '1';
+                }, 50);
+            }, 600);
+        }
+        
+        function loadContent(mode) {
+            const contentArea = document.getElementById('content-area');
+            contentArea.innerHTML = '';
+            contentArea.classList.add('fade-in');
+            
+            if (mode === 'metaphor') {
+                loadMetaphorContent(contentArea);
+            } else if (mode === 'phenomenology') {
+                loadPhenomenologyContent(contentArea);
+            } else if (mode === 'paradox') {
+                loadParadoxContent(contentArea);
+            }
+        }
+        
+        // Metaphor content
+        function loadMetaphorContent(container) {
+            const sections = [
+                {
+                    title: "The Underlying Reality",
+                    subtitle: "An experiment in substance and form.",
+                    icon: "gem",
+                    color: "amber",
+                    content: createGoldMetaphor()
+                },
+                {
+                    title: "Constructs of the Mind",
+                    subtitle: "How interpretation shapes reality.",
+                    icon: "flashlight",
+                    color: "rose",
+                    content: createRopeSnakeMetaphor()
+                },
+                {
+                    title: "The Architecture of Space",
+                    subtitle: "Investigating internal and external environments.",
+                    icon: "moon",
+                    color: "indigo",
+                    content: createDreamMetaphor()
+                },
+                {
+                    title: "The Function of Philosophy",
+                    subtitle: "Wisdom as a mirror rather than a doctrine.",
+                    icon: "book",
+                    color: "teal",
+                    content: createMirrorMetaphor()
+                },
+                {
+                    title: "The Mechanics of Identity",
+                    subtitle: "Exploring how the sense of self might operate.",
+                    icon: "sun",
+                    color: "sky",
+                    content: createEgoMetaphor()
+                },
+                {
+                    title: "Forms in Motion",
+                    subtitle: "An exploration of boundaries.",
+                    icon: "droplet",
+                    color: "cyan",
+                    content: createOceanWaveMetaphor()
+                }
+            ];
+            
+            sections.forEach((section, index) => {
+                const sectionEl = createSection(section, index);
+                container.appendChild(sectionEl);
+            });
+        }
+        
+        // Create section wrapper
+        function createSection(section, index) {
+            const div = document.createElement('div');
+            div.className = 'scroll-reveal';
+            
+            // Trigger pause overlay every 3-4 sections
+            if (index > 0 && index % 3 === 0) {
+                setTimeout(() => {
+                    showPauseOverlay();
+                    setTimeout(() => {
+                        hidePauseOverlay();
+                    }, 4000);
+                }, 1000);
+            }
+            
+            // Add intentional spacing - silence is structural
+            div.innerHTML = `
+                <div class="text-center mb-20 scroll-reveal">
+                    <div class="text-6xl mb-6 text-${section.color}-400">
+                        <i class="fas fa-${section.icon}"></i>
+                    </div>
+                    <h2 class="text-4xl serif font-bold text-slate-100 mb-4">${section.title}</h2>
+                    <p class="text-slate-400 text-lg max-w-2xl mx-auto">${section.subtitle}</p>
+                </div>
+                <div class="mb-16"></div>
+                ${section.content}
+                <div class="mb-24"></div>
+            `;
+            
+            return div;
+        }
+        
+        // Gold Metaphor
+        function createGoldMetaphor() {
+            return `
+                <div class="glass-card rounded-2xl p-8 md:p-12">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-6">
+                            <h3 class="text-3xl serif font-bold text-amber-400">Substance and Form</h3>
+                            <p class="text-slate-300 leading-relaxed text-lg">
+                                In Advaita Vedanta, the concept of <strong>Brahman</strong> represents pure, underlying existence.
+                            </p>
+                            <p class="text-slate-300 leading-relaxed">
+                                Think of a jewelry shop. We interact with rings, necklaces, and bracelets. They have distinct names, shapes, and uses. 
+                                Yet, if we look closely, we are only ever interacting with one substance: <strong>Gold</strong>.
+                            </p>
+                            <p class="text-amber-400 italic text-sm border-l-4 border-amber-500 pl-4">
+                                What happens to the "bracelet" when the gold is melted?
+                            </p>
+                            <div class="my-12"></div>
+                            <button onclick="toggleGoldMelt(this)" class="px-8 py-4 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-full transition-colors">
+                                <i class="fas fa-sparkles mr-2"></i>
+                                <span class="gold-btn-text">Observe the Substance</span>
+                            </button>
+                        </div>
+                        <div class="gold-visualization h-80 bg-slate-900 rounded-xl relative overflow-hidden border border-slate-700 flex items-center justify-center">
+                            <div class="gold-forms absolute transition-all duration-1000 flex gap-6">
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="w-20 h-20 rounded-full border-4 border-amber-400 border-dashed animate-spin" style="animation-duration: 10s;"></div>
+                                    <span class="text-slate-400 font-mono text-sm">Bracelet</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-2 mt-8">
+                                    <div class="w-16 h-16 rounded-full border-4 border-amber-400"></div>
+                                    <span class="text-slate-400 font-mono text-sm">Ring</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-2">
+                                    <i class="fas fa-gem text-amber-400 text-5xl"></i>
+                                    <span class="text-slate-400 font-mono text-sm">Necklace</span>
+                                </div>
+                            </div>
+                            <div class="gold-substance absolute transition-all duration-1000 flex flex-col items-center gap-4 opacity-0 scale-150">
+                                <div class="w-64 h-32 bg-gradient-to-br from-amber-300 via-amber-500 to-amber-700 rounded-lg shadow-[0_0_50px_rgba(251,191,36,0.5)] flex items-center justify-center">
+                                    <span class="text-slate-900 font-bold tracking-widest text-2xl">PURE GOLD</span>
+                                </div>
+                                <span class="text-amber-400 serif italic text-xl">"Existence Itself"</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function toggleGoldMelt(btn) {
+            const vis = btn.closest('.glass-card').querySelector('.gold-visualization');
+            const forms = vis.querySelector('.gold-forms');
+            const substance = vis.querySelector('.gold-substance');
+            const text = btn.querySelector('.gold-btn-text');
+            
+            if (forms.style.opacity !== '0') {
+                forms.style.opacity = '0';
+                forms.style.transform = 'scale(0.5)';
+                substance.style.opacity = '1';
+                substance.style.transform = 'scale(1)';
+                text.textContent = 'Observe the Forms';
+            } else {
+                forms.style.opacity = '1';
+                forms.style.transform = 'scale(1)';
+                substance.style.opacity = '0';
+                substance.style.transform = 'scale(1.5)';
+                text.textContent = 'Observe the Substance';
+            }
+        }
+        
+        // Rope and Snake Metaphor
+        function createRopeSnakeMetaphor() {
+            return `
+                <div class="glass-card rounded-2xl p-8 md:p-12">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-6 order-2 md:order-1">
+                            <h3 class="text-3xl serif font-bold text-rose-400">The Rope & The Snake</h3>
+                            <p class="text-slate-300 leading-relaxed text-lg">
+                                Imagine walking in the dark and seeing a coiled shape. You perceive a <strong>snake</strong>. Your heart races, and the biological response is entirely real to you in that moment.
+                            </p>
+                            <p class="text-slate-300 leading-relaxed">
+                                But when you shine a light on it, you notice it's just a <strong>rope</strong>. The snake was an interpretation superimposed onto the environment by the mind.
+                            </p>
+                            <p class="text-rose-400 italic text-sm border-l-4 border-rose-500 pl-4">
+                                What else in daily experience might be interpretation rather than fixed reality?
+                            </p>
+                            <div class="my-12"></div>
+                            <button onclick="toggleFlashlight(this)" class="px-8 py-4 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-full transition-colors">
+                                <i class="fas fa-flashlight mr-2"></i>
+                                <span class="flashlight-btn-text">Investigate</span>
+                            </button>
+                        </div>
+                        <div class="rope-snake-visualization h-80 rounded-xl relative overflow-hidden border border-slate-700 cursor-none order-1 md:order-2" 
+                             onmousemove="updateFlashlight(event, this)">
+                            <svg viewBox="0 0 200 100" class="absolute inset-0 w-full h-full opacity-80" stroke="#b45309" stroke-width="8" fill="none">
+                                <path d="M 20 50 Q 50 10 100 50 T 180 50" />
+                                <path d="M 30 50 Q 50 20 100 50 T 170 50" stroke="#78350f" stroke-width="2" />
+                            </svg>
+                            <span class="absolute bottom-4 right-4 text-amber-700 font-mono text-sm font-bold opacity-80">ROPE</span>
+                            <div class="rope-darkness absolute inset-0 pointer-events-none transition-opacity duration-300 bg-slate-950">
+                                <div class="snake-eyes absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex gap-4 transition-opacity duration-300">
+                                    <div class="w-4 h-4 bg-rose-500 rounded-full shadow-[0_0_15px_rgba(244,63,94,1)]"></div>
+                                    <div class="w-4 h-4 bg-rose-500 rounded-full shadow-[0_0_15px_rgba(244,63,94,1)]"></div>
+                                </div>
+                                <span class="snake-text absolute bottom-4 left-4 text-rose-500 font-mono text-sm font-bold tracking-widest transition-opacity duration-300 animate-pulse">INTERPRETATION: SNAKE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function toggleFlashlight(btn) {
+            const vis = btn.closest('.glass-card').querySelector('.rope-snake-visualization');
+            const darkness = vis.querySelector('.rope-darkness');
+            const eyes = vis.querySelector('.snake-eyes');
+            const text = vis.querySelector('.snake-text');
+            const btnText = btn.querySelector('.flashlight-btn-text');
+            
+            if (vis.dataset.lightOn === 'true') {
+                vis.dataset.lightOn = 'false';
+                darkness.style.opacity = '1';
+                eyes.style.opacity = '1';
+                text.style.opacity = '1';
+                btnText.textContent = 'Investigate';
+                vis.style.cursor = 'default';
+            } else {
+                vis.dataset.lightOn = 'true';
+                darkness.style.opacity = '0.3';
+                eyes.style.opacity = '0';
+                text.style.opacity = '0';
+                btnText.textContent = 'Turn Off Light';
+                vis.style.cursor = 'none';
+            }
+        }
+        
+        function updateFlashlight(event, container) {
+            if (container.dataset.lightOn !== 'true') return;
+            const rect = container.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const darkness = container.querySelector('.rope-darkness');
+            darkness.style.background = `radial-gradient(circle 120px at ${x}px ${y}px, transparent 0%, rgba(15, 23, 42, 0.98) 100%)`;
+        }
+        
+        // Dream Metaphor
+        function createDreamMetaphor() {
+            return `
+                <div class="glass-card rounded-2xl p-8 md:p-12">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-6">
+                            <h3 class="text-3xl serif font-bold text-indigo-400">The Construct of Space</h3>
+                            <p class="text-slate-300 leading-relaxed text-lg">
+                                Consider the experience of dreaming. In a dream, you might perceive objects here and there. They appear to exist in physical space and interact differently.
+                            </p>
+                            <p class="text-slate-300 leading-relaxed">
+                                Upon waking, what can be observed about the "objects" and the "space" between them?
+                            </p>
+                            <p class="text-indigo-400 italic text-sm border-l-4 border-indigo-500 pl-4">
+                                Does waking perception share any architectural similarities with dream perception?
+                            </p>
+                            <div class="my-12"></div>
+                            <button onclick="toggleDream(this)" class="px-8 py-4 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-full transition-colors">
+                                <i class="fas fa-sun mr-2 dream-icon"></i>
+                                <span class="dream-btn-text">View as Awareness</span>
+                            </button>
+                        </div>
+                        <div class="dream-visualization h-80 bg-slate-900 rounded-xl relative overflow-hidden border border-slate-700 flex items-center justify-center">
+                            <div class="dream-state absolute w-full h-full p-8 transition-all duration-1000 flex justify-between items-center">
+                                <div class="bg-slate-800 p-6 rounded-xl border border-slate-600 flex flex-col items-center animate-bounce">
+                                    <i class="fas fa-mobile-alt text-blue-400 text-5xl mb-2"></i>
+                                    <span class="text-slate-300 font-mono">Object A</span>
+                                </div>
+                                <span class="text-slate-500 serif italic">Perceived Space</span>
+                                <div class="bg-slate-800 p-6 rounded-xl border border-slate-600 flex flex-col items-center animate-pulse">
+                                    <i class="fas fa-magnet text-red-400 text-5xl mb-2"></i>
+                                    <span class="text-slate-300 font-mono">Object B</span>
+                                </div>
+                            </div>
+                            <div class="awake-state absolute transition-all duration-1000 flex flex-col items-center opacity-0 scale-50">
+                                <i class="fas fa-brain text-indigo-400 text-7xl mb-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function toggleDream(btn) {
+            const vis = btn.closest('.glass-card').querySelector('.dream-visualization');
+            const dream = vis.querySelector('.dream-state');
+            const awake = vis.querySelector('.awake-state');
+            const icon = btn.querySelector('.dream-icon');
+            const text = btn.querySelector('.dream-btn-text');
+            
+            if (dream.style.opacity !== '0') {
+                dream.style.opacity = '0';
+                dream.style.filter = 'blur(10px)';
+                awake.style.opacity = '1';
+                awake.style.transform = 'scale(1)';
+                icon.className = 'fas fa-moon mr-2 dream-icon';
+                text.textContent = 'View as Dream';
+            } else {
+                dream.style.opacity = '1';
+                dream.style.filter = 'blur(0)';
+                awake.style.opacity = '0';
+                awake.style.transform = 'scale(0.5)';
+                icon.className = 'fas fa-sun mr-2 dream-icon';
+                text.textContent = 'View as Awareness';
+            }
+        }
+        
+        // Mirror Metaphor
+        function createMirrorMetaphor() {
+            return `
+                <div class="glass-card rounded-2xl p-8 md:p-12">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-6 order-2 md:order-1">
+                            <h3 class="text-3xl serif font-bold text-teal-400">The Mirror of Wisdom</h3>
+                            <p class="text-slate-300 leading-relaxed text-lg">
+                                In many contemplative traditions, philosophical texts are not viewed as sets of beliefs to acquire or defend. Instead, they act as mirrors.
+                            </p>
+                            <p class="text-slate-300 leading-relaxed">
+                                Attention is often likened to a mirror covered in the dust of habitual thought. As you observe with curiosity, what happens?
+                            </p>
+                            <div class="flex items-center gap-4 mt-6">
+                                <button onclick="resetMirror(this)" class="text-slate-400 hover:text-white text-sm underline hidden mirror-reset">
+                                    Reset
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mirror-visualization w-full max-w-sm aspect-square rounded-full border-8 border-slate-700 relative overflow-hidden flex items-center justify-center bg-amber-100/10 shadow-[0_0_50px_rgba(20,184,166,0.1)] mx-auto cursor-pointer order-1 md:order-2" 
+                             onmousemove="wipeMirror(event, this)">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="mirror-core w-3/4 h-3/4 rounded-full bg-teal-400/20 shadow-[0_0_100px_rgba(45,212,191,0.8)] flex items-center justify-center transition-all duration-1000">
+                                    <i class="fas fa-sparkles text-teal-300 text-6xl animate-pulse"></i>
+                                </div>
+                            </div>
+                            <div class="mirror-grid absolute inset-0 grid grid-cols-10 grid-rows-10 z-10"></div>
+                            <div class="mirror-prompt absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-1000 z-20">
+                                <span class="bg-slate-900/80 text-white px-4 py-2 rounded-full font-mono text-sm border border-slate-700">Hover to interact</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function initMirror(container) {
+            const grid = container.querySelector('.mirror-grid');
+            for (let i = 0; i < 100; i++) {
+                const cell = document.createElement('div');
+                cell.dataset.index = i;
+                cell.className = 'mirror-cell transition-all duration-500 ease-out opacity-100 scale-100 bg-slate-300/40 backdrop-blur-md border border-white/5';
+                grid.appendChild(cell);
+            }
+        }
+        
+        function wipeMirror(event, container) {
+            const rect = container.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const cellSize = rect.width / 10;
+            const col = Math.floor(x / cellSize);
+            const row = Math.floor(y / cellSize);
+            const index = row * 10 + col;
+            
+            const cell = container.querySelector(`[data-index="${index}"]`);
+            if (cell && !cell.dataset.wiped) {
+                cell.dataset.wiped = 'true';
+                cell.style.opacity = '0';
+                cell.style.transform = 'scale(0.5)';
+                
+                const wiped = container.querySelectorAll('[data-index].mirror-cell[data-wiped="true"]').length;
+                
+                if (wiped > 5) {
+                    const prompt = container.querySelector('.mirror-prompt');
+                    prompt.style.opacity = '0';
+                }
+                
+                if (wiped > 0) {
+                    const resetBtn = container.closest('.glass-card').querySelector('.mirror-reset');
+                    resetBtn.classList.remove('hidden');
+                }
+            }
+        }
+        
+        function resetMirror(btn) {
+            const vis = btn.closest('.glass-card').querySelector('.mirror-visualization');
+            const cells = vis.querySelectorAll('.mirror-cell');
+            cells.forEach(cell => {
+                cell.removeAttribute('data-wiped');
+                cell.style.opacity = '1';
+                cell.style.transform = 'scale(1)';
+            });
+            btn.classList.add('hidden');
+            const prompt = vis.querySelector('.mirror-prompt');
+            prompt.style.opacity = '1';
+        }
+        
+        // Ego Metaphor
+        function createEgoMetaphor() {
+            return `
+                <div class="glass-card rounded-2xl p-8 md:p-12">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-6">
+                            <h3 class="text-3xl serif font-bold text-sky-400">Identity as Reflection</h3>
+                            <p class="text-slate-300 leading-relaxed text-lg">
+                                How does the feeling of an individual "Self" form? Vedanta offers the metaphor of the Moon and the Sun.
+                            </p>
+                            <p class="text-slate-300 leading-relaxed">
+                                At night, moonlight illuminates the Earth, but the moon generates no light of its own. It merely reflects the sun. Similarly, the mind (The Moon) reflects the light of base awareness (The Sun) to animate the body (The Earth).
+                            </p>
+                            <p class="text-sky-400 italic text-sm border-l-4 border-sky-500 pl-4">
+                                Does the sense of "me" generate consciousness, or simply reflect it?
+                            </p>
+                            <div class="my-12"></div>
+                            <button onclick="toggleEgo(this)" class="px-8 py-4 bg-sky-500 hover:bg-sky-600 text-slate-900 font-bold rounded-full transition-colors">
+                                <i class="fas fa-user-minus mr-2 ego-icon"></i>
+                                <span class="ego-btn-text">Pause the Reflection</span>
+                            </button>
+                        </div>
+                        <div class="ego-visualization h-96 bg-slate-900 rounded-xl relative overflow-hidden border border-slate-700 flex flex-col items-center justify-between py-8">
+                            <div class="flex flex-col items-center z-10">
+                                <i class="fas fa-sun text-amber-400 text-6xl drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]"></i>
+                                <span class="text-amber-400/80 text-xs font-mono mt-2">Awareness</span>
+                            </div>
+                            <div class="absolute top-20 w-1 h-20 bg-gradient-to-b from-amber-400/50 to-transparent"></div>
+                            <div class="ego-moon transition-all duration-700 z-10 flex flex-col items-center">
+                                <i class="fas fa-moon text-slate-200 text-5xl drop-shadow-[0_0_10px_rgba(226,232,240,0.8)]"></i>
+                                <span class="text-slate-300/80 text-xs font-mono mt-2">Mind / Identity</span>
+                            </div>
+                            <div class="ego-light absolute top-48 w-24 h-24 bg-gradient-to-b from-slate-200/20 to-transparent blur-xl transition-opacity duration-700"></div>
+                            <div class="flex flex-col items-center z-10">
+                                <i class="fas fa-globe text-blue-400 text-6xl drop-shadow-[0_0_15px_rgba(96,165,250,0.6)] ego-earth"></i>
+                                <span class="text-blue-400/80 text-xs font-mono mt-2 ego-earth-text">Physical Perception</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function toggleEgo(btn) {
+            const vis = btn.closest('.glass-card').querySelector('.ego-visualization');
+            const moon = vis.querySelector('.ego-moon');
+            const light = vis.querySelector('.ego-light');
+            const earth = vis.querySelector('.ego-earth');
+            const earthText = vis.querySelector('.ego-earth-text');
+            const icon = btn.querySelector('.ego-icon');
+            const text = btn.querySelector('.ego-btn-text');
+            
+            if (moon.style.opacity !== '0.2') {
+                moon.style.opacity = '0.2';
+                moon.style.transform = 'scale(0.75)';
+                light.style.opacity = '0';
+                earth.style.color = '#475569';
+                earthText.style.color = '#64748b';
+                icon.className = 'fas fa-focus mr-2 ego-icon';
+                text.textContent = 'Resume the Reflection';
+            } else {
+                moon.style.opacity = '1';
+                moon.style.transform = 'scale(1)';
+                light.style.opacity = '1';
+                earth.style.color = '#60a5fa';
+                earthText.style.color = '#60a5fa';
+                icon.className = 'fas fa-user-minus mr-2 ego-icon';
+                text.textContent = 'Pause the Reflection';
+            }
+        }
+        
+        // Ocean Wave Metaphor
+        function createOceanWaveMetaphor() {
+            return `
+                <div class="glass-card rounded-2xl p-8 md:p-12">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-6 order-2 md:order-1">
+                            <h3 class="text-3xl serif font-bold text-cyan-400">Forms in Motion</h3>
+                            <p class="text-slate-300 leading-relaxed text-lg">
+                                A wave rises from the ocean. It has a specific shape, a trajectory, and a lifespan. From its localized perspective, it might appear separate from the other waves.
+                            </p>
+                            <p class="text-slate-300 leading-relaxed">
+                                A wave is not the entire ocean. However, examining the substance of the wave reveals it is entirely water—the exact same substance as the ocean itself.
+                            </p>
+                            <div class="my-12"></div>
+                            <button onclick="createWave(this)" class="px-8 py-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-full transition-colors">
+                                <i class="fas fa-droplet mr-2"></i>
+                                Observe a Wave Form
+                            </button>
+                        </div>
+                        <div class="ocean-visualization h-80 bg-slate-900 rounded-xl relative overflow-hidden border border-slate-700 flex items-end justify-center order-1 md:order-2">
+                            <div class="absolute top-4 left-4 text-slate-500 font-mono text-sm">Ocean (The Whole)</div>
+                            <div class="w-full h-24 bg-gradient-to-t from-cyan-900 to-cyan-700 relative z-10"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        let waveCount = 0;
+        function createWave(btn) {
+            const vis = btn.closest('.glass-card').querySelector('.ocean-visualization');
+            waveCount++;
+            const wave = document.createElement('div');
+            wave.className = 'wave-animation';
+            wave.style.cssText = `
+                position: absolute;
+                bottom: 80px;
+                width: 128px;
+                height: 128px;
+                background: #0891b2;
+                border-radius: 50% 50% 0 0;
+                clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+                box-shadow: inset 0 10px 20px rgba(255,255,255,0.2);
+            `;
+            const label = document.createElement('span');
+            label.className = 'absolute bottom-4 left-1/2 -translate-x-1/2 text-cyan-200 text-xs font-mono';
+            label.textContent = 'Wave (The Part)';
+            wave.appendChild(label);
+            vis.appendChild(wave);
+            
+            setTimeout(() => wave.remove(), 3000);
+        }
+        
+        // Phenomenology content
+        function loadPhenomenologyContent(container) {
+            const sections = [
+                {
+                    title: "The Space of Observation",
+                    subtitle: "Examining the flow of internal phenomena.",
+                    icon: "cloud",
+                    color: "blue",
+                    content: createSkyCloudsMetaphor()
+                },
+                {
+                    title: "The Spectrum of Experience",
+                    subtitle: "What changes and what remains constant?",
+                    icon: "moon",
+                    color: "fuchsia",
+                    content: createStatesOfConsciousness()
+                },
+                {
+                    title: "The Process of Unbinding",
+                    subtitle: "Observing the elements of experience.",
+                    icon: "brain",
+                    color: "emerald",
+                    content: createSelfInquiry()
+                },
+                {
+                    title: "The Centerless Field",
+                    subtitle: "An experiment in visual and physical location.",
+                    icon: "crosshairs",
+                    color: "rose",
+                    content: createFindYourselfScanner()
+                }
+            ];
+            
+            sections.forEach((section, index) => {
+                const sectionEl = createSection(section, index);
+                container.appendChild(sectionEl);
+            });
+        }
+        
+        // Sky Clouds Metaphor
+        function createSkyCloudsMetaphor() {
+            return `
+                <div class="glass-card rounded-2xl p-8 md:p-12">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-6">
+                            <h3 class="text-3xl serif font-bold text-blue-300">Observation (Sakshi Bhava)</h3>
+                            <p class="text-slate-300 leading-relaxed text-lg">
+                                Consider the difference between being a <em>participant</em> in a thought and being the <em>witness</em> of a thought.
+                            </p>
+                            <p class="text-slate-300 leading-relaxed">
+                                Thoughts, emotions, and sensations are like weather patterns. When we identify with them, they consume the horizon. What happens when we observe them neutrally?
+                            </p>
+                            <p class="text-blue-400 italic text-sm border-l-4 border-blue-500 pl-4">
+                                Does a thought feel consciously chosen by you, or does it simply appear in your awareness?
+                            </p>
+                            <div class="my-12"></div>
+                            <button onclick="toggleWitnessing(this)" class="px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full transition-colors">
+                                <i class="fas fa-wind mr-2"></i>
+                                <span class="witness-btn-text">Observe as the Sky</span>
+                            </button>
+                        </div>
+                        <div class="sky-visualization h-80 rounded-xl relative overflow-hidden border border-slate-700 transition-all duration-1000 bg-slate-700">
+                            <div class="sky-bg absolute inset-0 transition-opacity duration-1000 opacity-0 bg-sky-900">
+                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-amber-400/10 blur-3xl rounded-full"></div>
+                            </div>
+                            <div class="cloud cloud-1 absolute left-0 transition-all duration-[3000ms] ease-in-out flex flex-col items-center translate-x-[80px] scale-150 opacity-100 z-10">
+                                <i class="fas fa-cloud text-slate-300 text-6xl drop-shadow-xl"></i>
+                                <span class="text-slate-900 font-bold text-xs -mt-8 relative z-10">Thought</span>
+                            </div>
+                            <div class="cloud cloud-2 absolute left-0 transition-all duration-[4000ms] ease-in-out flex flex-col items-center translate-x-[150px] -translate-y-10 scale-125 opacity-100 z-10">
+                                <i class="fas fa-cloud text-slate-400 text-7xl drop-shadow-xl"></i>
+                                <span class="text-slate-900 font-bold text-xs -mt-10 relative z-10">Emotion</span>
+                            </div>
+                            <div class="cloud cloud-3 absolute left-0 transition-all duration-[3500ms] ease-in-out flex flex-col items-center -translate-x-[20px] translate-y-12 scale-150 opacity-90 z-10">
+                                <i class="fas fa-cloud text-slate-500 text-6xl drop-shadow-xl"></i>
+                                <span class="text-slate-900 font-bold text-xs -mt-10 relative z-10">Memory</span>
+                            </div>
+                            <div class="sky-overlay absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] transition-opacity duration-1000 opacity-100"></div>
+                            <span class="sky-label absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-bold tracking-widest text-lg z-20 whitespace-nowrap drop-shadow-md transition-opacity duration-1000">PARTICIPATING IN NARRATIVE</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function toggleWitnessing(btn) {
+            const vis = btn.closest('.glass-card').querySelector('.sky-visualization');
+            const bg = vis.querySelector('.sky-bg');
+            const clouds = vis.querySelectorAll('.cloud');
+            const overlay = vis.querySelector('.sky-overlay');
+            const label = vis.querySelector('.sky-label');
+            const text = btn.querySelector('.witness-btn-text');
+            
+            if (vis.dataset.witnessing === 'true') {
+                vis.dataset.witnessing = 'false';
+                bg.style.opacity = '0';
+                overlay.style.opacity = '1';
+                label.style.opacity = '1';
+                clouds.forEach((cloud, i) => {
+                    if (i === 0) {
+                        cloud.style.transform = 'translateX(80px) scale(1.5)';
+                        cloud.style.opacity = '1';
+                    } else if (i === 1) {
+                        cloud.style.transform = 'translateX(150px) translateY(-10px) scale(1.25)';
+                        cloud.style.opacity = '1';
+                    } else {
+                        cloud.style.transform = 'translateX(-20px) translateY(12px) scale(1.5)';
+                        cloud.style.opacity = '0.9';
+                    }
+                });
+                text.textContent = 'Observe as the Sky';
+            } else {
+                vis.dataset.witnessing = 'true';
+                bg.style.opacity = '1';
+                overlay.style.opacity = '0';
+                label.style.opacity = '0';
+                clouds.forEach((cloud, i) => {
+                    if (i === 0) {
+                        cloud.style.transform = 'translateX(200px) scale(0.5)';
+                        cloud.style.opacity = '0.4';
+                    } else if (i === 1) {
+                        cloud.style.transform = 'translateX(50px) translateY(10px) scale(0.5)';
+                        cloud.style.opacity = '0.3';
+                    } else {
+                        cloud.style.transform = 'translateX(280px) translateY(-8px) scale(0.5)';
+                        cloud.style.opacity = '0.2';
+                    }
+                });
+                text.textContent = 'Engage with Content';
+            }
+        }
+        
+        // States of Consciousness
+        function createStatesOfConsciousness() {
+            return `
+                <div class="glass-card rounded-2xl p-8 md:p-12">
+                    <div class="space-y-8">
+                        <div class="text-center space-y-4">
+                            <h3 class="text-3xl serif font-bold text-fuchsia-400">Avastha Traya: States of Experience</h3>
+                            <p class="text-slate-300 leading-relaxed max-w-3xl mx-auto text-lg">
+                                We move through different modes of experience every 24 hours. By sliding through these states, we can investigate what changes and what remains constant.
+                            </p>
+                        </div>
+                        <div class="relative w-full h-64 bg-slate-900 rounded-xl overflow-hidden border border-slate-700 flex flex-col items-center justify-center p-6">
+                            <div class="states-bg absolute inset-0 bg-amber-500/10 transition-opacity duration-1000 opacity-20"></div>
+                            <div class="states-glow absolute w-32 h-32 rounded-full bg-amber-400/20 blur-2xl transition-all duration-1000 scale-50 opacity-0"></div>
+                            <i class="states-icon fas fa-sun text-blue-400 text-6xl relative z-10 transition-colors duration-500"></i>
+                            <h4 class="states-name relative z-10 text-2xl serif font-bold mt-4 transition-colors duration-500 text-blue-400">
+                                Jagrat (Waking)
+                            </h4>
+                        </div>
+                        <div class="max-w-xl mx-auto w-full px-4">
+                            <input type="range" min="0" max="3" step="1" value="0" 
+                                   oninput="updateState(this)" 
+                                   class="states-slider w-full accent-fuchsia-500 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                            <div class="flex justify-between text-xs text-slate-400 font-mono mt-2">
+                                <span>Waking</span>
+                                <span>Dreaming</span>
+                                <span>Deep Sleep</span>
+                                <span class="text-amber-400 font-bold">Constant</span>
+                            </div>
+                        </div>
+                        <p class="text-center text-slate-300 italic min-h-[3rem] text-lg states-desc">
+                            Sensory interaction with the external environment.
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        const states = [
+            { name: "Jagrat (Waking)", desc: "Sensory interaction with the external environment.", icon: "fa-sun", color: "text-blue-400" },
+            { name: "Svapna (Dreaming)", desc: "Interaction with an internal, mentally constructed environment.", icon: "fa-cloud-moon", color: "text-indigo-400" },
+            { name: "Sushupti (Deep Sleep)", desc: "No constructed environment. Total rest. Yet, upon waking, we report an experience of 'peaceful nothingness.'", icon: "fa-moon-star", color: "text-slate-500" },
+            { name: "Turiya (The Constant)", desc: "The background of observation that remains present through waking, dreaming, and deep sleep.", icon: "fa-eye", color: "text-amber-400" }
+        ];
+        
+        function updateState(slider) {
+            const index = parseInt(slider.value);
+            const state = states[index];
+            const card = slider.closest('.glass-card');
+            const icon = card.querySelector('.states-icon');
+            const name = card.querySelector('.states-name');
+            const desc = card.querySelector('.states-desc');
+            const bg = card.querySelector('.states-bg');
+            const glow = card.querySelector('.states-glow');
+            
+            icon.className = `states-icon fas ${state.icon} ${state.color} text-6xl relative z-10 transition-colors duration-500`;
+            if (index === 3) {
+                icon.style.filter = 'drop-shadow(0 0 20px rgba(251,191,36,0.8))';
+            } else {
+                icon.style.filter = 'none';
+            }
+            name.textContent = state.name;
+            name.className = `states-name relative z-10 text-2xl serif font-bold mt-4 transition-colors duration-500 ${state.color}`;
+            desc.textContent = state.desc;
+            
+            if (index === 3) {
+                bg.style.opacity = '1';
+                glow.style.transform = 'scale(1.5)';
+                glow.style.opacity = '1';
+            } else {
+                bg.style.opacity = '0.2';
+                glow.style.transform = 'scale(0.5)';
+                glow.style.opacity = '0';
+            }
+        }
+        
+        // Self Inquiry
+        function createSelfInquiry() {
+            return `
+                <div class="glass-card rounded-2xl p-8 md:p-12">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-6">
+                            <h3 class="text-3xl serif font-bold text-emerald-400">The Logic of "Neti-Neti"</h3>
+                            <p class="text-slate-300 leading-relaxed text-lg">
+                                <em>Neti-Neti</em> translates roughly to "not this, not this." It is a process of examining objects of experience.
+                            </p>
+                            <p class="text-emerald-400 italic text-sm border-l-4 border-emerald-500 pl-4">
+                                If you can observe your body, your perceptions, and your thoughts, who is doing the observing?
+                            </p>
+                            <div class="my-12"></div>
+                            <div class="space-y-3">
+                                <button onclick="toggleLayer(this, 'body')" class="neti-btn w-full flex items-center justify-between p-4 rounded-lg border transition-all bg-slate-700 border-slate-600 text-slate-200" data-layer="body">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-user-minus"></i>
+                                        <span>1. "I can observe the Body"</span>
+                                    </div>
+                                    <span class="text-sm neti-status">Observing</span>
+                                </button>
+                                <button onclick="toggleLayer(this, 'senses')" class="neti-btn w-full flex items-center justify-between p-4 rounded-lg border transition-all bg-slate-700 border-slate-600 text-slate-200" data-layer="senses">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-eye-slash"></i>
+                                        <span>2. "I can observe Perceptions"</span>
+                                    </div>
+                                    <span class="text-sm neti-status">Observing</span>
+                                </button>
+                                <button onclick="toggleLayer(this, 'memory')" class="neti-btn w-full flex items-center justify-between p-4 rounded-lg border transition-all bg-slate-700 border-slate-600 text-slate-200" data-layer="memory">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-brain"></i>
+                                        <span>3. "I can observe Thoughts"</span>
+                                    </div>
+                                    <span class="text-sm neti-status">Observing</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="neti-visualization h-96 bg-slate-900 rounded-xl relative overflow-hidden border border-slate-700 flex items-center justify-center">
+                            <div class="neti-base absolute flex flex-col items-center transition-all duration-1000 scale-75 opacity-50">
+                                <div class="w-24 h-24 rounded-full bg-emerald-400/20 shadow-[0_0_50px_rgba(52,211,153,0.5)] animate-pulse flex items-center justify-center">
+                                    <i class="fas fa-sparkle text-emerald-400 text-4xl"></i>
+                                </div>
+                                <span class="neti-label mt-4 serif text-emerald-400 transition-opacity duration-1000 opacity-0">The Space of Observation</span>
+                                <span class="neti-sublabel text-xs text-emerald-400/70 mt-1 transition-opacity duration-1000 opacity-0">"What remains?"</span>
+                            </div>
+                            <div class="neti-layer neti-memory absolute transition-all duration-700 flex items-center justify-center opacity-100 scale-100">
+                                <div class="w-32 h-32 rounded-full border-4 border-dashed border-indigo-400 animate-spin" style="animation-duration: 20s;"></div>
+                            </div>
+                            <div class="neti-layer neti-senses absolute transition-all duration-700 flex items-center justify-center opacity-100 scale-100">
+                                <div class="w-40 h-40 rounded-full border-2 border-sky-400 animate-spin" style="animation-duration: 15s; animation-direction: reverse;"></div>
+                            </div>
+                            <div class="neti-layer neti-body absolute transition-all duration-700 flex items-center justify-center opacity-100 scale-100">
+                                <div class="w-48 h-48 rounded-full border border-slate-400 bg-slate-800/30 backdrop-blur-sm"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function toggleLayer(btn, layer) {
+            const vis = btn.closest('.glass-card').querySelector('.neti-visualization');
+            const layerEl = vis.querySelector(`.neti-${layer}`);
+            const base = vis.querySelector('.neti-base');
+            const label = vis.querySelector('.neti-label');
+            const sublabel = vis.querySelector('.neti-sublabel');
+            const status = btn.querySelector('.neti-status');
+            
+            if (layerEl.style.opacity !== '0') {
+                layerEl.style.opacity = '0';
+                layerEl.style.transform = 'scale(1.1)';
+                status.textContent = 'Acknowledged';
+                btn.classList.remove('bg-slate-700', 'border-slate-600', 'text-slate-200');
+                btn.classList.add('bg-slate-800/50', 'border-emerald-900/50', 'text-slate-500');
+            } else {
+                layerEl.style.opacity = '1';
+                layerEl.style.transform = 'scale(1)';
+                status.textContent = 'Observing';
+                btn.classList.add('bg-slate-700', 'border-slate-600', 'text-slate-200');
+                btn.classList.remove('bg-slate-800/50', 'border-emerald-900/50', 'text-slate-500');
+            }
+            
+            const allLayers = vis.querySelectorAll('.neti-layer');
+            const allHidden = Array.from(allLayers).every(l => l.style.opacity === '0');
+            
+            if (allHidden) {
+                base.style.transform = 'scale(1.25)';
+                base.style.opacity = '1';
+                label.style.opacity = '1';
+                sublabel.style.opacity = '1';
+            } else {
+                base.style.transform = 'scale(0.75)';
+                base.style.opacity = '0.5';
+                label.style.opacity = '0';
+                sublabel.style.opacity = '0';
+            }
+        }
+        
+        // Find Yourself Scanner
+        function createFindYourselfScanner() {
+            return `
+                <div class="glass-card rounded-2xl p-8 md:p-12">
+                    <div class="space-y-8">
+                        <div class="text-center space-y-4">
+                            <h3 class="text-3xl serif font-bold text-rose-500">Locate the Observer</h3>
+                            <p class="text-slate-300 leading-relaxed max-w-2xl mx-auto text-lg">
+                                Try a simple experiment. Notice your thoughts. Notice your physical sensations. 
+                                Now look at the screen. Look for the exact physical location of the one who is looking. Use the grid below.
+                            </p>
+                        </div>
+                        <div onclick="handleScannerClick(event, this)" 
+                             class="scanner-visualization relative w-full h-96 bg-slate-950 rounded-xl overflow-hidden border-2 border-slate-700 cursor-crosshair flex flex-col items-center justify-center">
+                            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.4)_0,transparent_100%)]"></div>
+                            <div class="absolute w-full h-[1px] bg-slate-800 top-1/2"></div>
+                            <div class="absolute h-full w-[1px] bg-slate-800 left-1/2"></div>
+                            <div class="absolute w-48 h-48 border border-slate-800 rounded-full"></div>
+                            <div class="absolute w-96 h-96 border border-slate-800 rounded-full"></div>
+                            <div class="scanner-readout relative z-10 bg-slate-900/80 backdrop-blur-sm border border-slate-700 px-6 py-3 rounded-lg pointer-events-none mt-48 transition-all">
+                                <span class="scanner-message font-mono text-sm text-slate-400">
+                                    Click on the exact location of the observer.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function handleScannerClick(event, container) {
+            const rect = container.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // Remove existing marker
+            const existing = container.querySelector('.scanner-marker');
+            if (existing) existing.remove();
+            
+            // Create marker
+            const marker = document.createElement('div');
+            marker.className = 'scanner-marker absolute pointer-events-none transform -translate-x-1/2 -translate-y-1/2';
+            marker.style.left = x + 'px';
+            marker.style.top = y + 'px';
+            marker.innerHTML = `
+                <div class="w-8 h-8 border-2 border-rose-500 rounded-full animate-ping absolute inset-0"></div>
+                <i class="fas fa-crosshairs text-rose-500 text-3xl"></i>
+            `;
+            container.appendChild(marker);
+            
+            const message = container.querySelector('.scanner-message');
+            message.textContent = 'Processing coordinates...';
+            message.classList.add('text-rose-400', 'font-bold');
+            message.classList.remove('text-slate-400');
+            
+            setTimeout(() => {
+                message.textContent = 'Observation: That location is also an object appearing in your visual field. Where is the awareness itself?';
+            }, 1200);
+        }
+        
+        // Paradox content
+        function loadParadoxContent(container) {
+            const sections = [
+                {
+                    title: "The Limits of Logic",
+                    subtitle: "Engaging with questions that exhaust the intellect.",
+                    icon: "comment",
+                    color: "violet",
+                    content: createKoanEngine()
+                }
+            ];
+            
+            sections.forEach((section, index) => {
+                const sectionEl = createSection(section, index);
+                container.appendChild(sectionEl);
+            });
+            
+            // Add sudden stop
+            const stopDiv = document.createElement('div');
+            stopDiv.className = 'flex justify-center my-16';
+            stopDiv.innerHTML = `
+                <button onclick="triggerSuddenStop()" class="group relative px-8 py-4 bg-slate-900 border border-slate-700 hover:border-slate-500 rounded-full transition-all duration-500 overflow-hidden flex items-center gap-3">
+                    <div class="absolute inset-0 bg-slate-800 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                    <i class="fas fa-power-off text-slate-400 group-hover:text-white relative z-10 text-xl"></i>
+                    <span class="text-slate-400 group-hover:text-white font-mono font-bold tracking-widest relative z-10">PAUSE INVESTIGATION</span>
+                </button>
+            `;
+            container.appendChild(stopDiv);
+        }
+        
+        // Koan Engine
+        function createKoanEngine() {
+            return `
+                <div class="glass-card rounded-2xl p-8 md:p-12">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <h3 class="text-3xl serif font-bold text-violet-400">The Paradox Engine</h3>
+                            <p class="text-slate-300 leading-relaxed text-lg">
+                                Zen tradition utilizes koans—paradoxical statements designed to exhaust the analytical mind. They are not riddles to be solved, but tools to observe the limits of conceptual thought.
+                            </p>
+                            <p class="text-slate-300 leading-relaxed text-sm italic">
+                                *In Zen practice, the response "Mu" (無) roughly translates to "un-ask the question," suggesting the premise itself relies on a false duality.
+                            </p>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-xl border border-slate-700 p-6 relative overflow-hidden h-64 flex flex-col justify-end">
+                            <div class="koan-response absolute inset-0 flex items-center justify-center p-6 text-center">
+                                <span class="koan-text text-xl serif text-violet-300 italic">Enter an inquiry to observe the mind's reaction...</span>
+                            </div>
+                            <form onsubmit="handleKoanSubmit(event, this)" class="relative z-10 flex gap-2 mt-auto">
+                                <input type="text" 
+                                       placeholder="Type an assumption or question..." 
+                                       class="koan-input flex-1 bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-slate-200 focus:outline-none focus:border-violet-500 font-mono text-sm">
+                                <button type="submit" class="bg-violet-600 hover:bg-violet-500 text-white px-4 py-2 rounded-lg font-bold transition-colors">
+                                    Inquire
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function handleKoanSubmit(event, form) {
+            event.preventDefault();
+            const input = form.querySelector('.koan-input');
+            const response = form.closest('.glass-card').querySelector('.koan-text');
+            
+            if (!input.value.trim()) return;
+            
+            response.textContent = 'MU.';
+            response.className = 'koan-text text-8xl serif font-black text-slate-500 animate-pulse';
+            input.value = '';
+            input.disabled = true;
+            form.querySelector('button').disabled = true;
+            
+            setTimeout(() => {
+                const responses = [
+                    "If everything is one, who is asking the question?",
+                    "What was your face before your parents were born?",
+                    "How do you hold infinity in a finite thought?",
+                    "Show me the mind that formulated this."
+                ];
+                response.textContent = responses[Math.floor(Math.random() * responses.length)];
+                response.className = 'koan-text text-xl serif text-violet-300 italic';
+                input.disabled = false;
+                form.querySelector('button').disabled = false;
+            }, 2000);
+        }
+        
+        // Sudden Stop
+        function triggerSuddenStop() {
+            const overlay = document.createElement('div');
+            overlay.className = 'sudden-stop fixed inset-0 z-50 bg-black flex flex-col items-center justify-center cursor-pointer';
+            overlay.onclick = () => overlay.remove();
+            overlay.innerHTML = `
+                <h1 class="text-slate-300 text-2xl md:text-4xl serif tracking-wide opacity-0 animate-[fadeIn_2s_ease-out_1s_forwards]">
+                    Take a breath.
+                </h1>
+                <h2 class="text-slate-100 text-3xl md:text-5xl serif mt-8 opacity-0 animate-[fadeIn_2s_ease-out_4s_forwards]">
+                    What is here?
+                </h2>
+                <h3 class="text-amber-500/80 text-xl serif italic mt-8 opacity-0 animate-[fadeIn_2s_ease-out_8s_forwards]">
+                    What do you notice?
+                </h3>
+                <span class="absolute bottom-8 text-slate-700 font-mono text-sm opacity-0 animate-[fadeIn_2s_ease-out_12s_forwards]">
+                    Click anywhere to return.
+                </span>
+            `;
+            document.body.appendChild(overlay);
+        }
+        
+        // Progress indicator
+        function updateProgress() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            const progressBar = document.getElementById('progress-indicator');
+            if (progressBar) {
+                progressBar.style.transform = `scaleX(${scrolled / 100})`;
+            }
+        }
+        
+        // Scroll reveal - minimal
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        
+        function initScrollReveals() {
+            document.querySelectorAll('.scroll-reveal').forEach(el => {
+                scrollObserver.observe(el);
+            });
+        }
+        
+        // Pause overlay functionality
+        function showPauseOverlay() {
+            const overlay = document.getElementById('pause-overlay');
+            if (overlay) {
+                overlay.classList.add('active');
+            }
+        }
+        
+        function hidePauseOverlay() {
+            const overlay = document.getElementById('pause-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+        }
+        
+        // Auto-show pause every 3-4 sections
+        let sectionCount = 0;
+        function checkForPause() {
+            sectionCount++;
+            if (sectionCount > 0 && sectionCount % 3 === 0) {
+                setTimeout(() => {
+                    showPauseOverlay();
+                    setTimeout(() => {
+                        hidePauseOverlay();
+                    }, 4000);
+                }, 2000);
+            }
+        }
+        
+        // Add subtle sound feedback (optional, can be disabled)
+        function playSubtleSound(type) {
+            // Using Web Audio API for subtle feedback
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = type === 'click' ? 800 : 600;
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.05, audioContext.currentTime + 0.01);
+            gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default mode
+            setMode('metaphor');
+            
+            // Initialize minimal interactions
+            initScrollReveals();
+            updateProgress();
+            
+            // Progress tracking
+            window.addEventListener('scroll', updateProgress, { passive: true });
+            
+            // Pause overlay click to dismiss
+            const pauseOverlay = document.getElementById('pause-overlay');
+            if (pauseOverlay) {
+                pauseOverlay.addEventListener('click', hidePauseOverlay);
+            }
+            
+            // Add scroll reveal class to sections
+            setTimeout(() => {
+                document.querySelectorAll('section').forEach(section => {
+                    section.classList.add('scroll-reveal');
+                });
+            }, 100);
+            
+            // Initialize mirrors when they're created
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeType === 1) {
+                            const mirrors = node.querySelectorAll ? node.querySelectorAll('.mirror-visualization') : [];
+                            mirrors.forEach(initMirror);
+                            
+                            // Re-initialize scroll reveals for new content
+                            node.querySelectorAll('.scroll-reveal').forEach(el => {
+                                scrollObserver.observe(el);
+                            });
+                        }
+                    });
+                });
+            });
+            observer.observe(document.getElementById('content-area'), { childList: true, subtree: true });
+        });
+    </script>
+</body>
+</html>
