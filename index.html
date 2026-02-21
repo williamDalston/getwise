@@ -207,6 +207,7 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 .ground-btns{display:flex;gap:1rem}
 /* IMMERSION */
 body.immersion #mod-hdr{opacity:0;pointer-events:none}
+body.immersion #ground-btn{opacity:.18;pointer-events:all}
 .imm-strip{position:fixed;top:0;left:0;right:0;height:4px;z-index:300;cursor:pointer}
 /* INTERACTIONS */
 .thought-field{min-height:140px;position:relative;overflow:hidden;
@@ -399,7 +400,7 @@ body.immersion #mod-hdr{opacity:0;pointer-events:none}
     <div class="btn-group">
       <button class="btn btn-primary" onclick="enterDeep()">Begin</button>
     </div>
-    <button class="btn-link" style="margin-top:1.25rem;font-size:.875rem;opacity:.45" onclick="nav('ordinary')">Continue as usual</button>
+    <button class="btn-link" style="margin-top:1.25rem;font-size:.875rem;opacity:.6" onclick="nav('ordinary')">Continue as usual</button>
   </div>
   <section class="land-sec">
     <p class="land-sec-lbl">What this is</p>
@@ -524,7 +525,7 @@ body.immersion #mod-hdr{opacity:0;pointer-events:none}
       <div class="mod-controls">
         <button class="icon-btn" id="audio-btn" onclick="toggleAudio()" title="Audio">&#9834;</button>
         <button class="icon-btn" id="breath-btn" onclick="toggleBreath()" title="Breath pacer">&#9675;</button>
-        <button class="icon-btn" onclick="showGround()" title="Ground">&#8635;</button>
+        <button class="icon-btn" id="ground-btn" onclick="showGround()" title="Ground">&#8635;</button>
         <button class="icon-btn" id="imm-btn" onclick="toggleImm()" title="Immersion">&#8865;</button>
       </div>
     </div>
@@ -775,7 +776,7 @@ function enterNothing(){
   var ret=document.getElementById('nothing-ret');
   ret.style.opacity='0';
   clearTimeout(window._nothingT);
-  window._nothingT=setTimeout(function(){ret.style.opacity='1';},45000);
+  window._nothingT=setTimeout(function(){ret.style.opacity='1';},90000);
 }
 function replayOnboarding(){
   var sc=document.getElementById('screen-onboarding');
@@ -901,7 +902,11 @@ function nextMod(){
   var j=J[S.journey];
   localStorage.setItem('dm_d_'+j.mods[S.module].id,'1');
   clearInterval(S.timerInt);
-  if(S.module<j.mods.length-1){S.module++;loadModule();}else backToJourneys();
+  if(S.module<j.mods.length-1){
+    var body=document.getElementById('mod-body');
+    body.style.transition='opacity 400ms ease';body.style.opacity='0';
+    setTimeout(function(){body.style.opacity='1';S.module++;loadModule();},1500);
+  }else backToJourneys();
 }
 
 function backToJourneys(){clearInterval(S.timerInt);document.body.classList.remove('immersion');resetBreath();if(S.audio){toggleAudio();}nav('journey-select');}
@@ -1190,10 +1195,10 @@ function resetBreath(){
   document.getElementById('breath-btn').classList.remove('on');
   document.getElementById('breath-ring').classList.remove('on');
 }
-function showPause(){document.getElementById('pause-overlay').classList.add('on');}
-function hidePause(){document.getElementById('pause-overlay').classList.remove('on');}
-function showGround(){document.getElementById('ground-drawer').classList.add('on');}
-function hideGround(){document.getElementById('ground-drawer').classList.remove('on');}
+function showPause(){document.getElementById('pause-overlay').classList.add('on');if(_gain)_gain.gain.setTargetAtTime(0.005,AC.currentTime,0.8);}
+function hidePause(){document.getElementById('pause-overlay').classList.remove('on');if(S.audio&&_gain)_gain.gain.setTargetAtTime(0.014,AC.currentTime,1.2);}
+function showGround(){document.getElementById('ground-drawer').classList.add('on');if(_gain)_gain.gain.setTargetAtTime(0.005,AC.currentTime,0.8);}
+function hideGround(){document.getElementById('ground-drawer').classList.remove('on');if(S.audio&&_gain)_gain.gain.setTargetAtTime(0.014,AC.currentTime,1.2);}
 
 /* Rapid-interaction detection */
 var _iactTimes=[];
