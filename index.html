@@ -320,7 +320,8 @@ body.immersion #mod-hdr{opacity:0;pointer-events:none}
 #breath-ring.on{opacity:1;animation:breathe 10s ease-in-out infinite}
 @keyframes breathe{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(2.4)}}
 /* REFLECTION SURFACE */
-.ref-surface{padding:2rem 0 2.5rem}
+.ref-surface{padding:2rem 0 2.5rem;opacity:0;animation:refFade 2s ease forwards;animation-delay:.4s}
+@keyframes refFade{to{opacity:1}}
 .rs-text{font-size:1.1875rem;font-weight:300;color:var(--text);line-height:1.75;opacity:.7}
 .ref-surface-div{height:1px;background:var(--b);margin-bottom:2rem}
 </style>
@@ -1082,7 +1083,7 @@ function audioStart(){
   _osc.frequency.value=TONE[J[S.journey].id]||186;
   _osc.connect(_flt);_flt.connect(_gain);_gain.connect(AC.destination);
   _lfo.start();_osc.start();
-  _gain.gain.setTargetAtTime(0.03,AC.currentTime,2.5);
+  _gain.gain.setTargetAtTime(0.014,AC.currentTime,2.5);
 }
 function audioStop(){
   if(!_osc)return;
