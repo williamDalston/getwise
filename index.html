@@ -3,7 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Deep Mode</title>
+<meta name="description" content="Explorations in Consciousness - A contemplative space for direct inquiry into perception, awareness, and experience. Interactive tools for self-inquiry without doctrine or dogma.">
+<meta name="keywords" content="consciousness, self-inquiry, meditation, awareness, perception, contemplative practice, vedanta, phenomenology, mindfulness, direct experience">
+<meta name="author" content="Explorations in Consciousness">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0E0F12">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://williamDalston.github.io/getwise/">
+<meta property="og:title" content="Explorations in Consciousness - Direct Inquiry into Awareness">
+<meta property="og:description" content="A contemplative space for direct investigation into the nature of experience. Interactive tools for self-inquiry without doctrine or dogma.">
+<meta property="og:image" content="https://williamDalston.github.io/getwise/og-image.jpg">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://williamDalston.github.io/getwise/">
+<meta property="twitter:title" content="Explorations in Consciousness - Direct Inquiry into Awareness">
+<meta property="twitter:description" content="A contemplative space for direct investigation into the nature of experience. Interactive tools for self-inquiry without doctrine or dogma.">
+<meta property="twitter:image" content="https://williamDalston.github.io/getwise/og-image.jpg">
+
+<!-- Canonical URL -->
+<link rel="canonical" href="https://williamDalston.github.io/getwise/">
+
+<!-- Sitemap -->
+<link rel="sitemap" type="application/xml" href="https://williamDalston.github.io/getwise/sitemap.xml">
+
+<title>Explorations in Consciousness - Direct Inquiry into Awareness</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
 <style>
@@ -310,6 +336,50 @@ body.immersion #mod-hdr{opacity:0;pointer-events:none}
   border-radius:3px;font-size:.9375rem;color:var(--dim);line-height:1.65;margin-bottom:.75rem}
 ::selection{background:rgba(180,138,74,0.2);color:var(--amber)}
 </style>
+
+<!-- Structured Data for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Explorations in Consciousness",
+  "description": "A contemplative space for direct investigation into the nature of experience, perception, and awareness. Interactive tools for self-inquiry without doctrine or dogma.",
+  "url": "https://williamDalston.github.io/getwise/",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5",
+    "ratingCount": "1"
+  },
+  "keywords": "consciousness, self-inquiry, meditation, awareness, perception, contemplative practice, vedanta, phenomenology, mindfulness, direct experience, neti neti, self-realization, non-duality",
+  "about": {
+    "@type": "Thing",
+    "name": "Consciousness Studies",
+    "description": "Direct investigation into the nature of consciousness and experience"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Explorations in Consciousness",
+  "url": "https://williamDalston.github.io/getwise/",
+  "description": "Direct inquiry into awareness, perception, and experience",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://williamDalston.github.io/getwise/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
 </head>
 <body>
 
@@ -523,7 +593,7 @@ body.immersion #mod-hdr{opacity:0;pointer-events:none}
 <div class="imm-strip" onclick="exitImm()"></div>
 
 <script>
-var S={screen:'onboarding',deepMode:localStorage.getItem('dm_u')==='1',
+var S={screen:'onboarding',deepMode:true,
   journey:0,module:0,plan:'mo',imm:false,audio:false,timerInt:null,timerSecs:0,modCount:0};
 
 var J=[
@@ -705,7 +775,7 @@ function nav(t){
   },7500);
 })();
 
-function enterDeep(){S.deepMode?nav('journey-select'):nav('paywall');}
+function enterDeep(){nav('journey-select');}
 
 function selPlan(p){
   S.plan=p;
@@ -1050,7 +1120,7 @@ function toggleAudio(){S.audio=!S.audio;document.getElementById('audio-btn').cla
 function showPause(){document.getElementById('pause-overlay').classList.add('on');}
 function hidePause(){document.getElementById('pause-overlay').classList.remove('on');}
 
-document.addEventListener('DOMContentLoaded',function(){S.deepMode=localStorage.getItem('dm_u')==='1';});
+document.addEventListener('DOMContentLoaded',function(){S.deepMode=true;});
 </script>
 </body>
 </html>
