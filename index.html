@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Explorations in Consciousness - A contemplative space for direct inquiry into perception, awareness, and experience. Interactive tools for self-inquiry without doctrine or dogma.">
 <meta name="keywords" content="consciousness, self-inquiry, meditation, awareness, perception, contemplative practice, vedanta, phenomenology, mindfulness, direct experience">
-<meta name="author" content="Explorations in Consciousness">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#0E0F12">
 
@@ -444,7 +443,7 @@ body.immersion #mod-hdr{opacity:0;pointer-events:none}
     </div>
     <div class="exp-card">
       <h2>Sky &amp; Clouds</h2>
-      <p>Thoughts, emotions, and sensations are weather patterns. When we identify with them, they consume the horizon. When we witness them, we notice a vaster space.</p>
+      <p>Thoughts, emotions, and sensations are weather patterns. When we identify with them, they consume the horizon. What happens when we witness them?</p>
       <div class="exp-interact">
         <div class="sky-state" id="sky-state">Participating: you are inside the thought, moved by it, identified with it.</div>
         <div class="flex g2 mt2">
@@ -476,7 +475,7 @@ body.immersion #mod-hdr{opacity:0;pointer-events:none}
           <div class="id-layer"><span class="id-name">Your beliefs</span><button class="id-rm" onclick="expRmLayer(this)">Remove</button></div>
           <div class="id-layer"><span class="id-name">Your history</span><button class="id-rm" onclick="expRmLayer(this)">Remove</button></div>
         </div>
-        <div class="id-reveal mt2" id="exp-id-rev">What remains when the attributes are subtracted?</div>
+        <div class="id-reveal mt2" id="exp-id-rev">What is present when the attributes are removed?</div>
       </div>
     </div>
   </div>
@@ -545,7 +544,7 @@ var S={screen:'onboarding',deepMode:true,
   journey:0,module:0,plan:'mo',imm:false,audio:false,breath:false,timerInt:null,timerSecs:0,modCount:0};
 
 var J=[
-  {id:'obs',title:'The Observer Protocol',purpose:'Shift identification from content to awareness.',
+  {id:'obs',title:'The Observer Protocol',purpose:'Examine the relationship between content and awareness.',
    mods:[
     {id:'m01',title:'Watching Thought',
      instr:'Notice the difference between being inside a thought and observing it.',
@@ -575,7 +574,7 @@ var J=[
      instr:'Notice the physical sensation of emotion, separated from its narrative.',
      steps:['Recall a mild recent emotion.',
             'Strip the story: who said what, what it means.',
-            'What remains? Locate it in the body. What is its texture?'],
+            'What is present? Locate it in the body. What is its texture?'],
      iact:'sensLoc',prompt:'What was the emotion without the story?'},
     {id:'m06',title:'Time As Appearance',
      instr:'Examine what is actually here.',
@@ -591,7 +590,7 @@ var J=[
      iact:'seeker',prompt:'What happened when you looked for the seeker?'}
    ]
   },
-  {id:'lab',title:'The Perception Lab',purpose:'Destabilize assumptions without attacking identity.',
+  {id:'lab',title:'The Perception Lab',purpose:'Examine assumptions about perception and identity.',
    mods:[
     {id:'m08',title:'Visual Field Experiment',
      instr:'Examine the structure of seeing itself.',
@@ -628,7 +627,7 @@ var J=[
      steps:['Notice the roles you carry: your name, profession, relationships.',
             'These are real and functional. But are they you, or attributes of you?',
             'What holds them together?'],
-     iact:'idStack',prompt:'What remains if you subtract the roles?'},
+     iact:'idStack',prompt:'What is present if you subtract the roles?'},
     {id:'m14',title:'Mortality Contemplation',
      instr:'Use finitude as a clarity instrument.',
      steps:['Consider the possibility that this body will cease.',
@@ -654,7 +653,7 @@ var J=[
      iact:'reviewInt',prompt:'What, if anything, stood out?'}
    ]
   },
-  {id:'int',title:'Integration Mode',purpose:'Prevent dissociation and spiritual ego.',
+  {id:'int',title:'Integration Mode',purpose:'Examine dissociation and spiritual identity.',
    mods:[
     {id:'m18',title:'Functioning Without a Center',
      instr:'Examine how ordinary activity continues without a fixed self.',
@@ -860,7 +859,7 @@ function buildIact(type,mid){
   if(type==='bodyMap')return '<p class="dim mb2" style="font-size:.875rem">Touch a region. Notice what is actually there.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
   if(type==='memTransform')return '<p class="dim mb2" style="font-size:.875rem">Type a memory, then press Enter.</p><input class="mem-input" id="memi-'+mid+'" placeholder="A memory..." onkeydown="transformMem(event,\''+mid+'\')"><div class="mem-out" id="memo-'+mid+'"></div>';
   if(type==='agencyTest')return '<p class="dim mb2" style="font-size:.875rem">Press when you decide to. Notice what happens before the press.</p><button class="agency-btn" onclick="logAgency(\''+mid+'\')">I am pressing this now</button><div class="agency-log" id="al-'+mid+'"></div>';
-  if(type==='idStack')return '<div class="id-layers" id="il-'+mid+'">'+['Your name','Your occupation','Your relationships','Your beliefs','Your history'].map(function(l){return '<div class="id-layer"><span class="id-name">'+l+'</span><button class="id-rm" onclick="rmLayer(this,\''+mid+'\')">Remove</button></div>';}).join('')+'</div><div class="id-reveal mt2" id="idr-'+mid+'">What remains when the attributes are subtracted?</div>';
+  if(type==='idStack')return '<div class="id-layers" id="il-'+mid+'">'+['Your name','Your occupation','Your relationships','Your beliefs','Your history'].map(function(l){return '<div class="id-layer"><span class="id-name">'+l+'</span><button class="id-rm" onclick="rmLayer(this,\''+mid+'\')">Remove</button></div>';}).join('')+'</div><div class="id-reveal mt2" id="idr-'+mid+'">What is present when the attributes are removed?</div>';
   if(type==='contemp')return '<div class="contemp"><p>Sit with this for a moment.<br>No analysis required.</p></div>';
   if(type==='narToggle')return '<div class="toggle-pair"><button class="t-opt on" id="nts-'+mid+'" onclick="setNar(\'story\',\''+mid+'\')">Story</button><button class="t-opt" id="ntx-'+mid+'" onclick="setNar(\'sens\',\''+mid+'\')">Sensation</button></div><p class="t-desc dim" id="ntd-'+mid+'">Story: "I felt anxious because of what she said, and now I am worried about tomorrow."</p>';
   if(type==='silSpace')return '<div class="toggle-pair"><button class="t-opt on" id="sss-'+mid+'" onclick="setSil(\'sound\',\''+mid+'\')">Sound</button><button class="t-opt" id="ssl-'+mid+'" onclick="setSil(\'sil\',\''+mid+'\')">Silence</button></div><p class="t-desc dim" id="ssd-'+mid+'">Notice: right now, there is sound. And it appears within something.</p>';
