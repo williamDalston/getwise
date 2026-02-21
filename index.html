@@ -128,6 +128,7 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 .j-card h2{font-size:1.375rem;margin-bottom:.375rem}
 .j-range{font-size:.8125rem;color:var(--dim)}
 .j-random{display:block;margin:1.5rem auto 0}
+.j-nothing{display:flex;align-items:center;justify-content:center;min-height:4rem;padding:1.5rem}
 .j-dots{display:flex;gap:3px;margin-top:.875rem}
 .jd{width:5px;height:5px;border-radius:50%;background:var(--b2);transition:background 400ms}
 .jd.done{background:rgba(180,138,74,0.45)}
@@ -398,6 +399,7 @@ body.immersion #mod-hdr{opacity:0;pointer-events:none}
     <div class="btn-group">
       <button class="btn btn-primary" onclick="enterDeep()">Begin</button>
     </div>
+    <button class="btn-link" style="margin-top:1.25rem;font-size:.875rem;opacity:.45" onclick="nav('ordinary')">Continue as usual</button>
   </div>
   <section class="land-sec">
     <p class="land-sec-lbl">What this is</p>
@@ -541,6 +543,23 @@ body.immersion #mod-hdr{opacity:0;pointer-events:none}
     <button class="btn-link btn-sm" onclick="exportRef()">Export</button>
   </div>
   <div class="ref-list" id="ref-list"></div>
+</div>
+
+<!-- ORDINARY -->
+<div id="screen-ordinary" class="screen gone">
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center">
+    <div>
+      <p style="font-size:1.25rem;font-weight:300;color:var(--dim);line-height:1.8">This moment is already sufficient.</p>
+      <button class="btn btn-ghost" style="margin-top:2.5rem" onclick="nav('landing')">Return</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTHING -->
+<div id="screen-nothing" class="screen gone">
+  <div id="nothing-ret" style="position:fixed;bottom:3rem;left:50%;transform:translateX(-50%);opacity:0;transition:opacity 2s ease">
+    <button class="btn btn-ghost" onclick="nav('journey-select')">Return</button>
+  </div>
 </div>
 
 <!-- PAUSE OVERLAY -->
@@ -751,6 +770,13 @@ function nav(t){
 })();
 
 function enterDeep(){nav('journey-select');}
+function enterNothing(){
+  nav('nothing');
+  var ret=document.getElementById('nothing-ret');
+  ret.style.opacity='0';
+  clearTimeout(window._nothingT);
+  window._nothingT=setTimeout(function(){ret.style.opacity='1';},45000);
+}
 function replayOnboarding(){
   var sc=document.getElementById('screen-onboarding');
   var ob1=document.getElementById('ob1'),ob2=document.getElementById('ob2'),cont=document.getElementById('ob-cont');
@@ -779,6 +805,10 @@ function renderJourneys(){
       +'<div class="j-dots">'+dots+'</div>';
     body.appendChild(card);
   });
+  var nothing=document.createElement('div');nothing.className='j-card j-nothing';
+  nothing.onclick=enterNothing;
+  nothing.innerHTML='<h2 style="font-size:2rem;font-weight:300;color:var(--b2);letter-spacing:.15em">—</h2>';
+  body.appendChild(nothing);
   var rand=document.createElement('button');rand.className='btn btn-ghost btn-sm j-random';
   rand.textContent='Random session';
   rand.onclick=function(){
