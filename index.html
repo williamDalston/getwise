@@ -1,1487 +1,1056 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explorations in Consciousness</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0a0e1a;
-            color: #e2e8f0;
-            overflow-x: hidden;
-        }
-        
-        .serif {
-            font-family: 'Playfair Display', serif;
-        }
-        
-        /* Ultra-soft breathing background - barely perceptible */
-        .animated-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: radial-gradient(circle at 20% 50%, rgba(251, 191, 36, 0.03) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(244, 63, 94, 0.03) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
-        }
-        
-        @media (prefers-reduced-motion: no-preference) {
-            .animated-bg {
-                animation: breathe 10s ease-in-out infinite;
-            }
-        }
-        
-        @keyframes breathe {
-            0%, 100% { 
-                opacity: 1;
-            }
-            50% { 
-                opacity: 1.02;
-            }
-        }
-        
-        /* Simple cards - no glass morphism theatrics */
-        .glass-card {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* Smooth scroll */
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        @media (prefers-reduced-motion: reduce) {
-            html {
-                scroll-behavior: auto;
-            }
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-        
-        /* Subtle scroll reveal - 8-12px shift, 500ms */
-        .scroll-reveal {
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        
-        @media (prefers-reduced-motion: no-preference) {
-            .scroll-reveal.revealed {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @media (prefers-reduced-motion: reduce) {
-            .scroll-reveal {
-                opacity: 1;
-                transform: none;
-            }
-        }
-        
-        /* Progress indicator - thin 2px, muted */
-        .progress-indicator {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 2px;
-            background: rgba(148, 163, 184, 0.4);
-            z-index: 10000;
-            transform-origin: left;
-            transition: transform 0.1s ease;
-        }
-        
-        /* Minimal button ripple */
-        button, a[href^="#"] {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        button::after, a[href^="#"]::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: translate(-50%, -50%);
-            transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
-            opacity: 0;
-        }
-        
-        button:active::after, a[href^="#"]:active::after {
-            width: 200px;
-            height: 200px;
-            opacity: 1;
-        }
-        
-        /* Text selection - soft, matte */
-        ::selection {
-            background: rgba(251, 191, 36, 0.25);
-            color: #fbbf24;
-        }
-        
-        ::-moz-selection {
-            background: rgba(251, 191, 36, 0.25);
-            color: #fbbf24;
-        }
-        
-        /* Clean focus states */
-        button:focus-visible, a:focus-visible {
-            outline: 2px solid rgba(148, 163, 184, 0.6);
-            outline-offset: 3px;
-        }
-        
-        /* Pause overlay */
-        .pause-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 9998;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.6s ease;
-        }
-        
-        .pause-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        .pause-content {
-            text-align: center;
-            color: #e2e8f0;
-        }
-        
-        .pause-content h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-        
-        .pause-content p {
-            font-size: 1.1rem;
-            color: #94a3b8;
-        }
-        
-        /* Mode transition fade */
-        .mode-transition {
-            transition: opacity 0.6s ease;
-        }
-        
-        /* Custom scrollbar - minimal */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Deep Mode</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --base:#0E0F12;--panel:#17181C;--panel2:#1E1F24;
+  --text:#E6E8EB;--dim:#9BA1A6;
+  --amber:#B48A4A;--amber-bg:rgba(180,138,74,0.1);--amber-b:rgba(180,138,74,0.3);
+  --b:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;
+  background:var(--base);color:var(--text);-webkit-font-smoothing:antialiased}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;transition:opacity 600ms ease}
+.screen.active{opacity:1;pointer-events:all}
+.screen.gone{display:none}
+.scr{overflow-y:auto;overflow-x:hidden}
+.scr::-webkit-scrollbar{width:2px}
+.scr::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);border-radius:1px}
+h1{font-size:clamp(2rem,5vw,3.25rem);font-weight:400;letter-spacing:-.02em;line-height:1.15;color:var(--text)}
+h2{font-size:clamp(1.375rem,3vw,2rem);font-weight:400;letter-spacing:-.015em;line-height:1.25;color:var(--text)}
+p{font-size:1.0625rem;line-height:1.75;color:var(--dim)}
+small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.75rem 1.75rem;border-radius:3px;font-family:inherit;font-size:.9375rem;
+  font-weight:500;cursor:pointer;transition:all 400ms ease;border:none;outline:none;
+  background:transparent;white-space:nowrap}
+.btn:focus-visible{outline:1px solid var(--amber);outline-offset:3px}
+.btn-primary{background:var(--amber);color:#0E0F12}
+.btn-primary:hover{background:#c49a5a}
+.btn-ghost{border:1px solid var(--b2);color:var(--dim)}
+.btn-ghost:hover{color:var(--text)}
+.btn-sm{padding:.5rem 1.125rem;font-size:.875rem}
+.btn-link{color:var(--dim);font-size:.875rem;padding:.25rem 0;
+  text-decoration:underline;text-underline-offset:3px;background:none;border:none;
+  cursor:pointer;font-family:inherit}
+.btn-link:hover{color:var(--text)}
+.icon-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--b);border-radius:3px;background:transparent;color:var(--dim);
+  cursor:pointer;transition:all 300ms ease;font-size:.875rem;font-family:inherit}
+.icon-btn:hover{border-color:var(--b2);color:var(--text)}
+.icon-btn.on{border-color:var(--amber-b);color:var(--amber)}
+.hdr{display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.5rem;border-bottom:1px solid var(--b);flex-shrink:0}
+.hdr-label{font-size:.8125rem;font-weight:500;color:var(--dim);
+  letter-spacing:.06em;text-transform:uppercase}
+.flex{display:flex}.fi{align-items:center}.fj{justify-content:center}.fbet{justify-content:space-between}
+.g1{gap:.5rem}.g2{gap:1rem}.g3{gap:1.5rem}
+.mt1{margin-top:.5rem}.mt2{margin-top:1rem}.mt3{margin-top:1.5rem}.mt4{margin-top:2rem}.mt6{margin-top:3rem}
+.mb1{margin-bottom:.5rem}.mb2{margin-bottom:1rem}.mb3{margin-bottom:1.5rem}.mb4{margin-bottom:2rem}
+.w100{width:100%}.tc{text-align:center}
+.amber{color:var(--amber)}.dim{color:var(--dim)}
+/* ONBOARDING */
+#screen-onboarding{background:#0B0C0F;align-items:center;justify-content:center;text-align:center}
+.ob-wrap{max-width:520px;padding:2rem}
+.ob-line{font-size:clamp(1.25rem,3vw,1.75rem);font-weight:300;color:var(--text);
+  opacity:0;transition:opacity 1200ms ease;line-height:1.6;margin-bottom:1.5rem}
+.ob-line.show{opacity:1}
+/* LANDING */
+#screen-landing{overflow-y:auto;overflow-x:hidden}
+#screen-landing::-webkit-scrollbar{width:2px}
+#screen-landing::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.05)}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:4rem 2rem}
+.hero h1{margin-bottom:1.25rem}
+.hero>p{max-width:440px;margin:0 auto 2.5rem}
+.btn-group{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;align-items:center}
+.land-sec{border-top:1px solid var(--b);padding:4.5rem 2rem;max-width:640px;margin:0 auto}
+.land-sec-lbl{font-size:.75rem;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);margin-bottom:2rem}
+.what-list{list-style:none;display:flex;flex-direction:column;gap:.875rem}
+.what-list li{position:relative;padding-left:1.375rem;font-size:1.0625rem;color:var(--dim)}
+.what-list li::before{content:'--';position:absolute;left:0;color:var(--amber)}
+.lens-grid{display:grid;grid-template-columns:repeat(2,1fr);
+  gap:1px;background:var(--b);border:1px solid var(--b);border-radius:4px;overflow:hidden}
+.lens-item{background:var(--panel);padding:1.5rem;cursor:pointer;transition:background 400ms}
+.lens-item:hover{background:var(--panel2)}
+.lens-item h4{font-size:.9375rem;font-weight:500;color:var(--text);margin-bottom:.375rem}
+.lens-item p{font-size:.875rem;line-height:1.6}
+.dm-preview{background:var(--panel);border:1px solid var(--b);border-radius:4px;padding:2rem}
+.dm-list{list-style:none;margin-bottom:2rem}
+.dm-list li{font-size:1.0625rem;color:var(--dim);padding:.625rem 0;border-bottom:1px solid var(--b)}
+.dm-list li:last-child{border-bottom:none}
+.land-footer{border-top:1px solid var(--b);padding:2.5rem;text-align:center}
+.land-footer p{font-size:.8125rem}
+/* FREE EXPLORE */
+.explore-body{flex:1;overflow-y:auto;padding:2rem 1.5rem;max-width:720px;margin:0 auto;width:100%}
+.explore-body::-webkit-scrollbar{width:2px}
+.exp-card{background:var(--panel);border:1px solid var(--b);border-radius:4px;
+  padding:1.75rem;margin-bottom:1rem}
+.exp-card h2{font-size:1.375rem;margin-bottom:.625rem}
+.exp-card p{font-size:.9375rem;margin-bottom:1.25rem}
+.exp-interact{background:var(--base);border:1px solid var(--b);
+  border-radius:3px;padding:1.25rem;margin:1rem 0}
+.exp-upgrade{background:var(--panel);border:1px solid var(--b);border-radius:4px;
+  padding:2rem;margin-top:2rem;text-align:center}
+.exp-upgrade p{margin-bottom:1.5rem}
+/* JOURNEY SELECT */
+.journey-body{flex:1;overflow-y:auto;padding:3rem 1.5rem}
+.j-card{background:var(--panel);border:1px solid var(--b);border-radius:4px;
+  padding:2rem;cursor:pointer;transition:border-color 400ms,background 400ms;
+  margin-bottom:.875rem;max-width:640px}
+.j-card:hover{border-color:var(--b2);background:var(--panel2)}
+.j-label{font-size:.75rem;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--amber);margin-bottom:.75rem}
+.j-card h2{font-size:1.375rem;margin-bottom:.625rem}
+.j-card p{font-size:.9375rem}
+.j-meta{display:flex;gap:1.5rem;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--b)}
+.j-meta span{font-size:.8125rem;color:var(--dim)}
+.j-dots{display:flex;gap:3px;margin-top:.875rem}
+.jd{width:5px;height:5px;border-radius:50%;background:var(--b2);transition:background 400ms}
+.jd.done{background:rgba(180,138,74,0.45)}
+.jd.active{background:var(--amber)}
+/* MODULE */
+#screen-module{position:fixed;inset:0}
+#mod-entry{position:absolute;inset:0;background:#0B0C0F;
+  display:flex;align-items:center;justify-content:center;
+  z-index:20;transition:opacity 800ms ease;text-align:center;padding:2rem}
+.me-text{font-size:clamp(1.25rem,3vw,1.75rem);font-weight:300;color:var(--text);
+  opacity:0;transition:opacity 1000ms ease;line-height:1.6;margin-bottom:2rem}
+.me-text.show{opacity:1}
+#mod-hdr{display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.5rem;border-bottom:1px solid var(--b);flex-shrink:0;
+  transition:opacity 500ms ease;position:relative;z-index:10;background:var(--base)}
+.mod-pbar{position:absolute;top:0;left:0;right:0;height:1px;background:var(--b)}
+.mod-pfill{height:100%;background:var(--amber);transition:width 600ms ease}
+.mp-dots{display:flex;gap:4px}
+.mpd{width:5px;height:5px;border-radius:50%;background:var(--b2);transition:background 400ms}
+.mpd.done{background:rgba(180,138,74,0.4)}
+.mpd.active{background:var(--amber)}
+.mod-timer{font-size:.8125rem;color:var(--dim);font-variant-numeric:tabular-nums;min-width:3ch}
+.mod-controls{display:flex;gap:.625rem}
+#mod-body{flex:1;overflow-y:auto;overflow-x:hidden;position:relative}
+#mod-body::-webkit-scrollbar{width:2px}
+#mod-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.04)}
+#mod-content{max-width:600px;margin:0 auto;padding:3.5rem 1.5rem 8rem}
+.mod-title{font-size:clamp(2rem,5vw,3rem);font-weight:300;letter-spacing:-.02em;
+  color:var(--text);margin-bottom:1.25rem;line-height:1.15}
+.mod-instr{font-size:1.125rem;color:var(--dim);margin-bottom:2.5rem;line-height:1.75}
+.mod-steps{list-style:none;display:flex;flex-direction:column;gap:1.125rem;margin-bottom:3rem}
+.mod-steps li{display:flex;gap:1rem;align-items:flex-start;font-size:1rem;color:var(--dim);line-height:1.7}
+.mod-steps li::before{content:'·';color:var(--amber);font-size:1.25rem;line-height:1;flex-shrink:0;margin-top:3px}
+.mod-div{height:1px;background:var(--b);margin:3rem 0}
+.iact{background:var(--panel);border:1px solid var(--b);border-radius:4px;padding:1.75rem;margin-bottom:3rem}
+.iact-lbl{font-size:.75rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:1rem}
+.ref-lbl{font-size:.75rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:.75rem}
+.ref-prompt{font-size:1.125rem;color:var(--text);font-weight:400;margin-bottom:1.25rem;line-height:1.6}
+.ref-area{width:100%;min-height:110px;background:var(--base);border:1px solid var(--b);
+  border-radius:3px;padding:.875rem 1rem;color:var(--text);font-family:inherit;
+  font-size:.9375rem;line-height:1.75;resize:vertical;outline:none;transition:border-color 300ms}
+.ref-area:focus{border-color:var(--amber-b)}
+.ref-area::placeholder{color:var(--dim);opacity:.5}
+.ref-row{display:flex;align-items:center;justify-content:space-between;margin-top:.75rem}
+.ref-saved{font-size:.875rem;color:var(--amber);opacity:0;transition:opacity 400ms}
+.ref-saved.show{opacity:1}
+.mod-foot{padding:2.5rem 0;text-align:center}
+.mod-continue-txt{font-size:.9375rem;color:var(--dim);display:block;margin-bottom:1.5rem}
+/* PAYWALL */
+#screen-paywall{align-items:center;justify-content:center;padding:2rem}
+.pw-wrap{max-width:440px;width:100%;text-align:center}
+.pw-wrap h2{margin-bottom:1rem}
+.pw-wrap>p{max-width:340px;margin:0 auto 2.5rem}
+.pw-opts{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem}
+.pw-opt{background:var(--panel);border:1px solid var(--b);border-radius:4px;
+  padding:1.25rem 1.5rem;cursor:pointer;transition:border-color 400ms;
+  text-align:left;display:flex;align-items:center;justify-content:space-between;font-family:inherit;color:inherit}
+.pw-opt:hover{border-color:var(--amber-b)}
+.pw-opt.sel{border-color:var(--amber)}
+.pw-opt-l p{font-size:1rem;color:var(--text);font-weight:500;margin-bottom:.125rem}
+.pw-price{font-size:1.125rem;color:var(--amber);font-weight:500}
+.pw-demo{margin-top:1.75rem}
+.pw-demo p{font-size:.8125rem;opacity:.55;margin-bottom:.75rem}
+/* REFLECTIONS */
+.ref-list{flex:1;overflow-y:auto;padding:2rem 1.5rem;max-width:680px;margin:0 auto;width:100%}
+.ref-list::-webkit-scrollbar{width:2px}
+.ref-entry{background:var(--panel);border:1px solid var(--b);border-radius:4px;padding:1.5rem;margin-bottom:.875rem}
+.re-title{font-size:.8125rem;color:var(--amber);font-weight:500;letter-spacing:.04em;margin-bottom:.5rem}
+.re-text{font-size:.9375rem;color:var(--dim);line-height:1.7}
+.re-date{font-size:.75rem;color:var(--dim);opacity:.4;margin-top:.625rem}
+.empty-state{display:flex;flex-direction:column;align-items:center;
+  justify-content:center;flex:1;text-align:center;padding:3rem;opacity:.4}
+.empty-state p{font-size:.9375rem;margin-top:.75rem}
+/* PAUSE */
+#pause-overlay{position:fixed;inset:0;background:#0B0C0F;z-index:200;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  opacity:0;pointer-events:none;transition:opacity 800ms ease;text-align:center;padding:2rem}
+#pause-overlay.on{opacity:1;pointer-events:all}
+.pause-text{font-size:clamp(1.25rem,3vw,1.75rem);font-weight:300;
+  color:var(--dim);line-height:1.7;margin-bottom:2.5rem}
+/* IMMERSION */
+body.immersion #mod-hdr{opacity:0;pointer-events:none}
+.imm-strip{position:fixed;top:0;left:0;right:0;height:4px;z-index:300;cursor:pointer}
+/* INTERACTIONS */
+.thought-field{min-height:140px;position:relative;overflow:hidden;
+  border-radius:3px;background:var(--base);border:1px solid var(--b)}
+.t-row{display:flex;gap:.5rem;margin-top:.875rem}
+.t-input{flex:1;background:var(--base);border:1px solid var(--b);border-radius:3px;
+  padding:.625rem .875rem;color:var(--text);font-family:inherit;font-size:.875rem;
+  outline:none;transition:border-color 300ms}
+.t-input:focus{border-color:var(--amber-b)}
+.t-bubble{position:absolute;font-size:.875rem;color:var(--dim);
+  opacity:0;transition:bottom 5s ease,opacity .6s ease;white-space:nowrap;max-width:88%}
+.t-bubble.up{opacity:.6}
+.own-q{font-size:1.125rem;color:var(--text);font-weight:300;text-align:center;padding:1rem 0;line-height:1.6}
+.own-opts{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;margin-top:1rem}
+.own-opt{padding:.625rem 1.25rem;border:1px solid var(--b);border-radius:3px;
+  font-size:.875rem;color:var(--dim);cursor:pointer;transition:all 300ms;background:transparent;font-family:inherit}
+.own-opt:hover{border-color:var(--b2);color:var(--text)}
+.own-opt.chosen{border-color:var(--amber-b);color:var(--amber)}
+.own-resp{text-align:center;font-size:.9375rem;color:var(--dim);font-style:italic;
+  margin-top:1.25rem;min-height:1.5em;opacity:0;transition:opacity 600ms;line-height:1.65}
+.own-resp.show{opacity:1}
+.loc-canvas{width:100%;height:140px;cursor:crosshair;position:relative;overflow:hidden;
+  border-radius:3px;background:var(--base);border:1px solid var(--b)}
+.loc-grid{position:absolute;inset:0;
+  background-image:linear-gradient(var(--b) 1px,transparent 1px),linear-gradient(90deg,var(--b) 1px,transparent 1px);
+  background-size:36px 36px;pointer-events:none}
+.loc-marker{position:absolute;width:8px;height:8px;border-radius:50%;
+  background:var(--amber);transform:translate(-50%,-50%);pointer-events:none;
+  opacity:0;transition:opacity 300ms;box-shadow:0 0 8px rgba(180,138,74,.4)}
+.loc-marker.show{opacity:1}
+.loc-resp{min-height:2.5em;margin-top:1rem;font-size:.9375rem;color:var(--dim);
+  line-height:1.7;font-style:italic;opacity:0;transition:opacity 500ms}
+.loc-resp.show{opacity:1}
+.field-area{width:100%;height:150px;position:relative;overflow:hidden;
+  border-radius:3px;background:var(--base);border:1px solid var(--b);
+  cursor:crosshair;display:flex;align-items:center;justify-content:center}
+.field-dot{width:5px;height:5px;border-radius:50%;background:var(--amber);
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.field-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  border-radius:50%;border:1px solid rgba(180,138,74,0.12);pointer-events:none;
+  animation:xpand 4s linear infinite;opacity:0}
+@keyframes xpand{0%{width:0;height:0;opacity:.35}100%{width:200px;height:200px;opacity:0}}
+.fr2{animation-delay:1.33s}.fr3{animation-delay:2.66s}
+.field-resp{min-height:2.5em;margin-top:1rem;font-size:.9375rem;color:var(--dim);
+  font-style:italic;text-align:center;line-height:1.65;opacity:0;transition:opacity 500ms}
+.field-resp.show{opacity:1}
+.sens-slider{-webkit-appearance:none;width:100%;height:2px;
+  background:var(--b2);outline:none;margin:1.5rem 0;border-radius:1px}
+.sens-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;
+  border-radius:50%;background:var(--amber);cursor:pointer}
+.sens-labels{display:flex;justify-content:space-between;font-size:.75rem;color:var(--dim)}
+.body-map{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;max-width:300px;margin:0 auto}
+.bz{background:var(--base);border:1px solid var(--b);border-radius:3px;
+  padding:.75rem .5rem;text-align:center;font-size:.8125rem;color:var(--dim);cursor:pointer;transition:all 300ms}
+.bz:hover,.bz.on{border-color:var(--amber-b);color:var(--amber);background:var(--amber-bg)}
+.bz-note{margin-top:1rem;min-height:1.5em;font-size:.875rem;color:var(--dim);
+  font-style:italic;text-align:center;opacity:0;transition:opacity 400ms}
+.bz-note.show{opacity:1}
+.now-num{font-size:clamp(3rem,8vw,5rem);font-weight:300;color:var(--text);
+  text-align:center;letter-spacing:-.02em;font-variant-numeric:tabular-nums;
+  cursor:default;user-select:none;line-height:1;padding:.75rem 0}
+.now-lbl{text-align:center;font-size:.875rem;color:var(--dim);margin-top:.25rem}
+.now-btn{display:block;margin:.875rem auto 0}
+.sk-input{width:100%;background:var(--base);border:1px solid var(--b);border-radius:3px;
+  padding:.75rem 1rem;color:var(--text);font-family:inherit;font-size:.9375rem;outline:none;transition:border-color 300ms}
+.sk-input:focus{border-color:var(--amber-b)}
+.sk-resp{min-height:3em;margin-top:1rem;padding:1rem;background:var(--base);
+  border-radius:3px;font-size:.9375rem;color:var(--dim);font-style:italic;line-height:1.7;opacity:0;transition:opacity 600ms}
+.sk-resp.show{opacity:1}
+.sil-track{height:2px;background:var(--b);border-radius:1px;overflow:hidden;margin:1rem 0}
+.sil-fill{height:100%;background:var(--amber);width:0%;transition:width .1s linear}
+.sil-count{font-size:.875rem;color:var(--dim);text-align:center}
+.id-layers{display:flex;flex-direction:column;gap:.5rem}
+.id-layer{display:flex;align-items:center;justify-content:space-between;
+  padding:.875rem 1rem;background:var(--base);border:1px solid var(--b);
+  border-radius:3px;transition:all 400ms;overflow:hidden}
+.id-layer.gone{opacity:0;max-height:0;padding:0;border-width:0;margin:0}
+.id-name{font-size:.9375rem;color:var(--dim)}
+.id-rm{font-size:.75rem;color:var(--dim);cursor:pointer;padding:.25rem .625rem;
+  border:1px solid var(--b);border-radius:2px;background:transparent;
+  font-family:inherit;transition:all 300ms;flex-shrink:0}
+.id-rm:hover{border-color:var(--b2);color:var(--text)}
+.id-reveal{text-align:center;padding:1.25rem;font-size:.9375rem;color:var(--dim);
+  font-style:italic;line-height:1.65;opacity:0;transition:opacity 600ms}
+.id-reveal.show{opacity:1}
+.mem-input{width:100%;background:var(--base);border:1px solid var(--b);border-radius:3px;
+  padding:.75rem 1rem;color:var(--text);font-family:inherit;font-size:.9375rem;
+  outline:none;transition:border-color 300ms;margin-bottom:.75rem}
+.mem-input:focus{border-color:var(--amber-b)}
+.mem-out{padding:1rem;background:var(--base);border-radius:3px;font-size:.9375rem;
+  color:var(--dim);line-height:1.7;min-height:3em;opacity:0;transition:opacity 600ms;font-style:italic}
+.mem-out.show{opacity:1}
+.agency-btn{width:100%;padding:1rem;background:var(--base);border:1px solid var(--b);
+  border-radius:3px;color:var(--dim);font-family:inherit;font-size:.9375rem;cursor:pointer;transition:all 300ms}
+.agency-btn:hover{border-color:var(--b2);color:var(--text)}
+.agency-log{display:flex;flex-direction:column;gap:.5rem;margin-top:1rem;max-height:120px;overflow-y:auto}
+.ag-e{font-size:.8125rem;color:var(--dim);padding:.5rem .75rem;
+  background:var(--base);border-left:2px solid var(--amber-b);border-radius:0 2px 2px 0}
+.toggle-pair{display:flex;border:1px solid var(--b);border-radius:3px;overflow:hidden}
+.t-opt{flex:1;padding:.75rem 1rem;text-align:center;font-size:.875rem;
+  color:var(--dim);cursor:pointer;transition:all 300ms;border:none;background:transparent;font-family:inherit}
+.t-opt.on{background:var(--amber-bg);color:var(--text)}
+.t-opt:not(:last-child){border-right:1px solid var(--b)}
+.t-desc{margin-top:1rem;font-size:.9375rem;color:var(--dim);line-height:1.7;font-style:italic}
+.contemp{min-height:100px;display:flex;align-items:center;justify-content:center;text-align:center;padding:1rem 0}
+.contemp p{font-size:1rem;line-height:1.8;font-style:italic;max-width:340px}
+.review-q{padding:.75rem 0;border-bottom:1px solid var(--b);font-size:.9375rem;color:var(--dim);line-height:1.65}
+.review-q:last-child{border-bottom:none}
+.return-text{font-size:1.125rem;color:var(--text);font-weight:300;line-height:1.75;text-align:center;padding:.5rem 0}
+.gold-state{padding:1rem;background:var(--base);border:1px solid var(--b);
+  border-radius:3px;font-size:.9375rem;color:var(--dim);line-height:1.65;min-height:3em;margin-bottom:.75rem}
+.sky-state{padding:1rem;background:var(--base);border:1px solid var(--b);
+  border-radius:3px;font-size:.9375rem;color:var(--dim);line-height:1.65;margin-bottom:.75rem}
+::selection{background:rgba(180,138,74,0.2);color:var(--amber)}
+</style>
 </head>
 <body>
-    <!-- Progress Indicator -->
-    <div class="progress-indicator" id="progress-indicator"></div>
-    
-    <!-- Pause Overlay -->
-    <div class="pause-overlay" id="pause-overlay">
-        <div class="pause-content">
-            <h2>Pause.</h2>
-            <p>Notice what is here.</p>
-        </div>
+
+<!-- ONBOARDING -->
+<div id="screen-onboarding" class="screen active">
+  <div class="ob-wrap">
+    <p class="ob-line" id="ob1">Before continuing, pause for a moment.</p>
+    <div id="ob2" style="font-size:clamp(1.25rem,3vw,1.75rem);font-weight:300;color:var(--text);opacity:0;transition:opacity 1200ms ease;line-height:1.6;margin-bottom:1.5rem;display:none">
+      Notice that you are aware.
     </div>
-    
-    <div class="animated-bg"></div>
-    
-    <!-- Hero Section -->
-    <header class="relative min-h-screen flex items-center justify-center px-6 py-24 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/50 to-slate-950"></div>
-        <div class="max-w-6xl mx-auto text-center relative z-10 scroll-reveal">
-            <h1 class="text-6xl md:text-8xl font-black serif mb-8 text-slate-100 leading-tight">
-                Explorations in<br>Consciousness
-            </h1>
-            <p class="text-xl md:text-2xl text-slate-400 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Not a library to tell you what is true, but a space for shared investigation into the nature of your own experience.
-            </p>
-            <div class="flex flex-wrap items-center justify-center gap-8 text-sm font-mono text-slate-500">
-                <div class="flex items-center gap-2 text-amber-400">
-                    <i class="fas fa-search"></i>
-                    <span>Open Inquiry</span>
-                </div>
-                <div class="flex items-center gap-2 text-cyan-400">
-                    <i class="fas fa-eye"></i>
-                    <span>Direct Observation</span>
-                </div>
-                <div class="flex items-center gap-2 text-rose-400">
-                    <i class="fas fa-sparkles"></i>
-                    <span>Shared Curiosity</span>
-                </div>
-            </div>
-            <div class="mt-16">
-                <a href="#explorations" class="inline-block px-8 py-4 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-full transition-colors">
-                    Begin Exploration
-                </a>
-            </div>
+    <button class="btn btn-ghost" id="ob-cont" style="display:none;opacity:0;transition:opacity 800ms ease" onclick="nav('landing')">Continue</button>
+  </div>
+</div>
+
+<!-- LANDING -->
+<div id="screen-landing" class="screen gone">
+  <div class="hero">
+    <h1>Explore experience directly.</h1>
+    <p>A structured environment for examining perception, identity, and awareness.</p>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="nav('explore')">Begin Free</button>
+      <button class="btn btn-ghost" onclick="enterDeep()">Enter Deep Mode</button>
+    </div>
+  </div>
+  <section class="land-sec">
+    <p class="land-sec-lbl">What this is</p>
+    <ul class="what-list">
+      <li>Not a belief system</li>
+      <li>Not therapy</li>
+      <li>Not self-improvement</li>
+      <li>An environment for careful observation</li>
+    </ul>
+  </section>
+  <section class="land-sec">
+    <p class="land-sec-lbl">Explore through</p>
+    <div class="lens-grid">
+      <div class="lens-item" onclick="nav('explore')">
+        <h4>Metaphor</h4>
+        <p>Conceptual frameworks that point without asserting.</p>
+      </div>
+      <div class="lens-item" onclick="nav('explore')">
+        <h4>Phenomenology</h4>
+        <p>Direct mapping of immediate experience.</p>
+      </div>
+      <div class="lens-item" onclick="nav('explore')">
+        <h4>Inquiry</h4>
+        <p>Questions that exhaust the analytical mind.</p>
+      </div>
+      <div class="lens-item" onclick="nav('explore')">
+        <h4>Psychological</h4>
+        <p>Identity, narrative, and the constructed self.</p>
+      </div>
+    </div>
+  </section>
+  <section class="land-sec">
+    <p class="land-sec-lbl">Deep Mode</p>
+    <div class="dm-preview">
+      <ul class="dm-list">
+        <li>Structured journeys</li>
+        <li>Guided audio</li>
+        <li>Saved reflections</li>
+        <li>Focus immersion</li>
+      </ul>
+      <button class="btn btn-primary" onclick="enterDeep()">Unlock Deep Mode</button>
+    </div>
+  </section>
+  <footer class="land-footer"><p>An invitation to direct investigation.</p></footer>
+</div>
+
+<!-- FREE EXPLORE -->
+<div id="screen-explore" class="screen gone">
+  <div class="hdr">
+    <div class="flex fi g2">
+      <button class="icon-btn" onclick="nav('landing')">&#8592;</button>
+      <span class="hdr-label">Explore</span>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="enterDeep()">Deep Mode</button>
+  </div>
+  <div class="explore-body">
+    <div class="exp-card">
+      <h2>Substance &amp; Form</h2>
+      <p>In a jewelry shop, rings and necklaces appear distinct. Yet they are one substance: gold. The form changes. The substance does not.</p>
+      <div class="exp-interact">
+        <div class="gold-state" id="gold-state">The forms -- rings, necklaces, bracelets -- appear distinct and separate.</div>
+        <button class="btn btn-ghost btn-sm" id="gold-btn" onclick="toggleGold()">Observe substance</button>
+      </div>
+      <p style="font-size:.875rem;font-style:italic;color:var(--dim);border-left:2px solid var(--amber-b);padding-left:.875rem;margin-top:1rem">What is present in awareness when a thought disappears?</p>
+    </div>
+    <div class="exp-card">
+      <h2>Sky &amp; Clouds</h2>
+      <p>Thoughts, emotions, and sensations are weather patterns. When we identify with them, they consume the horizon. When we witness them, we notice a vaster space.</p>
+      <div class="exp-interact">
+        <div class="sky-state" id="sky-state">Participating: you are inside the thought, moved by it, identified with it.</div>
+        <div class="flex g2 mt2">
+          <button class="btn btn-ghost btn-sm" onclick="setSky('in')">Participating</button>
+          <button class="btn btn-ghost btn-sm" onclick="setSky('out')">Witnessing</button>
         </div>
-        
-        <!-- Scroll indicator -->
-        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2">
-            <i class="fas fa-chevron-down text-slate-500 text-2xl"></i>
+      </div>
+      <p style="font-size:.875rem;font-style:italic;color:var(--dim);border-left:2px solid var(--amber-b);padding-left:.875rem;margin-top:1rem">Did you choose the last thought you had, or did it appear?</p>
+    </div>
+    <div class="exp-card">
+      <h2>Locate the Observer</h2>
+      <p>Look at the screen. Notice that you are looking. Now -- without pointing -- find the exact location of the one who is looking.</p>
+      <div class="exp-interact">
+        <div class="loc-canvas" onclick="handleExpLoc(event,this)">
+          <div class="loc-grid"></div>
+          <div class="loc-marker" id="explm"></div>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main id="explorations" class="max-w-6xl mx-auto px-6 pb-32 space-y-32">
-        
-        <!-- Mode Selector -->
-        <section class="pt-16">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl serif font-bold text-slate-100 mb-4">Sessions</h2>
-                <p class="text-slate-400 text-lg max-w-2xl mx-auto">
-                    Different approaches to inquiry
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                <div class="mode-btn glass-card rounded-2xl p-8 scroll-reveal" data-mode="metaphor">
-                    <div class="text-5xl mb-4 text-amber-400">
-                        <i class="fas fa-book-open"></i>
-                    </div>
-                    <h3 class="text-2xl serif font-bold text-amber-300 mb-3">Metaphor</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">
-                        Thought experiments and frameworks.
-                    </p>
-                </div>
-                
-                <div class="mode-btn glass-card rounded-2xl p-8 scroll-reveal" data-mode="phenomenology">
-                    <div class="text-5xl mb-4 text-cyan-400">
-                        <i class="fas fa-microscope"></i>
-                    </div>
-                    <h3 class="text-2xl serif font-bold text-cyan-300 mb-3">Experience</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">
-                        Direct observation of present experience.
-                    </p>
-                </div>
-                
-                <div class="mode-btn glass-card rounded-2xl p-8 scroll-reveal" data-mode="paradox">
-                    <div class="text-5xl mb-4 text-rose-400">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3 class="text-2xl serif font-bold text-rose-300 mb-3">Paradox</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">
-                        Questions that exhaust conceptual thinking.
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Dynamic Content Area -->
-        <div id="content-area" class="space-y-32">
-            <!-- Content will be dynamically loaded here -->
+        <div class="loc-resp show" id="explr">Click to mark the location of the observer.</div>
+      </div>
+    </div>
+    <div class="exp-card">
+      <h2>Identity Layers</h2>
+      <p>You carry roles: name, profession, relationships. These are real and functional. But are they you, or attributes of you?</p>
+      <div class="exp-interact">
+        <div class="id-layers" id="exp-id">
+          <div class="id-layer"><span class="id-name">Your name</span><button class="id-rm" onclick="expRmLayer(this)">Remove</button></div>
+          <div class="id-layer"><span class="id-name">Your occupation</span><button class="id-rm" onclick="expRmLayer(this)">Remove</button></div>
+          <div class="id-layer"><span class="id-name">Your relationships</span><button class="id-rm" onclick="expRmLayer(this)">Remove</button></div>
+          <div class="id-layer"><span class="id-name">Your beliefs</span><button class="id-rm" onclick="expRmLayer(this)">Remove</button></div>
+          <div class="id-layer"><span class="id-name">Your history</span><button class="id-rm" onclick="expRmLayer(this)">Remove</button></div>
         </div>
+        <div class="id-reveal mt2" id="exp-id-rev">What remains when the attributes are subtracted?</div>
+      </div>
+    </div>
+    <div class="exp-upgrade">
+      <p>Structured journeys, guided audio, and saved reflections are available in Deep Mode.</p>
+      <button class="btn btn-primary" onclick="enterDeep()">Unlock Deep Mode</button>
+    </div>
+  </div>
+</div>
 
-        <!-- Conclusion -->
-        <section class="py-16 border-t border-slate-800 text-center mt-32">
-            <div class="w-20 h-20 mx-auto mb-8 flex items-center justify-center rounded-full bg-amber-500/10 text-amber-400 text-4xl">
-                <i class="fas fa-sparkles"></i>
-            </div>
-            <h2 class="text-5xl serif font-bold text-slate-100 mb-6">A Space for Curiosity</h2>
-            <p class="text-2xl text-amber-400/90 serif italic mb-8 max-w-3xl mx-auto">
-                "We are not here to acquire a new identity, but to examine the one we have."
-            </p>
-            <p class="text-slate-400 max-w-3xl mx-auto leading-relaxed text-lg">
-                These interactive tools are simply invitations to look closely at perception, awareness, and thought. 
-                There is nothing to fix and no secret to attain.
-            </p>
-        </section>
-    </main>
+<!-- JOURNEY SELECT -->
+<div id="screen-journey-select" class="screen gone">
+  <div class="hdr">
+    <div class="flex fi g2">
+      <button class="icon-btn" onclick="nav('landing')">&#8592;</button>
+      <span class="hdr-label">Deep Mode</span>
+    </div>
+    <button class="icon-btn" onclick="nav('reflections')" title="Reflections">&#8801;</button>
+  </div>
+  <div class="journey-body" id="journey-body"></div>
+</div>
 
-    <!-- Footer -->
-    <footer class="border-t border-slate-800 py-12 text-center text-slate-500">
-        <p class="text-sm">An invitation to direct investigation</p>
-    </footer>
+<!-- MODULE -->
+<div id="screen-module" class="screen gone">
+  <div id="mod-entry">
+    <div>
+      <p class="me-text" id="me-text">Move slowly.</p>
+      <button class="btn btn-ghost" id="me-btn" style="display:none;opacity:0;transition:opacity 600ms" onclick="beginModule()">Begin</button>
+    </div>
+  </div>
+  <div id="mod-hdr">
+    <div class="mod-pbar"><div class="mod-pfill" id="mod-pfill"></div></div>
+    <div class="flex fi g2">
+      <button class="icon-btn" onclick="backToJourneys()">&#8592;</button>
+      <div class="mp-dots" id="mp-dots"></div>
+    </div>
+    <div class="flex fi g2">
+      <span class="mod-timer" id="mod-timer">0:00</span>
+      <div class="mod-controls">
+        <button class="icon-btn" id="audio-btn" onclick="toggleAudio()" title="Audio">&#9834;</button>
+        <button class="icon-btn" id="imm-btn" onclick="toggleImm()" title="Immersion">&#8865;</button>
+      </div>
+    </div>
+  </div>
+  <div id="mod-body"><div id="mod-content"></div></div>
+</div>
 
-    <script>
-        // Mode management
-        let currentMode = 'metaphor';
-        
-        const modeButtons = document.querySelectorAll('.mode-btn');
-        modeButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const mode = btn.dataset.mode;
-                setMode(mode);
-            });
-        });
-        
-        function setMode(mode) {
-            currentMode = mode;
-            
-            // Mode transition fade
-            const contentArea = document.getElementById('content-area');
-            contentArea.classList.add('mode-transition');
-            contentArea.style.opacity = '0';
-            
-            setTimeout(() => {
-                loadContent(mode);
-                setTimeout(() => {
-                    contentArea.style.opacity = '1';
-                }, 50);
-            }, 600);
-        }
-        
-        function loadContent(mode) {
-            const contentArea = document.getElementById('content-area');
-            contentArea.innerHTML = '';
-            contentArea.classList.add('fade-in');
-            
-            if (mode === 'metaphor') {
-                loadMetaphorContent(contentArea);
-            } else if (mode === 'phenomenology') {
-                loadPhenomenologyContent(contentArea);
-            } else if (mode === 'paradox') {
-                loadParadoxContent(contentArea);
-            }
-        }
-        
-        // Metaphor content
-        function loadMetaphorContent(container) {
-            const sections = [
-                {
-                    title: "The Underlying Reality",
-                    subtitle: "An experiment in substance and form.",
-                    icon: "gem",
-                    color: "amber",
-                    content: createGoldMetaphor()
-                },
-                {
-                    title: "Constructs of the Mind",
-                    subtitle: "How interpretation shapes reality.",
-                    icon: "flashlight",
-                    color: "rose",
-                    content: createRopeSnakeMetaphor()
-                },
-                {
-                    title: "The Architecture of Space",
-                    subtitle: "Investigating internal and external environments.",
-                    icon: "moon",
-                    color: "indigo",
-                    content: createDreamMetaphor()
-                },
-                {
-                    title: "The Function of Philosophy",
-                    subtitle: "Wisdom as a mirror rather than a doctrine.",
-                    icon: "book",
-                    color: "teal",
-                    content: createMirrorMetaphor()
-                },
-                {
-                    title: "The Mechanics of Identity",
-                    subtitle: "Exploring how the sense of self might operate.",
-                    icon: "sun",
-                    color: "sky",
-                    content: createEgoMetaphor()
-                },
-                {
-                    title: "Forms in Motion",
-                    subtitle: "An exploration of boundaries.",
-                    icon: "droplet",
-                    color: "cyan",
-                    content: createOceanWaveMetaphor()
-                }
-            ];
-            
-            sections.forEach((section, index) => {
-                const sectionEl = createSection(section, index);
-                container.appendChild(sectionEl);
-            });
-        }
-        
-        // Create section wrapper
-        function createSection(section, index) {
-            const div = document.createElement('div');
-            div.className = 'scroll-reveal';
-            
-            // Trigger pause overlay every 3-4 sections
-            if (index > 0 && index % 3 === 0) {
-                setTimeout(() => {
-                    showPauseOverlay();
-                    setTimeout(() => {
-                        hidePauseOverlay();
-                    }, 4000);
-                }, 1000);
-            }
-            
-            // Add intentional spacing - silence is structural
-            div.innerHTML = `
-                <div class="text-center mb-20 scroll-reveal">
-                    <div class="text-6xl mb-6 text-${section.color}-400">
-                        <i class="fas fa-${section.icon}"></i>
-                    </div>
-                    <h2 class="text-4xl serif font-bold text-slate-100 mb-4">${section.title}</h2>
-                    <p class="text-slate-400 text-lg max-w-2xl mx-auto">${section.subtitle}</p>
-                </div>
-                <div class="mb-16"></div>
-                ${section.content}
-                <div class="mb-24"></div>
-            `;
-            
-            return div;
-        }
-        
-        // Gold Metaphor
-        function createGoldMetaphor() {
-            return `
-                <div class="glass-card rounded-2xl p-8 md:p-12">
-                    <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <div class="space-y-6">
-                            <h3 class="text-3xl serif font-bold text-amber-400">Substance and Form</h3>
-                            <p class="text-slate-300 leading-relaxed text-lg">
-                                In Advaita Vedanta, the concept of <strong>Brahman</strong> represents pure, underlying existence.
-                            </p>
-                            <p class="text-slate-300 leading-relaxed">
-                                Think of a jewelry shop. We interact with rings, necklaces, and bracelets. They have distinct names, shapes, and uses. 
-                                Yet, if we look closely, we are only ever interacting with one substance: <strong>Gold</strong>.
-                            </p>
-                            <p class="text-amber-400 italic text-sm border-l-4 border-amber-500 pl-4">
-                                What happens to the "bracelet" when the gold is melted?
-                            </p>
-                            <div class="my-12"></div>
-                            <button onclick="toggleGoldMelt(this)" class="px-8 py-4 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-full transition-colors">
-                                <i class="fas fa-sparkles mr-2"></i>
-                                <span class="gold-btn-text">Observe the Substance</span>
-                            </button>
-                        </div>
-                        <div class="gold-visualization h-80 bg-slate-900 rounded-xl relative overflow-hidden border border-slate-700 flex items-center justify-center">
-                            <div class="gold-forms absolute transition-all duration-1000 flex gap-6">
-                                <div class="flex flex-col items-center gap-2">
-                                    <div class="w-20 h-20 rounded-full border-4 border-amber-400 border-dashed animate-spin" style="animation-duration: 10s;"></div>
-                                    <span class="text-slate-400 font-mono text-sm">Bracelet</span>
-                                </div>
-                                <div class="flex flex-col items-center gap-2 mt-8">
-                                    <div class="w-16 h-16 rounded-full border-4 border-amber-400"></div>
-                                    <span class="text-slate-400 font-mono text-sm">Ring</span>
-                                </div>
-                                <div class="flex flex-col items-center gap-2">
-                                    <i class="fas fa-gem text-amber-400 text-5xl"></i>
-                                    <span class="text-slate-400 font-mono text-sm">Necklace</span>
-                                </div>
-                            </div>
-                            <div class="gold-substance absolute transition-all duration-1000 flex flex-col items-center gap-4 opacity-0 scale-150">
-                                <div class="w-64 h-32 bg-gradient-to-br from-amber-300 via-amber-500 to-amber-700 rounded-lg shadow-[0_0_50px_rgba(251,191,36,0.5)] flex items-center justify-center">
-                                    <span class="text-slate-900 font-bold tracking-widest text-2xl">PURE GOLD</span>
-                                </div>
-                                <span class="text-amber-400 serif italic text-xl">"Existence Itself"</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function toggleGoldMelt(btn) {
-            const vis = btn.closest('.glass-card').querySelector('.gold-visualization');
-            const forms = vis.querySelector('.gold-forms');
-            const substance = vis.querySelector('.gold-substance');
-            const text = btn.querySelector('.gold-btn-text');
-            
-            if (forms.style.opacity !== '0') {
-                forms.style.opacity = '0';
-                forms.style.transform = 'scale(0.5)';
-                substance.style.opacity = '1';
-                substance.style.transform = 'scale(1)';
-                text.textContent = 'Observe the Forms';
-            } else {
-                forms.style.opacity = '1';
-                forms.style.transform = 'scale(1)';
-                substance.style.opacity = '0';
-                substance.style.transform = 'scale(1.5)';
-                text.textContent = 'Observe the Substance';
-            }
-        }
-        
-        // Rope and Snake Metaphor
-        function createRopeSnakeMetaphor() {
-            return `
-                <div class="glass-card rounded-2xl p-8 md:p-12">
-                    <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <div class="space-y-6 order-2 md:order-1">
-                            <h3 class="text-3xl serif font-bold text-rose-400">The Rope & The Snake</h3>
-                            <p class="text-slate-300 leading-relaxed text-lg">
-                                Imagine walking in the dark and seeing a coiled shape. You perceive a <strong>snake</strong>. Your heart races, and the biological response is entirely real to you in that moment.
-                            </p>
-                            <p class="text-slate-300 leading-relaxed">
-                                But when you shine a light on it, you notice it's just a <strong>rope</strong>. The snake was an interpretation superimposed onto the environment by the mind.
-                            </p>
-                            <p class="text-rose-400 italic text-sm border-l-4 border-rose-500 pl-4">
-                                What else in daily experience might be interpretation rather than fixed reality?
-                            </p>
-                            <div class="my-12"></div>
-                            <button onclick="toggleFlashlight(this)" class="px-8 py-4 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-full transition-colors">
-                                <i class="fas fa-flashlight mr-2"></i>
-                                <span class="flashlight-btn-text">Investigate</span>
-                            </button>
-                        </div>
-                        <div class="rope-snake-visualization h-80 rounded-xl relative overflow-hidden border border-slate-700 cursor-none order-1 md:order-2" 
-                             onmousemove="updateFlashlight(event, this)">
-                            <svg viewBox="0 0 200 100" class="absolute inset-0 w-full h-full opacity-80" stroke="#b45309" stroke-width="8" fill="none">
-                                <path d="M 20 50 Q 50 10 100 50 T 180 50" />
-                                <path d="M 30 50 Q 50 20 100 50 T 170 50" stroke="#78350f" stroke-width="2" />
-                            </svg>
-                            <span class="absolute bottom-4 right-4 text-amber-700 font-mono text-sm font-bold opacity-80">ROPE</span>
-                            <div class="rope-darkness absolute inset-0 pointer-events-none transition-opacity duration-300 bg-slate-950">
-                                <div class="snake-eyes absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex gap-4 transition-opacity duration-300">
-                                    <div class="w-4 h-4 bg-rose-500 rounded-full shadow-[0_0_15px_rgba(244,63,94,1)]"></div>
-                                    <div class="w-4 h-4 bg-rose-500 rounded-full shadow-[0_0_15px_rgba(244,63,94,1)]"></div>
-                                </div>
-                                <span class="snake-text absolute bottom-4 left-4 text-rose-500 font-mono text-sm font-bold tracking-widest transition-opacity duration-300 animate-pulse">INTERPRETATION: SNAKE</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function toggleFlashlight(btn) {
-            const vis = btn.closest('.glass-card').querySelector('.rope-snake-visualization');
-            const darkness = vis.querySelector('.rope-darkness');
-            const eyes = vis.querySelector('.snake-eyes');
-            const text = vis.querySelector('.snake-text');
-            const btnText = btn.querySelector('.flashlight-btn-text');
-            
-            if (vis.dataset.lightOn === 'true') {
-                vis.dataset.lightOn = 'false';
-                darkness.style.opacity = '1';
-                eyes.style.opacity = '1';
-                text.style.opacity = '1';
-                btnText.textContent = 'Investigate';
-                vis.style.cursor = 'default';
-            } else {
-                vis.dataset.lightOn = 'true';
-                darkness.style.opacity = '0.3';
-                eyes.style.opacity = '0';
-                text.style.opacity = '0';
-                btnText.textContent = 'Turn Off Light';
-                vis.style.cursor = 'none';
-            }
-        }
-        
-        function updateFlashlight(event, container) {
-            if (container.dataset.lightOn !== 'true') return;
-            const rect = container.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            const darkness = container.querySelector('.rope-darkness');
-            darkness.style.background = `radial-gradient(circle 120px at ${x}px ${y}px, transparent 0%, rgba(15, 23, 42, 0.98) 100%)`;
-        }
-        
-        // Dream Metaphor
-        function createDreamMetaphor() {
-            return `
-                <div class="glass-card rounded-2xl p-8 md:p-12">
-                    <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <div class="space-y-6">
-                            <h3 class="text-3xl serif font-bold text-indigo-400">The Construct of Space</h3>
-                            <p class="text-slate-300 leading-relaxed text-lg">
-                                Consider the experience of dreaming. In a dream, you might perceive objects here and there. They appear to exist in physical space and interact differently.
-                            </p>
-                            <p class="text-slate-300 leading-relaxed">
-                                Upon waking, what can be observed about the "objects" and the "space" between them?
-                            </p>
-                            <p class="text-indigo-400 italic text-sm border-l-4 border-indigo-500 pl-4">
-                                Does waking perception share any architectural similarities with dream perception?
-                            </p>
-                            <div class="my-12"></div>
-                            <button onclick="toggleDream(this)" class="px-8 py-4 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-full transition-colors">
-                                <i class="fas fa-sun mr-2 dream-icon"></i>
-                                <span class="dream-btn-text">View as Awareness</span>
-                            </button>
-                        </div>
-                        <div class="dream-visualization h-80 bg-slate-900 rounded-xl relative overflow-hidden border border-slate-700 flex items-center justify-center">
-                            <div class="dream-state absolute w-full h-full p-8 transition-all duration-1000 flex justify-between items-center">
-                                <div class="bg-slate-800 p-6 rounded-xl border border-slate-600 flex flex-col items-center animate-bounce">
-                                    <i class="fas fa-mobile-alt text-blue-400 text-5xl mb-2"></i>
-                                    <span class="text-slate-300 font-mono">Object A</span>
-                                </div>
-                                <span class="text-slate-500 serif italic">Perceived Space</span>
-                                <div class="bg-slate-800 p-6 rounded-xl border border-slate-600 flex flex-col items-center animate-pulse">
-                                    <i class="fas fa-magnet text-red-400 text-5xl mb-2"></i>
-                                    <span class="text-slate-300 font-mono">Object B</span>
-                                </div>
-                            </div>
-                            <div class="awake-state absolute transition-all duration-1000 flex flex-col items-center opacity-0 scale-50">
-                                <i class="fas fa-brain text-indigo-400 text-7xl mb-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function toggleDream(btn) {
-            const vis = btn.closest('.glass-card').querySelector('.dream-visualization');
-            const dream = vis.querySelector('.dream-state');
-            const awake = vis.querySelector('.awake-state');
-            const icon = btn.querySelector('.dream-icon');
-            const text = btn.querySelector('.dream-btn-text');
-            
-            if (dream.style.opacity !== '0') {
-                dream.style.opacity = '0';
-                dream.style.filter = 'blur(10px)';
-                awake.style.opacity = '1';
-                awake.style.transform = 'scale(1)';
-                icon.className = 'fas fa-moon mr-2 dream-icon';
-                text.textContent = 'View as Dream';
-            } else {
-                dream.style.opacity = '1';
-                dream.style.filter = 'blur(0)';
-                awake.style.opacity = '0';
-                awake.style.transform = 'scale(0.5)';
-                icon.className = 'fas fa-sun mr-2 dream-icon';
-                text.textContent = 'View as Awareness';
-            }
-        }
-        
-        // Mirror Metaphor
-        function createMirrorMetaphor() {
-            return `
-                <div class="glass-card rounded-2xl p-8 md:p-12">
-                    <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <div class="space-y-6 order-2 md:order-1">
-                            <h3 class="text-3xl serif font-bold text-teal-400">The Mirror of Wisdom</h3>
-                            <p class="text-slate-300 leading-relaxed text-lg">
-                                In many contemplative traditions, philosophical texts are not viewed as sets of beliefs to acquire or defend. Instead, they act as mirrors.
-                            </p>
-                            <p class="text-slate-300 leading-relaxed">
-                                Attention is often likened to a mirror covered in the dust of habitual thought. As you observe with curiosity, what happens?
-                            </p>
-                            <div class="flex items-center gap-4 mt-6">
-                                <button onclick="resetMirror(this)" class="text-slate-400 hover:text-white text-sm underline hidden mirror-reset">
-                                    Reset
-                                </button>
-                            </div>
-                        </div>
-                        <div class="mirror-visualization w-full max-w-sm aspect-square rounded-full border-8 border-slate-700 relative overflow-hidden flex items-center justify-center bg-amber-100/10 shadow-[0_0_50px_rgba(20,184,166,0.1)] mx-auto cursor-pointer order-1 md:order-2" 
-                             onmousemove="wipeMirror(event, this)">
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="mirror-core w-3/4 h-3/4 rounded-full bg-teal-400/20 shadow-[0_0_100px_rgba(45,212,191,0.8)] flex items-center justify-center transition-all duration-1000">
-                                    <i class="fas fa-sparkles text-teal-300 text-6xl animate-pulse"></i>
-                                </div>
-                            </div>
-                            <div class="mirror-grid absolute inset-0 grid grid-cols-10 grid-rows-10 z-10"></div>
-                            <div class="mirror-prompt absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-1000 z-20">
-                                <span class="bg-slate-900/80 text-white px-4 py-2 rounded-full font-mono text-sm border border-slate-700">Hover to interact</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function initMirror(container) {
-            const grid = container.querySelector('.mirror-grid');
-            for (let i = 0; i < 100; i++) {
-                const cell = document.createElement('div');
-                cell.dataset.index = i;
-                cell.className = 'mirror-cell transition-all duration-500 ease-out opacity-100 scale-100 bg-slate-300/40 backdrop-blur-md border border-white/5';
-                grid.appendChild(cell);
-            }
-        }
-        
-        function wipeMirror(event, container) {
-            const rect = container.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            const cellSize = rect.width / 10;
-            const col = Math.floor(x / cellSize);
-            const row = Math.floor(y / cellSize);
-            const index = row * 10 + col;
-            
-            const cell = container.querySelector(`[data-index="${index}"]`);
-            if (cell && !cell.dataset.wiped) {
-                cell.dataset.wiped = 'true';
-                cell.style.opacity = '0';
-                cell.style.transform = 'scale(0.5)';
-                
-                const wiped = container.querySelectorAll('[data-index].mirror-cell[data-wiped="true"]').length;
-                
-                if (wiped > 5) {
-                    const prompt = container.querySelector('.mirror-prompt');
-                    prompt.style.opacity = '0';
-                }
-                
-                if (wiped > 0) {
-                    const resetBtn = container.closest('.glass-card').querySelector('.mirror-reset');
-                    resetBtn.classList.remove('hidden');
-                }
-            }
-        }
-        
-        function resetMirror(btn) {
-            const vis = btn.closest('.glass-card').querySelector('.mirror-visualization');
-            const cells = vis.querySelectorAll('.mirror-cell');
-            cells.forEach(cell => {
-                cell.removeAttribute('data-wiped');
-                cell.style.opacity = '1';
-                cell.style.transform = 'scale(1)';
-            });
-            btn.classList.add('hidden');
-            const prompt = vis.querySelector('.mirror-prompt');
-            prompt.style.opacity = '1';
-        }
-        
-        // Ego Metaphor
-        function createEgoMetaphor() {
-            return `
-                <div class="glass-card rounded-2xl p-8 md:p-12">
-                    <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <div class="space-y-6">
-                            <h3 class="text-3xl serif font-bold text-sky-400">Identity as Reflection</h3>
-                            <p class="text-slate-300 leading-relaxed text-lg">
-                                How does the feeling of an individual "Self" form? Vedanta offers the metaphor of the Moon and the Sun.
-                            </p>
-                            <p class="text-slate-300 leading-relaxed">
-                                At night, moonlight illuminates the Earth, but the moon generates no light of its own. It merely reflects the sun. Similarly, the mind (The Moon) reflects the light of base awareness (The Sun) to animate the body (The Earth).
-                            </p>
-                            <p class="text-sky-400 italic text-sm border-l-4 border-sky-500 pl-4">
-                                Does the sense of "me" generate consciousness, or simply reflect it?
-                            </p>
-                            <div class="my-12"></div>
-                            <button onclick="toggleEgo(this)" class="px-8 py-4 bg-sky-500 hover:bg-sky-600 text-slate-900 font-bold rounded-full transition-colors">
-                                <i class="fas fa-user-minus mr-2 ego-icon"></i>
-                                <span class="ego-btn-text">Pause the Reflection</span>
-                            </button>
-                        </div>
-                        <div class="ego-visualization h-96 bg-slate-900 rounded-xl relative overflow-hidden border border-slate-700 flex flex-col items-center justify-between py-8">
-                            <div class="flex flex-col items-center z-10">
-                                <i class="fas fa-sun text-amber-400 text-6xl drop-shadow-[0_0_15px_rgba(251,191,36,0.8)]"></i>
-                                <span class="text-amber-400/80 text-xs font-mono mt-2">Awareness</span>
-                            </div>
-                            <div class="absolute top-20 w-1 h-20 bg-gradient-to-b from-amber-400/50 to-transparent"></div>
-                            <div class="ego-moon transition-all duration-700 z-10 flex flex-col items-center">
-                                <i class="fas fa-moon text-slate-200 text-5xl drop-shadow-[0_0_10px_rgba(226,232,240,0.8)]"></i>
-                                <span class="text-slate-300/80 text-xs font-mono mt-2">Mind / Identity</span>
-                            </div>
-                            <div class="ego-light absolute top-48 w-24 h-24 bg-gradient-to-b from-slate-200/20 to-transparent blur-xl transition-opacity duration-700"></div>
-                            <div class="flex flex-col items-center z-10">
-                                <i class="fas fa-globe text-blue-400 text-6xl drop-shadow-[0_0_15px_rgba(96,165,250,0.6)] ego-earth"></i>
-                                <span class="text-blue-400/80 text-xs font-mono mt-2 ego-earth-text">Physical Perception</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function toggleEgo(btn) {
-            const vis = btn.closest('.glass-card').querySelector('.ego-visualization');
-            const moon = vis.querySelector('.ego-moon');
-            const light = vis.querySelector('.ego-light');
-            const earth = vis.querySelector('.ego-earth');
-            const earthText = vis.querySelector('.ego-earth-text');
-            const icon = btn.querySelector('.ego-icon');
-            const text = btn.querySelector('.ego-btn-text');
-            
-            if (moon.style.opacity !== '0.2') {
-                moon.style.opacity = '0.2';
-                moon.style.transform = 'scale(0.75)';
-                light.style.opacity = '0';
-                earth.style.color = '#475569';
-                earthText.style.color = '#64748b';
-                icon.className = 'fas fa-focus mr-2 ego-icon';
-                text.textContent = 'Resume the Reflection';
-            } else {
-                moon.style.opacity = '1';
-                moon.style.transform = 'scale(1)';
-                light.style.opacity = '1';
-                earth.style.color = '#60a5fa';
-                earthText.style.color = '#60a5fa';
-                icon.className = 'fas fa-user-minus mr-2 ego-icon';
-                text.textContent = 'Pause the Reflection';
-            }
-        }
-        
-        // Ocean Wave Metaphor
-        function createOceanWaveMetaphor() {
-            return `
-                <div class="glass-card rounded-2xl p-8 md:p-12">
-                    <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <div class="space-y-6 order-2 md:order-1">
-                            <h3 class="text-3xl serif font-bold text-cyan-400">Forms in Motion</h3>
-                            <p class="text-slate-300 leading-relaxed text-lg">
-                                A wave rises from the ocean. It has a specific shape, a trajectory, and a lifespan. From its localized perspective, it might appear separate from the other waves.
-                            </p>
-                            <p class="text-slate-300 leading-relaxed">
-                                A wave is not the entire ocean. However, examining the substance of the wave reveals it is entirely water—the exact same substance as the ocean itself.
-                            </p>
-                            <div class="my-12"></div>
-                            <button onclick="createWave(this)" class="px-8 py-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-full transition-colors">
-                                <i class="fas fa-droplet mr-2"></i>
-                                Observe a Wave Form
-                            </button>
-                        </div>
-                        <div class="ocean-visualization h-80 bg-slate-900 rounded-xl relative overflow-hidden border border-slate-700 flex items-end justify-center order-1 md:order-2">
-                            <div class="absolute top-4 left-4 text-slate-500 font-mono text-sm">Ocean (The Whole)</div>
-                            <div class="w-full h-24 bg-gradient-to-t from-cyan-900 to-cyan-700 relative z-10"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        let waveCount = 0;
-        function createWave(btn) {
-            const vis = btn.closest('.glass-card').querySelector('.ocean-visualization');
-            waveCount++;
-            const wave = document.createElement('div');
-            wave.className = 'wave-animation';
-            wave.style.cssText = `
-                position: absolute;
-                bottom: 80px;
-                width: 128px;
-                height: 128px;
-                background: #0891b2;
-                border-radius: 50% 50% 0 0;
-                clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
-                box-shadow: inset 0 10px 20px rgba(255,255,255,0.2);
-            `;
-            const label = document.createElement('span');
-            label.className = 'absolute bottom-4 left-1/2 -translate-x-1/2 text-cyan-200 text-xs font-mono';
-            label.textContent = 'Wave (The Part)';
-            wave.appendChild(label);
-            vis.appendChild(wave);
-            
-            setTimeout(() => wave.remove(), 3000);
-        }
-        
-        // Phenomenology content
-        function loadPhenomenologyContent(container) {
-            const sections = [
-                {
-                    title: "The Space of Observation",
-                    subtitle: "Examining the flow of internal phenomena.",
-                    icon: "cloud",
-                    color: "blue",
-                    content: createSkyCloudsMetaphor()
-                },
-                {
-                    title: "The Spectrum of Experience",
-                    subtitle: "What changes and what remains constant?",
-                    icon: "moon",
-                    color: "fuchsia",
-                    content: createStatesOfConsciousness()
-                },
-                {
-                    title: "The Process of Unbinding",
-                    subtitle: "Observing the elements of experience.",
-                    icon: "brain",
-                    color: "emerald",
-                    content: createSelfInquiry()
-                },
-                {
-                    title: "The Centerless Field",
-                    subtitle: "An experiment in visual and physical location.",
-                    icon: "crosshairs",
-                    color: "rose",
-                    content: createFindYourselfScanner()
-                }
-            ];
-            
-            sections.forEach((section, index) => {
-                const sectionEl = createSection(section, index);
-                container.appendChild(sectionEl);
-            });
-        }
-        
-        // Sky Clouds Metaphor
-        function createSkyCloudsMetaphor() {
-            return `
-                <div class="glass-card rounded-2xl p-8 md:p-12">
-                    <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <div class="space-y-6">
-                            <h3 class="text-3xl serif font-bold text-blue-300">Observation (Sakshi Bhava)</h3>
-                            <p class="text-slate-300 leading-relaxed text-lg">
-                                Consider the difference between being a <em>participant</em> in a thought and being the <em>witness</em> of a thought.
-                            </p>
-                            <p class="text-slate-300 leading-relaxed">
-                                Thoughts, emotions, and sensations are like weather patterns. When we identify with them, they consume the horizon. What happens when we observe them neutrally?
-                            </p>
-                            <p class="text-blue-400 italic text-sm border-l-4 border-blue-500 pl-4">
-                                Does a thought feel consciously chosen by you, or does it simply appear in your awareness?
-                            </p>
-                            <div class="my-12"></div>
-                            <button onclick="toggleWitnessing(this)" class="px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full transition-colors">
-                                <i class="fas fa-wind mr-2"></i>
-                                <span class="witness-btn-text">Observe as the Sky</span>
-                            </button>
-                        </div>
-                        <div class="sky-visualization h-80 rounded-xl relative overflow-hidden border border-slate-700 transition-all duration-1000 bg-slate-700">
-                            <div class="sky-bg absolute inset-0 transition-opacity duration-1000 opacity-0 bg-sky-900">
-                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-amber-400/10 blur-3xl rounded-full"></div>
-                            </div>
-                            <div class="cloud cloud-1 absolute left-0 transition-all duration-[3000ms] ease-in-out flex flex-col items-center translate-x-[80px] scale-150 opacity-100 z-10">
-                                <i class="fas fa-cloud text-slate-300 text-6xl drop-shadow-xl"></i>
-                                <span class="text-slate-900 font-bold text-xs -mt-8 relative z-10">Thought</span>
-                            </div>
-                            <div class="cloud cloud-2 absolute left-0 transition-all duration-[4000ms] ease-in-out flex flex-col items-center translate-x-[150px] -translate-y-10 scale-125 opacity-100 z-10">
-                                <i class="fas fa-cloud text-slate-400 text-7xl drop-shadow-xl"></i>
-                                <span class="text-slate-900 font-bold text-xs -mt-10 relative z-10">Emotion</span>
-                            </div>
-                            <div class="cloud cloud-3 absolute left-0 transition-all duration-[3500ms] ease-in-out flex flex-col items-center -translate-x-[20px] translate-y-12 scale-150 opacity-90 z-10">
-                                <i class="fas fa-cloud text-slate-500 text-6xl drop-shadow-xl"></i>
-                                <span class="text-slate-900 font-bold text-xs -mt-10 relative z-10">Memory</span>
-                            </div>
-                            <div class="sky-overlay absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] transition-opacity duration-1000 opacity-100"></div>
-                            <span class="sky-label absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-bold tracking-widest text-lg z-20 whitespace-nowrap drop-shadow-md transition-opacity duration-1000">PARTICIPATING IN NARRATIVE</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function toggleWitnessing(btn) {
-            const vis = btn.closest('.glass-card').querySelector('.sky-visualization');
-            const bg = vis.querySelector('.sky-bg');
-            const clouds = vis.querySelectorAll('.cloud');
-            const overlay = vis.querySelector('.sky-overlay');
-            const label = vis.querySelector('.sky-label');
-            const text = btn.querySelector('.witness-btn-text');
-            
-            if (vis.dataset.witnessing === 'true') {
-                vis.dataset.witnessing = 'false';
-                bg.style.opacity = '0';
-                overlay.style.opacity = '1';
-                label.style.opacity = '1';
-                clouds.forEach((cloud, i) => {
-                    if (i === 0) {
-                        cloud.style.transform = 'translateX(80px) scale(1.5)';
-                        cloud.style.opacity = '1';
-                    } else if (i === 1) {
-                        cloud.style.transform = 'translateX(150px) translateY(-10px) scale(1.25)';
-                        cloud.style.opacity = '1';
-                    } else {
-                        cloud.style.transform = 'translateX(-20px) translateY(12px) scale(1.5)';
-                        cloud.style.opacity = '0.9';
-                    }
-                });
-                text.textContent = 'Observe as the Sky';
-            } else {
-                vis.dataset.witnessing = 'true';
-                bg.style.opacity = '1';
-                overlay.style.opacity = '0';
-                label.style.opacity = '0';
-                clouds.forEach((cloud, i) => {
-                    if (i === 0) {
-                        cloud.style.transform = 'translateX(200px) scale(0.5)';
-                        cloud.style.opacity = '0.4';
-                    } else if (i === 1) {
-                        cloud.style.transform = 'translateX(50px) translateY(10px) scale(0.5)';
-                        cloud.style.opacity = '0.3';
-                    } else {
-                        cloud.style.transform = 'translateX(280px) translateY(-8px) scale(0.5)';
-                        cloud.style.opacity = '0.2';
-                    }
-                });
-                text.textContent = 'Engage with Content';
-            }
-        }
-        
-        // States of Consciousness
-        function createStatesOfConsciousness() {
-            return `
-                <div class="glass-card rounded-2xl p-8 md:p-12">
-                    <div class="space-y-8">
-                        <div class="text-center space-y-4">
-                            <h3 class="text-3xl serif font-bold text-fuchsia-400">Avastha Traya: States of Experience</h3>
-                            <p class="text-slate-300 leading-relaxed max-w-3xl mx-auto text-lg">
-                                We move through different modes of experience every 24 hours. By sliding through these states, we can investigate what changes and what remains constant.
-                            </p>
-                        </div>
-                        <div class="relative w-full h-64 bg-slate-900 rounded-xl overflow-hidden border border-slate-700 flex flex-col items-center justify-center p-6">
-                            <div class="states-bg absolute inset-0 bg-amber-500/10 transition-opacity duration-1000 opacity-20"></div>
-                            <div class="states-glow absolute w-32 h-32 rounded-full bg-amber-400/20 blur-2xl transition-all duration-1000 scale-50 opacity-0"></div>
-                            <i class="states-icon fas fa-sun text-blue-400 text-6xl relative z-10 transition-colors duration-500"></i>
-                            <h4 class="states-name relative z-10 text-2xl serif font-bold mt-4 transition-colors duration-500 text-blue-400">
-                                Jagrat (Waking)
-                            </h4>
-                        </div>
-                        <div class="max-w-xl mx-auto w-full px-4">
-                            <input type="range" min="0" max="3" step="1" value="0" 
-                                   oninput="updateState(this)" 
-                                   class="states-slider w-full accent-fuchsia-500 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
-                            <div class="flex justify-between text-xs text-slate-400 font-mono mt-2">
-                                <span>Waking</span>
-                                <span>Dreaming</span>
-                                <span>Deep Sleep</span>
-                                <span class="text-amber-400 font-bold">Constant</span>
-                            </div>
-                        </div>
-                        <p class="text-center text-slate-300 italic min-h-[3rem] text-lg states-desc">
-                            Sensory interaction with the external environment.
-                        </p>
-                    </div>
-                </div>
-            `;
-        }
-        
-        const states = [
-            { name: "Jagrat (Waking)", desc: "Sensory interaction with the external environment.", icon: "fa-sun", color: "text-blue-400" },
-            { name: "Svapna (Dreaming)", desc: "Interaction with an internal, mentally constructed environment.", icon: "fa-cloud-moon", color: "text-indigo-400" },
-            { name: "Sushupti (Deep Sleep)", desc: "No constructed environment. Total rest. Yet, upon waking, we report an experience of 'peaceful nothingness.'", icon: "fa-moon-star", color: "text-slate-500" },
-            { name: "Turiya (The Constant)", desc: "The background of observation that remains present through waking, dreaming, and deep sleep.", icon: "fa-eye", color: "text-amber-400" }
-        ];
-        
-        function updateState(slider) {
-            const index = parseInt(slider.value);
-            const state = states[index];
-            const card = slider.closest('.glass-card');
-            const icon = card.querySelector('.states-icon');
-            const name = card.querySelector('.states-name');
-            const desc = card.querySelector('.states-desc');
-            const bg = card.querySelector('.states-bg');
-            const glow = card.querySelector('.states-glow');
-            
-            icon.className = `states-icon fas ${state.icon} ${state.color} text-6xl relative z-10 transition-colors duration-500`;
-            if (index === 3) {
-                icon.style.filter = 'drop-shadow(0 0 20px rgba(251,191,36,0.8))';
-            } else {
-                icon.style.filter = 'none';
-            }
-            name.textContent = state.name;
-            name.className = `states-name relative z-10 text-2xl serif font-bold mt-4 transition-colors duration-500 ${state.color}`;
-            desc.textContent = state.desc;
-            
-            if (index === 3) {
-                bg.style.opacity = '1';
-                glow.style.transform = 'scale(1.5)';
-                glow.style.opacity = '1';
-            } else {
-                bg.style.opacity = '0.2';
-                glow.style.transform = 'scale(0.5)';
-                glow.style.opacity = '0';
-            }
-        }
-        
-        // Self Inquiry
-        function createSelfInquiry() {
-            return `
-                <div class="glass-card rounded-2xl p-8 md:p-12">
-                    <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <div class="space-y-6">
-                            <h3 class="text-3xl serif font-bold text-emerald-400">The Logic of "Neti-Neti"</h3>
-                            <p class="text-slate-300 leading-relaxed text-lg">
-                                <em>Neti-Neti</em> translates roughly to "not this, not this." It is a process of examining objects of experience.
-                            </p>
-                            <p class="text-emerald-400 italic text-sm border-l-4 border-emerald-500 pl-4">
-                                If you can observe your body, your perceptions, and your thoughts, who is doing the observing?
-                            </p>
-                            <div class="my-12"></div>
-                            <div class="space-y-3">
-                                <button onclick="toggleLayer(this, 'body')" class="neti-btn w-full flex items-center justify-between p-4 rounded-lg border transition-all bg-slate-700 border-slate-600 text-slate-200" data-layer="body">
-                                    <div class="flex items-center gap-3">
-                                        <i class="fas fa-user-minus"></i>
-                                        <span>1. "I can observe the Body"</span>
-                                    </div>
-                                    <span class="text-sm neti-status">Observing</span>
-                                </button>
-                                <button onclick="toggleLayer(this, 'senses')" class="neti-btn w-full flex items-center justify-between p-4 rounded-lg border transition-all bg-slate-700 border-slate-600 text-slate-200" data-layer="senses">
-                                    <div class="flex items-center gap-3">
-                                        <i class="fas fa-eye-slash"></i>
-                                        <span>2. "I can observe Perceptions"</span>
-                                    </div>
-                                    <span class="text-sm neti-status">Observing</span>
-                                </button>
-                                <button onclick="toggleLayer(this, 'memory')" class="neti-btn w-full flex items-center justify-between p-4 rounded-lg border transition-all bg-slate-700 border-slate-600 text-slate-200" data-layer="memory">
-                                    <div class="flex items-center gap-3">
-                                        <i class="fas fa-brain"></i>
-                                        <span>3. "I can observe Thoughts"</span>
-                                    </div>
-                                    <span class="text-sm neti-status">Observing</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="neti-visualization h-96 bg-slate-900 rounded-xl relative overflow-hidden border border-slate-700 flex items-center justify-center">
-                            <div class="neti-base absolute flex flex-col items-center transition-all duration-1000 scale-75 opacity-50">
-                                <div class="w-24 h-24 rounded-full bg-emerald-400/20 shadow-[0_0_50px_rgba(52,211,153,0.5)] animate-pulse flex items-center justify-center">
-                                    <i class="fas fa-sparkle text-emerald-400 text-4xl"></i>
-                                </div>
-                                <span class="neti-label mt-4 serif text-emerald-400 transition-opacity duration-1000 opacity-0">The Space of Observation</span>
-                                <span class="neti-sublabel text-xs text-emerald-400/70 mt-1 transition-opacity duration-1000 opacity-0">"What remains?"</span>
-                            </div>
-                            <div class="neti-layer neti-memory absolute transition-all duration-700 flex items-center justify-center opacity-100 scale-100">
-                                <div class="w-32 h-32 rounded-full border-4 border-dashed border-indigo-400 animate-spin" style="animation-duration: 20s;"></div>
-                            </div>
-                            <div class="neti-layer neti-senses absolute transition-all duration-700 flex items-center justify-center opacity-100 scale-100">
-                                <div class="w-40 h-40 rounded-full border-2 border-sky-400 animate-spin" style="animation-duration: 15s; animation-direction: reverse;"></div>
-                            </div>
-                            <div class="neti-layer neti-body absolute transition-all duration-700 flex items-center justify-center opacity-100 scale-100">
-                                <div class="w-48 h-48 rounded-full border border-slate-400 bg-slate-800/30 backdrop-blur-sm"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function toggleLayer(btn, layer) {
-            const vis = btn.closest('.glass-card').querySelector('.neti-visualization');
-            const layerEl = vis.querySelector(`.neti-${layer}`);
-            const base = vis.querySelector('.neti-base');
-            const label = vis.querySelector('.neti-label');
-            const sublabel = vis.querySelector('.neti-sublabel');
-            const status = btn.querySelector('.neti-status');
-            
-            if (layerEl.style.opacity !== '0') {
-                layerEl.style.opacity = '0';
-                layerEl.style.transform = 'scale(1.1)';
-                status.textContent = 'Acknowledged';
-                btn.classList.remove('bg-slate-700', 'border-slate-600', 'text-slate-200');
-                btn.classList.add('bg-slate-800/50', 'border-emerald-900/50', 'text-slate-500');
-            } else {
-                layerEl.style.opacity = '1';
-                layerEl.style.transform = 'scale(1)';
-                status.textContent = 'Observing';
-                btn.classList.add('bg-slate-700', 'border-slate-600', 'text-slate-200');
-                btn.classList.remove('bg-slate-800/50', 'border-emerald-900/50', 'text-slate-500');
-            }
-            
-            const allLayers = vis.querySelectorAll('.neti-layer');
-            const allHidden = Array.from(allLayers).every(l => l.style.opacity === '0');
-            
-            if (allHidden) {
-                base.style.transform = 'scale(1.25)';
-                base.style.opacity = '1';
-                label.style.opacity = '1';
-                sublabel.style.opacity = '1';
-            } else {
-                base.style.transform = 'scale(0.75)';
-                base.style.opacity = '0.5';
-                label.style.opacity = '0';
-                sublabel.style.opacity = '0';
-            }
-        }
-        
-        // Find Yourself Scanner
-        function createFindYourselfScanner() {
-            return `
-                <div class="glass-card rounded-2xl p-8 md:p-12">
-                    <div class="space-y-8">
-                        <div class="text-center space-y-4">
-                            <h3 class="text-3xl serif font-bold text-rose-500">Locate the Observer</h3>
-                            <p class="text-slate-300 leading-relaxed max-w-2xl mx-auto text-lg">
-                                Try a simple experiment. Notice your thoughts. Notice your physical sensations. 
-                                Now look at the screen. Look for the exact physical location of the one who is looking. Use the grid below.
-                            </p>
-                        </div>
-                        <div onclick="handleScannerClick(event, this)" 
-                             class="scanner-visualization relative w-full h-96 bg-slate-950 rounded-xl overflow-hidden border-2 border-slate-700 cursor-crosshair flex flex-col items-center justify-center">
-                            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.4)_0,transparent_100%)]"></div>
-                            <div class="absolute w-full h-[1px] bg-slate-800 top-1/2"></div>
-                            <div class="absolute h-full w-[1px] bg-slate-800 left-1/2"></div>
-                            <div class="absolute w-48 h-48 border border-slate-800 rounded-full"></div>
-                            <div class="absolute w-96 h-96 border border-slate-800 rounded-full"></div>
-                            <div class="scanner-readout relative z-10 bg-slate-900/80 backdrop-blur-sm border border-slate-700 px-6 py-3 rounded-lg pointer-events-none mt-48 transition-all">
-                                <span class="scanner-message font-mono text-sm text-slate-400">
-                                    Click on the exact location of the observer.
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function handleScannerClick(event, container) {
-            const rect = container.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            
-            // Remove existing marker
-            const existing = container.querySelector('.scanner-marker');
-            if (existing) existing.remove();
-            
-            // Create marker
-            const marker = document.createElement('div');
-            marker.className = 'scanner-marker absolute pointer-events-none transform -translate-x-1/2 -translate-y-1/2';
-            marker.style.left = x + 'px';
-            marker.style.top = y + 'px';
-            marker.innerHTML = `
-                <div class="w-8 h-8 border-2 border-rose-500 rounded-full animate-ping absolute inset-0"></div>
-                <i class="fas fa-crosshairs text-rose-500 text-3xl"></i>
-            `;
-            container.appendChild(marker);
-            
-            const message = container.querySelector('.scanner-message');
-            message.textContent = 'Processing coordinates...';
-            message.classList.add('text-rose-400', 'font-bold');
-            message.classList.remove('text-slate-400');
-            
-            setTimeout(() => {
-                message.textContent = 'Observation: That location is also an object appearing in your visual field. Where is the awareness itself?';
-            }, 1200);
-        }
-        
-        // Paradox content
-        function loadParadoxContent(container) {
-            const sections = [
-                {
-                    title: "The Limits of Logic",
-                    subtitle: "Engaging with questions that exhaust the intellect.",
-                    icon: "comment",
-                    color: "violet",
-                    content: createKoanEngine()
-                }
-            ];
-            
-            sections.forEach((section, index) => {
-                const sectionEl = createSection(section, index);
-                container.appendChild(sectionEl);
-            });
-            
-            // Add sudden stop
-            const stopDiv = document.createElement('div');
-            stopDiv.className = 'flex justify-center my-16';
-            stopDiv.innerHTML = `
-                <button onclick="triggerSuddenStop()" class="group relative px-8 py-4 bg-slate-900 border border-slate-700 hover:border-slate-500 rounded-full transition-all duration-500 overflow-hidden flex items-center gap-3">
-                    <div class="absolute inset-0 bg-slate-800 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-                    <i class="fas fa-power-off text-slate-400 group-hover:text-white relative z-10 text-xl"></i>
-                    <span class="text-slate-400 group-hover:text-white font-mono font-bold tracking-widest relative z-10">PAUSE INVESTIGATION</span>
-                </button>
-            `;
-            container.appendChild(stopDiv);
-        }
-        
-        // Koan Engine
-        function createKoanEngine() {
-            return `
-                <div class="glass-card rounded-2xl p-8 md:p-12">
-                    <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <div class="space-y-4">
-                            <h3 class="text-3xl serif font-bold text-violet-400">The Paradox Engine</h3>
-                            <p class="text-slate-300 leading-relaxed text-lg">
-                                Zen tradition utilizes koans—paradoxical statements designed to exhaust the analytical mind. They are not riddles to be solved, but tools to observe the limits of conceptual thought.
-                            </p>
-                            <p class="text-slate-300 leading-relaxed text-sm italic">
-                                *In Zen practice, the response "Mu" (無) roughly translates to "un-ask the question," suggesting the premise itself relies on a false duality.
-                            </p>
-                        </div>
-                        <div class="w-full bg-slate-900 rounded-xl border border-slate-700 p-6 relative overflow-hidden h-64 flex flex-col justify-end">
-                            <div class="koan-response absolute inset-0 flex items-center justify-center p-6 text-center">
-                                <span class="koan-text text-xl serif text-violet-300 italic">Enter an inquiry to observe the mind's reaction...</span>
-                            </div>
-                            <form onsubmit="handleKoanSubmit(event, this)" class="relative z-10 flex gap-2 mt-auto">
-                                <input type="text" 
-                                       placeholder="Type an assumption or question..." 
-                                       class="koan-input flex-1 bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-slate-200 focus:outline-none focus:border-violet-500 font-mono text-sm">
-                                <button type="submit" class="bg-violet-600 hover:bg-violet-500 text-white px-4 py-2 rounded-lg font-bold transition-colors">
-                                    Inquire
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function handleKoanSubmit(event, form) {
-            event.preventDefault();
-            const input = form.querySelector('.koan-input');
-            const response = form.closest('.glass-card').querySelector('.koan-text');
-            
-            if (!input.value.trim()) return;
-            
-            response.textContent = 'MU.';
-            response.className = 'koan-text text-8xl serif font-black text-slate-500 animate-pulse';
-            input.value = '';
-            input.disabled = true;
-            form.querySelector('button').disabled = true;
-            
-            setTimeout(() => {
-                const responses = [
-                    "If everything is one, who is asking the question?",
-                    "What was your face before your parents were born?",
-                    "How do you hold infinity in a finite thought?",
-                    "Show me the mind that formulated this."
-                ];
-                response.textContent = responses[Math.floor(Math.random() * responses.length)];
-                response.className = 'koan-text text-xl serif text-violet-300 italic';
-                input.disabled = false;
-                form.querySelector('button').disabled = false;
-            }, 2000);
-        }
-        
-        // Sudden Stop
-        function triggerSuddenStop() {
-            const overlay = document.createElement('div');
-            overlay.className = 'sudden-stop fixed inset-0 z-50 bg-black flex flex-col items-center justify-center cursor-pointer';
-            overlay.onclick = () => overlay.remove();
-            overlay.innerHTML = `
-                <h1 class="text-slate-300 text-2xl md:text-4xl serif tracking-wide opacity-0 animate-[fadeIn_2s_ease-out_1s_forwards]">
-                    Take a breath.
-                </h1>
-                <h2 class="text-slate-100 text-3xl md:text-5xl serif mt-8 opacity-0 animate-[fadeIn_2s_ease-out_4s_forwards]">
-                    What is here?
-                </h2>
-                <h3 class="text-amber-500/80 text-xl serif italic mt-8 opacity-0 animate-[fadeIn_2s_ease-out_8s_forwards]">
-                    What do you notice?
-                </h3>
-                <span class="absolute bottom-8 text-slate-700 font-mono text-sm opacity-0 animate-[fadeIn_2s_ease-out_12s_forwards]">
-                    Click anywhere to return.
-                </span>
-            `;
-            document.body.appendChild(overlay);
-        }
-        
-        // Progress indicator
-        function updateProgress() {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrolled = (winScroll / height) * 100;
-            const progressBar = document.getElementById('progress-indicator');
-            if (progressBar) {
-                progressBar.style.transform = `scaleX(${scrolled / 100})`;
-            }
-        }
-        
-        // Scroll reveal - minimal
-        const scrollObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('revealed');
-                }
-            });
-        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-        
-        function initScrollReveals() {
-            document.querySelectorAll('.scroll-reveal').forEach(el => {
-                scrollObserver.observe(el);
-            });
-        }
-        
-        // Pause overlay functionality
-        function showPauseOverlay() {
-            const overlay = document.getElementById('pause-overlay');
-            if (overlay) {
-                overlay.classList.add('active');
-            }
-        }
-        
-        function hidePauseOverlay() {
-            const overlay = document.getElementById('pause-overlay');
-            if (overlay) {
-                overlay.classList.remove('active');
-            }
-        }
-        
-        // Auto-show pause every 3-4 sections
-        let sectionCount = 0;
-        function checkForPause() {
-            sectionCount++;
-            if (sectionCount > 0 && sectionCount % 3 === 0) {
-                setTimeout(() => {
-                    showPauseOverlay();
-                    setTimeout(() => {
-                        hidePauseOverlay();
-                    }, 4000);
-                }, 2000);
-            }
-        }
-        
-        // Add subtle sound feedback (optional, can be disabled)
-        function playSubtleSound(type) {
-            // Using Web Audio API for subtle feedback
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = type === 'click' ? 800 : 600;
-            oscillator.type = 'sine';
-            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.05, audioContext.currentTime + 0.01);
-            gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.1);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.1);
-        }
-        
-        // Initialize on load
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set default mode
-            setMode('metaphor');
-            
-            // Initialize minimal interactions
-            initScrollReveals();
-            updateProgress();
-            
-            // Progress tracking
-            window.addEventListener('scroll', updateProgress, { passive: true });
-            
-            // Pause overlay click to dismiss
-            const pauseOverlay = document.getElementById('pause-overlay');
-            if (pauseOverlay) {
-                pauseOverlay.addEventListener('click', hidePauseOverlay);
-            }
-            
-            // Add scroll reveal class to sections
-            setTimeout(() => {
-                document.querySelectorAll('section').forEach(section => {
-                    section.classList.add('scroll-reveal');
-                });
-            }, 100);
-            
-            // Initialize mirrors when they're created
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    mutation.addedNodes.forEach((node) => {
-                        if (node.nodeType === 1) {
-                            const mirrors = node.querySelectorAll ? node.querySelectorAll('.mirror-visualization') : [];
-                            mirrors.forEach(initMirror);
-                            
-                            // Re-initialize scroll reveals for new content
-                            node.querySelectorAll('.scroll-reveal').forEach(el => {
-                                scrollObserver.observe(el);
-                            });
-                        }
-                    });
-                });
-            });
-            observer.observe(document.getElementById('content-area'), { childList: true, subtree: true });
-        });
-    </script>
+<!-- PAYWALL -->
+<div id="screen-paywall" class="screen gone">
+  <div class="pw-wrap">
+    <h2>Deep Mode</h2>
+    <p>Structured journeys and reflection tracking.<br>Designed for sustained inquiry.</p>
+    <div class="pw-opts">
+      <button class="pw-opt sel" id="pw-mo" onclick="selPlan('mo')">
+        <div class="pw-opt-l"><p>Monthly</p><small>Cancel anytime</small></div>
+        <span class="pw-price">$7/mo</span>
+      </button>
+      <button class="pw-opt" id="pw-lt" onclick="selPlan('lt')">
+        <div class="pw-opt-l"><p>Lifetime</p><small>Early supporter</small></div>
+        <span class="pw-price">$29</span>
+      </button>
+    </div>
+    <button class="btn btn-primary w100" onclick="processPaywall()">Unlock Deep Mode</button>
+    <div class="pw-demo">
+      <p>No payment connected. Demo access:</p>
+      <button class="btn btn-ghost btn-sm" onclick="unlockDemo()">Unlock (Demo)</button>
+    </div>
+    <button class="btn-link mt3" style="margin-top:1.5rem;display:block" onclick="nav('landing')">Back</button>
+  </div>
+</div>
+
+<!-- REFLECTIONS -->
+<div id="screen-reflections" class="screen gone">
+  <div class="hdr">
+    <div class="flex fi g2">
+      <button class="icon-btn" onclick="nav('journey-select')">&#8592;</button>
+      <span class="hdr-label">Reflections</span>
+    </div>
+    <button class="btn-link btn-sm" onclick="exportRef()">Export</button>
+  </div>
+  <div class="ref-list" id="ref-list"></div>
+</div>
+
+<!-- PAUSE OVERLAY -->
+<div id="pause-overlay">
+  <p class="pause-text">Pause.<br>Notice what is here without commentary.</p>
+  <button class="btn btn-ghost" onclick="hidePause()">Continue</button>
+</div>
+<div class="imm-strip" onclick="exitImm()"></div>
+
+<script>
+var S={screen:'onboarding',deepMode:localStorage.getItem('dm_u')==='1',
+  journey:0,module:0,plan:'mo',imm:false,audio:false,timerInt:null,timerSecs:0,modCount:0};
+
+var J=[
+  {id:'obs',title:'The Observer Protocol',purpose:'Shift identification from content to awareness.',
+   mods:[
+    {id:'m01',title:'Watching Thought',
+     instr:'Notice the difference between being inside a thought and observing it.',
+     steps:['Let your attention settle wherever it naturally rests.',
+            'When a thought appears, observe it without following its content.',
+            'See if you can watch the thought the way you might watch clouds passing.'],
+     iact:'thoughtStream',prompt:'What did you notice in the moment you became aware of a thought?'},
+    {id:'m02',title:'Ownership Illusion',
+     instr:'Examine the assumption that thoughts belong to you.',
+     steps:['A thought appears in awareness.',
+            'Consider: did you choose to think it?',
+            'If it arrived without your consent, in what sense is it yours?'],
+     iact:'ownership',prompt:'Does the sense of "my thought" appear before or after the thought itself?'},
+    {id:'m03',title:'Where Is The Observer?',
+     instr:'Attempt to locate the one who is observing.',
+     steps:['Look at the screen.',
+            'Without pointing, find the location of the one looking.',
+            'Notice: whatever you find is also an object appearing in awareness.'],
+     iact:'locationFinder',prompt:'What happened when you tried to locate the observer?'},
+    {id:'m04',title:'The No-Center Field',
+     instr:'Notice the visual field as a whole.',
+     steps:['Soften your gaze.',
+            'Without fixing on any point, notice the entire visual field at once.',
+            'Without pointing, find the center of what is seen.'],
+     iact:'fieldExp',prompt:'Did the field have a center? What was the quality of seeing without a fixed point?'},
+    {id:'m05',title:'Emotion Without Story',
+     instr:'Notice the physical sensation of emotion, separated from its narrative.',
+     steps:['Recall a mild recent emotion.',
+            'Strip the story: who said what, what it means.',
+            'What remains? Locate it in the body. What is its texture?'],
+     iact:'sensLoc',prompt:'What was the emotion without the story?'},
+    {id:'m06',title:'Time As Appearance',
+     instr:'Examine what is actually here.',
+     steps:['Past exists as present memory.',
+            'Future exists as present anticipation.',
+            'What is here that is neither memory nor anticipation?'],
+     iact:'nowTrack',prompt:'Is now something you found, or something already always here?'},
+    {id:'m07',title:'Who Is Seeking?',
+     instr:'Turn the search back on the searcher.',
+     steps:['Notice the impulse to find something -- clarity, understanding, peace.',
+            'Ask: who is seeking?',
+            'Sit with this question. Do not answer it with a concept.'],
+     iact:'seeker',prompt:'What happened when you looked for the seeker?'}
+   ]
+  },
+  {id:'lab',title:'The Perception Lab',purpose:'Destabilize assumptions without attacking identity.',
+   mods:[
+    {id:'m08',title:'Visual Field Experiment',
+     instr:'Examine the structure of seeing itself.',
+     steps:['Hold your gaze at a single point on the screen.',
+            'Notice that the periphery is still present in awareness.',
+            'Notice it is not sharply seen, yet it exists.'],
+     iact:'fieldExp',prompt:'Where does seeing happen -- in the eyes, or somewhere else?'},
+    {id:'m09',title:'Sound Without Listener',
+     instr:'Listen without constructing a listener.',
+     steps:['Attend to whatever sounds are present.',
+            'Notice the space in which sound appears.',
+            'Ask: who is listening?'],
+     iact:'listening',prompt:'Was there a listener, or just listening?'},
+    {id:'m10',title:'Body As Sensation Field',
+     instr:'Examine the body as sensation rather than solid object.',
+     steps:['Without looking, attend to any part of the body.',
+            'Notice: you encounter not flesh but sensations -- pressure, warmth, movement.',
+            'Is the body the sensation, or a concept imposed on sensation?'],
+     iact:'bodyMap',prompt:'Did you find a body, or did you find sensation?'},
+    {id:'m11',title:'Memory As Present Thought',
+     instr:'Notice that memory does not take you to the past.',
+     steps:['Recall a memory.',
+            'Where is it happening? The past -- or here, now, as a thought?',
+            'The memory is a present mental event. The past is gone. Only now remains.'],
+     iact:'memTransform',prompt:'Did this change anything about how the past feels?'},
+    {id:'m12',title:'Agency Simulation',
+     instr:'Examine the mechanics of choice.',
+     steps:['Decide to press a button.',
+            'Notice: the decision to decide -- where did that come from?',
+            'Before the thought "I will press," was there a prior thought?'],
+     iact:'agencyTest',prompt:'Where does the sense of "I chose this" come from?'},
+    {id:'m13',title:'Identity Construction',
+     instr:'Examine how a self is assembled.',
+     steps:['Notice the roles you carry: your name, profession, relationships.',
+            'These are real and functional. But are they you, or attributes of you?',
+            'What holds them together?'],
+     iact:'idStack',prompt:'What remains if you subtract the roles?'},
+    {id:'m14',title:'Mortality Contemplation',
+     instr:'Use finitude as a clarity instrument.',
+     steps:['This body will cease.',
+            'Every interaction, object, and relationship will end.',
+            'Notice what this does to what seems important right now.'],
+     iact:'contemp',prompt:'What shifted when you sat with this directly?'},
+    {id:'m15',title:'Narrative vs Sensation',
+     instr:'Notice the difference between story and direct experience.',
+     steps:['Right now, there is raw sensation.',
+            'There is also commentary on that sensation.',
+            'Attend to the sensation directly, before the commentary arrives.'],
+     iact:'narToggle',prompt:'What is sensation without interpretation?'},
+    {id:'m16',title:'Silence Interruption',
+     instr:'Investigate the space between sounds.',
+     steps:['Notice the sound present in the room.',
+            'Now notice the silence that contains the sound.',
+            'Which came first: sound or silence?'],
+     iact:'silSpace',prompt:'Is silence the absence of sound, or is sound an interruption of silence?'},
+    {id:'m17',title:'Integration',
+     instr:'Sit with what has emerged.',
+     steps:['No new concept is introduced here.',
+            'Review what you have noticed across these modules.',
+            'What, if anything, has shifted in how experience appears?'],
+     iact:'reviewInt',prompt:'What is worth carrying forward?'}
+   ]
+  },
+  {id:'int',title:'Integration Mode',purpose:'Prevent dissociation and spiritual ego.',
+   mods:[
+    {id:'m18',title:'Functioning Without a Center',
+     instr:'Examine how ordinary activity continues without a fixed self.',
+     steps:['Notice that actions happen -- words appear, hands move, decisions occur.',
+            'These do not require a persistent center to coordinate them.',
+            'Ordinary functioning does not depend on a located self.'],
+     iact:'contemp',prompt:'What does functioning feel like when the center is not in focus?'},
+    {id:'m19',title:'Emotional Grounding',
+     instr:'Ensure that open inquiry does not create disconnection.',
+     steps:['Emotions are data, not obstacles.',
+            'They require acknowledgment, not suppression.',
+            'Sit with whatever emotion is present. Allow it without commentary.'],
+     iact:'emotPres',prompt:'What emotion is here right now? Can you stay with it without changing it?'},
+    {id:'m20',title:'Relationships Without Superiority',
+     instr:'Examine inquiry in the context of ordinary relationships.',
+     steps:['These investigations are not achievements.',
+            'They do not make you more awake than those who have not done them.',
+            'The moment insight becomes status, it becomes obstruction.'],
+     iact:'contemp',prompt:'Is there anyone with whom you carry a sense of spiritual superiority? What is that?'},
+    {id:'m21',title:'Curiosity Over Certainty',
+     instr:'Maintain inquiry as a way of being, not a conclusion.',
+     steps:['Every insight solidified into belief becomes a new limitation.',
+            'Certainty closes. Curiosity opens.',
+            'Can you hold what you have noticed lightly?'],
+     iact:'certainty',prompt:'Where have you solidified something that should remain open?'},
+    {id:'m22',title:'Ordinary Life As Practice',
+     instr:'Return to ordinary activity as the field of inquiry.',
+     steps:['The kitchen, the commute, the conversation -- these are the practice.',
+            'Nothing special is required.',
+            'Careful attention to ordinary life is sufficient.'],
+     iact:'returnSt',prompt:'What is one ordinary activity where you could bring this quality of attention?'}
+   ]
+  }
+];
+
+function nav(t){
+  var cur=document.getElementById('screen-'+S.screen);
+  var nxt=document.getElementById('screen-'+t);
+  if(!nxt)return;
+  if(cur){cur.classList.remove('active');setTimeout(function(){cur.classList.add('gone');},650);}
+  nxt.classList.remove('gone');
+  requestAnimationFrame(function(){requestAnimationFrame(function(){nxt.classList.add('active');});});
+  S.screen=t;
+  if(t==='journey-select')renderJourneys();
+  if(t==='reflections')renderReflections();
+}
+
+(function initOb(){
+  var ob1=document.getElementById('ob1');
+  var ob2=document.getElementById('ob2');
+  var cont=document.getElementById('ob-cont');
+  if(localStorage.getItem('dm_v')==='1'){
+    var sc=document.getElementById('screen-onboarding');
+    sc.classList.remove('active');sc.classList.add('gone');nav('landing');return;
+  }
+  localStorage.setItem('dm_v','1');
+  setTimeout(function(){ob1.classList.add('show');},400);
+  setTimeout(function(){
+    ob2.style.display='block';
+    requestAnimationFrame(function(){requestAnimationFrame(function(){ob2.style.opacity='1';});});
+  },5000);
+  setTimeout(function(){
+    cont.style.display='inline-flex';
+    requestAnimationFrame(function(){requestAnimationFrame(function(){cont.style.opacity='1';});});
+  },7500);
+})();
+
+function enterDeep(){S.deepMode?nav('journey-select'):nav('paywall');}
+
+function selPlan(p){
+  S.plan=p;
+  document.getElementById('pw-mo').classList.toggle('sel',p==='mo');
+  document.getElementById('pw-lt').classList.toggle('sel',p==='lt');
+}
+function processPaywall(){alert('Payment not connected. Use the demo unlock to test Deep Mode.');}
+function unlockDemo(){localStorage.setItem('dm_u','1');S.deepMode=true;nav('journey-select');}
+
+function renderJourneys(){
+  var body=document.getElementById('journey-body');body.innerHTML='';
+  J.forEach(function(j,ji){
+    var done=j.mods.filter(function(m){return localStorage.getItem('dm_d_'+m.id);}).length;
+    var dots=j.mods.map(function(m,mi){
+      var c='jd';if(mi<done)c+=' done';else if(mi===done)c+=' active';
+      return '<div class="'+c+'"></div>';
+    }).join('');
+    var card=document.createElement('div');card.className='j-card';
+    card.onclick=function(){startJourney(ji);};
+    card.innerHTML='<p class="j-label">Journey '+(ji+1)+' &middot; '+j.mods.length+' Modules</p>'
+      +'<h2>'+j.title+'</h2><p>'+j.purpose+'</p>'
+      +'<div class="j-dots">'+dots+'</div>'
+      +'<div class="j-meta"><span>'+done+'/'+j.mods.length+' complete</span>'
+      +'<span'+(done>0?' class="amber"':'')+'>'+(done>0?'In progress':'Not started')+'</span></div>';
+    body.appendChild(card);
+  });
+}
+
+function startJourney(ji){
+  S.journey=ji;var j=J[ji];var start=0;
+  for(var i=0;i<j.mods.length;i++){
+    if(!localStorage.getItem('dm_d_'+j.mods[i].id)){start=i;break;}
+    if(i===j.mods.length-1)start=0;
+  }
+  S.module=start;loadModule();
+}
+
+function loadModule(){
+  var j=J[S.journey];var m=j.mods[S.module];
+  clearInterval(S.timerInt);S.timerSecs=0;updateTimer();
+  document.body.classList.remove('immersion');S.imm=false;
+  document.getElementById('imm-btn').classList.remove('on');
+  nav('module');
+  var dots=document.getElementById('mp-dots');
+  dots.innerHTML=j.mods.map(function(_,i){
+    var c='mpd';if(i<S.module)c+=' done';if(i===S.module)c+=' active';
+    return '<div class="'+c+'"></div>';
+  }).join('');
+  document.getElementById('mod-pfill').style.width=((S.module/j.mods.length)*100)+'%';
+  var entry=document.getElementById('mod-entry');
+  var meText=document.getElementById('me-text');
+  var meBtn=document.getElementById('me-btn');
+  entry.style.opacity='1';entry.style.pointerEvents='all';
+  meText.classList.remove('show');meBtn.style.display='none';meBtn.style.opacity='0';
+  setTimeout(function(){meText.classList.add('show');},300);
+  setTimeout(function(){
+    meBtn.style.display='inline-flex';
+    requestAnimationFrame(function(){requestAnimationFrame(function(){meBtn.style.opacity='1';});});
+  },3200);
+  renderModContent(m);
+}
+
+function beginModule(){
+  var entry=document.getElementById('mod-entry');
+  entry.style.opacity='0';entry.style.pointerEvents='none';
+  S.timerSecs=0;
+  S.timerInt=setInterval(function(){S.timerSecs++;updateTimer();},1000);
+  S.modCount++;
+  if(S.modCount>0&&S.modCount%3===0)setTimeout(showPause,1000);
+}
+
+function updateTimer(){
+  var m=Math.floor(S.timerSecs/60),s=S.timerSecs%60;
+  document.getElementById('mod-timer').textContent=m+':'+(s<10?'0':'')+s;
+}
+
+function renderModContent(m){
+  var j=J[S.journey];
+  var steps=m.steps.map(function(s){return '<li>'+s+'</li>';}).join('');
+  var saved=getSavedRef(m.id);
+  var isLast=S.module===j.mods.length-1;
+  document.getElementById('mod-content').innerHTML=
+    '<p style="font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:1.5rem">'+j.title+'</p>'
+    +'<h1 class="mod-title">'+m.title+'</h1>'
+    +'<p class="mod-instr">'+m.instr+'</p>'
+    +'<ul class="mod-steps">'+steps+'</ul>'
+    +'<div class="mod-div"></div>'
+    +'<div class="iact"><p class="iact-lbl">Experiment</p>'+buildIact(m.iact,m.id)+'</div>'
+    +'<div class="mod-div"></div>'
+    +'<div><p class="ref-lbl">Reflection</p>'
+    +'<p class="ref-prompt">'+m.prompt+'</p>'
+    +'<textarea class="ref-area" id="ra-'+m.id+'" placeholder="Write here, or simply sit.">'+saved+'</textarea>'
+    +'<div class="ref-row">'
+    +'<button class="btn btn-ghost btn-sm" onclick="saveRef(\''+m.id+'\')">Save</button>'
+    +'<span class="ref-saved" id="rs-'+m.id+'">Saved.</span>'
+    +'</div></div>'
+    +'<div class="mod-foot">'
+    +'<span class="mod-continue-txt">Continue when ready.</span>'
+    +'<button class="btn btn-primary" onclick="nextMod()">'+(isLast?'Complete Journey':'Next Module')+'</button>'
+    +'<button class="btn-link" style="display:block;margin:1rem auto 0" onclick="backToJourneys()">Back to Journeys</button>'
+    +'</div>';
+  document.getElementById('mod-body').scrollTop=0;
+  initIact(m.iact,m.id);
+}
+
+function nextMod(){
+  var j=J[S.journey];
+  localStorage.setItem('dm_d_'+j.mods[S.module].id,'1');
+  clearInterval(S.timerInt);
+  if(S.module<j.mods.length-1){S.module++;loadModule();}else backToJourneys();
+}
+
+function backToJourneys(){clearInterval(S.timerInt);document.body.classList.remove('immersion');nav('journey-select');}
+
+function buildIact(type,mid){
+  if(type==='thoughtStream')return '<div class="thought-field" id="tf-'+mid+'"></div><div class="t-row"><input class="t-input" id="ti-'+mid+'" placeholder="Type a thought, press Enter" onkeydown="submitThought(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitThought({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><p class="dim mt2" style="font-size:.8125rem">Watch it drift. Notice who is watching.</p>';
+  if(type==='ownership')return '<p class="own-q">Think of the last thought you had before reading this sentence.</p><div class="own-opts"><button class="own-opt" onclick="selectOwn(this,\'mine\')">It felt like mine</button><button class="own-opt" onclick="selectOwn(this,\'appeared\')">It simply appeared</button></div><p class="own-resp" id="ownr-'+mid+'"></p>';
+  if(type==='locationFinder')return '<p class="dim mb2" style="font-size:.875rem">Click on the exact location of the one who is looking.</p><div class="loc-canvas" onclick="handleLoc(event,this)" id="lc-'+mid+'"><div class="loc-grid"></div><div class="loc-marker" id="lm-'+mid+'"></div></div><div class="loc-resp" id="lr-'+mid+'"></div>';
+  if(type==='fieldExp')return '<p class="dim mb2" style="font-size:.875rem">Click anywhere to locate the center of the visual field.</p><div class="field-area" onclick="handleField(\''+mid+\')" id="fa-'+mid+'"><div class="field-dot"></div><div class="field-ring"></div><div class="field-ring fr2"></div><div class="field-ring fr3"></div></div><div class="field-resp" id="fr-'+mid+'"></div>';
+  if(type==='sensLoc')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation lives in the body.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div><div class="mt3"><div class="sens-labels"><span>Faint</span><span>Intense</span></div><input class="sens-slider" type="range" min="0" max="10" value="0" oninput="this.nextElementSibling.textContent=\'Intensity: \'+this.value"><p class="dim" style="font-size:.8125rem;margin-top:.25rem">Intensity: 0</p></div>';
+  if(type==='nowTrack')return '<div class="now-num" id="now-'+mid+'">0</div><p class="now-lbl">Present moments noticed</p><button class="btn btn-ghost btn-sm now-btn" onclick="tickNow(\''+mid+'\')">Now</button><p class="dim mt2" style="font-size:.8125rem;text-align:center">Each press: a deliberate return to this moment.</p>';
+  if(type==='seeker')return '<p class="dim mb2" style="font-size:.875rem">Who is seeking? Type your answer.</p><input class="sk-input" id="ski-'+mid+'" placeholder="The seeker is..." onkeydown="submitSeeker(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="submitSeeker({key:\'Enter\'},\''+mid+'\')">Inquire</button><div class="sk-resp" id="skr-'+mid+'"></div>';
+  if(type==='listening')return '<p class="dim mb2" style="font-size:.875rem">Hold the button while listening without naming what you hear.</p><div class="sil-track"><div class="sil-fill" id="slf-'+mid+'"></div></div><p class="sil-count" id="slc-'+mid+'">0 seconds</p><button class="btn btn-ghost btn-sm mt2 w100" onmousedown="startListen(\''+mid+'\')" ontouchstart="startListen(\''+mid+'\')" onmouseup="stopListen()" ontouchend="stopListen()" onmouseleave="stopListen()">Hold to listen</button>';
+  if(type==='bodyMap')return '<p class="dim mb2" style="font-size:.875rem">Touch a region. Notice what is actually there.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
+  if(type==='memTransform')return '<p class="dim mb2" style="font-size:.875rem">Type a memory, then press Enter.</p><input class="mem-input" id="memi-'+mid+'" placeholder="A memory..." onkeydown="transformMem(event,\''+mid+'\')"><div class="mem-out" id="memo-'+mid+'"></div>';
+  if(type==='agencyTest')return '<p class="dim mb2" style="font-size:.875rem">Press when you decide to. Notice what happens before the press.</p><button class="agency-btn" onclick="logAgency(\''+mid+'\')">I am pressing this now</button><div class="agency-log" id="al-'+mid+'"></div>';
+  if(type==='idStack')return '<div class="id-layers" id="il-'+mid+'">'+['Your name','Your occupation','Your relationships','Your beliefs','Your history'].map(function(l){return '<div class="id-layer"><span class="id-name">'+l+'</span><button class="id-rm" onclick="rmLayer(this,\''+mid+'\')">Remove</button></div>';}).join('')+'</div><div class="id-reveal mt2" id="idr-'+mid+'">What remains when the attributes are subtracted?</div>';
+  if(type==='contemp')return '<div class="contemp"><p>Sit with this for a moment.<br>No analysis required.</p></div>';
+  if(type==='narToggle')return '<div class="toggle-pair"><button class="t-opt on" id="nts-'+mid+'" onclick="setNar(\'story\',\''+mid+'\')">Story</button><button class="t-opt" id="ntx-'+mid+'" onclick="setNar(\'sens\',\''+mid+'\')">Sensation</button></div><p class="t-desc dim" id="ntd-'+mid+'">Story: "I felt anxious because of what she said, and now I am worried about tomorrow."</p>';
+  if(type==='silSpace')return '<div class="toggle-pair"><button class="t-opt on" id="sss-'+mid+'" onclick="setSil(\'sound\',\''+mid+'\')">Sound</button><button class="t-opt" id="ssl-'+mid+'" onclick="setSil(\'sil\',\''+mid+'\')">Silence</button></div><p class="t-desc dim" id="ssd-'+mid+'">Notice: right now, there is sound. And it appears within something.</p>';
+  if(type==='reviewInt')return '<div>'+['Where did you expect to find the observer?','What was the emotion without the story?','What remained when the layers were removed?','What shifted, if anything?'].map(function(q){return '<p class="review-q">'+q+'</p>';}).join('')+'</div><p class="dim mt3" style="font-size:.8125rem;font-style:italic">Use the reflection field below to write freely.</p>';
+  if(type==='emotPres')return '<p class="dim mb2" style="font-size:.875rem">Name what is here, without commentary.</p><div class="body-map">'+['Calm','Uneasy','Tender','Heavy','Alert','Open'].map(function(e){return '<div class="bz" onclick="selEmotion(this,\''+mid+'\')">'+e+'</div>';}).join('')+'</div><div class="bz-note show" id="bzn-'+mid+'">Select what is present. Then stay with it.</div>';
+  if(type==='certainty')return '<p class="dim mb2" style="font-size:.875rem">What have you concluded from these modules?</p><input class="sk-input" id="cci-'+mid+'" placeholder="I am now certain that..." onkeydown="checkCert(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="checkCert({key:\'Enter\'},\''+mid+'\')">Examine</button><div class="sk-resp" id="ccr-'+mid+'"></div>';
+  if(type==='returnSt')return '<div class="return-text">Nothing special is required.<br><br>The next ordinary moment<br>is the practice.</div>';
+  return '<p class="dim">Sit quietly for a few moments.</p>';
+}
+
+function initIact(type,mid){
+  if(type==='narToggle')setNar('story',mid);
+  if(type==='silSpace')setSil('sound',mid);
+}
+
+function submitThought(e,mid){
+  if(e.key!=='Enter')return;
+  var inp=document.getElementById('ti-'+mid);
+  var txt=inp.value.trim();if(!txt)return;inp.value='';
+  var field=document.getElementById('tf-'+mid);
+  var b=document.createElement('div');b.className='t-bubble';
+  var lp=15+Math.random()*60;b.style.left=lp+'%';b.style.bottom='8px';b.textContent=txt;
+  field.appendChild(b);
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    b.style.bottom='calc(100% + 8px)';b.style.opacity='0.6';
+  });});
+  setTimeout(function(){b.style.opacity='0';},4500);
+  setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b);},5500);
+}
+
+function selectOwn(btn,choice){
+  btn.closest('.own-opts').querySelectorAll('.own-opt').forEach(function(b){b.classList.remove('chosen');});
+  btn.classList.add('chosen');
+  var r=btn.closest('.iact').querySelector('.own-resp');
+  if(r){r.textContent=choice==='mine'?'Even so -- where did the thought come from before it felt like yours?':'If it appeared without being chosen, who was it that received it?';r.classList.add('show');}
+}
+
+var LOC_R=['That location is also an object in awareness. Where is the awareness of it?',
+  'You found something. But that something can also be observed. What observes it?',
+  'You are looking for the looker. Does the looker have a location?',
+  'Whatever you found -- the awareness of it was already present. Can awareness be located?'];
+var locC=0;
+function handleLoc(e,canvas){
+  var rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
+  var mid=canvas.id.replace('lc-','');
+  var mk=document.getElementById('lm-'+mid),r=document.getElementById('lr-'+mid);
+  if(mk){mk.style.left=x+'px';mk.style.top=y+'px';mk.classList.add('show');}
+  if(r){r.textContent=LOC_R[locC%LOC_R.length];r.classList.add('show');locC++;}
+}
+function handleExpLoc(e,canvas){
+  var rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
+  var mk=document.getElementById('explm'),r=document.getElementById('explr');
+  if(mk){mk.style.left=x+'px';mk.style.top=y+'px';mk.classList.add('show');}
+  if(r){r.textContent=LOC_R[locC%LOC_R.length];r.classList.add('show');locC++;}
+}
+
+var FIELD_R=['That point is also an object within the field. The field is held by something prior to any center.',
+  'The periphery and center are both in awareness. What holds them both?',
+  'You are looking for the edge of seeing. Does seeing have an edge?'];
+var fieldC=0;
+function handleField(mid){
+  var r=document.getElementById('fr-'+mid);
+  if(r){r.textContent=FIELD_R[fieldC%FIELD_R.length];r.classList.add('show');fieldC++;}
+}
+
+function selZone(el,mid){
+  el.closest('.body-map').querySelectorAll('.bz').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+  var note=document.getElementById('bzn-'+mid);
+  if(note){note.textContent='Notice: is there a solid '+el.textContent.toLowerCase()+', or is there sensation?';note.classList.add('show');}
+}
+function selEmotion(el,mid){
+  el.closest('.body-map').querySelectorAll('.bz').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+  var note=document.getElementById('bzn-'+mid);
+  if(note){note.textContent=el.textContent+' is present. Stay with it without trying to change it.';note.classList.add('show');}
+}
+
+function tickNow(mid){var el=document.getElementById('now-'+mid);if(!el)return;el.textContent=parseInt(el.textContent)+1;}
+
+var SK_R=['And who is the one saying that?','Can that seeker find itself?',
+  'Look for the one who just offered that answer.',
+  'Before that thought, was there a seeker?',
+  'Is the seeker something you find -- or something you assume?'];
+var skC=0;
+function submitSeeker(e,mid){
+  if(e.key!=='Enter')return;
+  var inp=document.getElementById('ski-'+mid);if(!inp||!inp.value.trim())return;
+  inp.value='';
+  var r=document.getElementById('skr-'+mid);
+  if(r){r.textContent=SK_R[skC%SK_R.length];r.classList.add('show');skC++;}
+}
+
+var listenT=null,listenS=0;
+function startListen(mid){
+  listenS=0;
+  var fill=document.getElementById('slf-'+mid),count=document.getElementById('slc-'+mid);
+  listenT=setInterval(function(){
+    listenS++;
+    if(count)count.textContent=listenS+(listenS===1?' second':' seconds');
+    if(fill)fill.style.width=Math.min((listenS/120)*100,100)+'%';
+  },1000);
+}
+function stopListen(){clearInterval(listenT);}
+
+function transformMem(e,mid){
+  if(e.key!=='Enter')return;
+  var inp=document.getElementById('memi-'+mid);if(!inp||!inp.value.trim())return;
+  var txt=inp.value.trim();
+  var out=document.getElementById('memo-'+mid);
+  if(out){out.textContent='"'+txt+'" -- this is a thought happening now. The past it describes is gone. Only this present mental event remains.';out.classList.add('show');}
+}
+
+var agencyC=0;
+var AG_R=['Notice: before the press, something moved. What was that?',
+  'The decision arose. Who decided to decide?',
+  'Action occurred. Was there a clear moment of choosing?',
+  'Where exactly does "I" appear in this sequence?'];
+function logAgency(mid){
+  agencyC++;
+  var log=document.getElementById('al-'+mid);if(!log)return;
+  var e=document.createElement('div');e.className='ag-e';
+  e.textContent=AG_R[(agencyC-1)%AG_R.length];log.insertBefore(e,log.firstChild);
+}
+
+function rmLayer(btn,mid){
+  btn.closest('.id-layer').classList.add('gone');
+  var layers=document.getElementById('il-'+mid);
+  var rev=document.getElementById('idr-'+mid);
+  if(layers&&rev&&layers.querySelectorAll('.id-layer:not(.gone)').length===0)rev.classList.add('show');
+}
+function expRmLayer(btn){
+  btn.closest('.id-layer').classList.add('gone');
+  var layers=document.getElementById('exp-id');
+  var rev=document.getElementById('exp-id-rev');
+  if(layers&&rev&&layers.querySelectorAll('.id-layer:not(.gone)').length===0)rev.classList.add('show');
+}
+
+function setNar(mode,mid){
+  var s=document.getElementById('nts-'+mid),x=document.getElementById('ntx-'+mid),d=document.getElementById('ntd-'+mid);
+  if(s)s.classList.toggle('on',mode==='story');
+  if(x)x.classList.toggle('on',mode==='sens');
+  if(d)d.textContent=mode==='story'?'Story: "I felt anxious because of what she said, and now I am worried about tomorrow."':'Sensation: tightness in the chest. Shallow breath. Heat around the eyes. Present, without interpretation.';
+}
+function setSil(mode,mid){
+  var s=document.getElementById('sss-'+mid),l=document.getElementById('ssl-'+mid),d=document.getElementById('ssd-'+mid);
+  if(s)s.classList.toggle('on',mode==='sound');
+  if(l)l.classList.toggle('on',mode==='sil');
+  if(d)d.textContent=mode==='sound'?'Notice: right now, there is sound. And it appears within something.':'Silence is here between sounds. It was here before the sound. It remains after.';
+}
+
+var CERT_R=['Hold that conclusion lightly. Could the opposite also have something true in it?',
+  'Certainty closes inquiry. What would remain if you held this as a question instead?',
+  'Who is certain? Can you find them?',
+  'Is this a realization -- or a new belief to protect?'];
+var certC=0;
+function checkCert(e,mid){
+  if(e.key!=='Enter')return;
+  var inp=document.getElementById('cci-'+mid);if(!inp||!inp.value.trim())return;
+  inp.value='';
+  var r=document.getElementById('ccr-'+mid);
+  if(r){r.textContent=CERT_R[certC%CERT_R.length];r.classList.add('show');certC++;}
+}
+
+var goldMode=false;
+function toggleGold(){
+  goldMode=!goldMode;
+  document.getElementById('gold-state').textContent=goldMode?'The substance -- gold -- is one. The forms are temporary appearances of the same underlying reality.':'The forms -- rings, necklaces, bracelets -- appear distinct and separate.';
+  document.getElementById('gold-btn').textContent=goldMode?'Observe forms':'Observe substance';
+}
+function setSky(mode){
+  document.getElementById('sky-state').textContent=mode==='in'?'Participating: you are inside the thought, moved by it, identified with it.':'Witnessing: the thought passes through awareness the way a cloud passes through sky. The sky is not the cloud.';
+}
+
+function saveRef(mid){
+  var area=document.getElementById('ra-'+mid);if(!area)return;
+  var txt=area.value.trim();if(!txt)return;
+  var j=J[S.journey],m=j?j.mods[S.module]:null;
+  localStorage.setItem('dm_r_'+mid,JSON.stringify({text:txt,title:m?m.title:mid,date:new Date().toLocaleDateString()}));
+  var s=document.getElementById('rs-'+mid);
+  if(s){s.classList.add('show');setTimeout(function(){s.classList.remove('show');},2500);}
+}
+function getSavedRef(mid){
+  try{var d=JSON.parse(localStorage.getItem('dm_r_'+mid));return d?d.text:'';}catch{return '';}
+}
+function renderReflections(){
+  var body=document.getElementById('ref-list');body.innerHTML='';
+  var entries=[];
+  for(var i=0;i<localStorage.length;i++){
+    var k=localStorage.key(i);if(!k||!k.startsWith('dm_r_'))continue;
+    try{var d=JSON.parse(localStorage.getItem(k));if(d&&d.text)entries.push(d);}catch{}
+  }
+  if(!entries.length){body.innerHTML='<div class="empty-state"><span style="font-size:2rem">&#9711;</span><p>No reflections saved yet.</p></div>';return;}
+  entries.forEach(function(e){
+    var div=document.createElement('div');div.className='ref-entry';
+    div.innerHTML='<p class="re-title">'+(e.title||'Reflection')+'</p><p class="re-text">'+e.text+'</p><p class="re-date">'+(e.date||'')+'</p>';
+    body.appendChild(div);
+  });
+}
+function exportRef(){
+  var lines=[];
+  for(var i=0;i<localStorage.length;i++){
+    var k=localStorage.key(i);if(!k||!k.startsWith('dm_r_'))continue;
+    try{var d=JSON.parse(localStorage.getItem(k));lines.push('## '+d.title+'\n'+d.date+'\n\n'+d.text+'\n\n---\n');}catch{}
+  }
+  if(!lines.length){alert('No reflections to export.');return;}
+  var blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='deep-mode-reflections.txt';a.click();
+}
+
+function toggleImm(){S.imm=!S.imm;document.body.classList.toggle('immersion',S.imm);document.getElementById('imm-btn').classList.toggle('on',S.imm);}
+function exitImm(){if(!S.imm)return;S.imm=false;document.body.classList.remove('immersion');document.getElementById('imm-btn').classList.remove('on');}
+function toggleAudio(){S.audio=!S.audio;document.getElementById('audio-btn').classList.toggle('on',S.audio);}
+function showPause(){document.getElementById('pause-overlay').classList.add('on');}
+function hidePause(){document.getElementById('pause-overlay').classList.remove('on');}
+
+document.addEventListener('DOMContentLoaded',function(){S.deepMode=localStorage.getItem('dm_u')==='1';});
+</script>
 </body>
 </html>
