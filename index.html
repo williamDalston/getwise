@@ -208,6 +208,10 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 /* IMMERSION */
 body.immersion #mod-hdr{opacity:0;pointer-events:none}
 body.immersion #ground-btn{opacity:.18;pointer-events:all}
+/* SIMPLIFY */
+body.simplify .iact,body.simplify .ref-prompt,body.simplify .ref-area,
+body.simplify .ref-row,body.simplify .ref-saved,body.simplify .mp-dots,
+body.simplify .mod-continue-txt{display:none}
 .imm-strip{position:fixed;top:0;left:0;right:0;height:4px;z-index:300;cursor:pointer}
 /* INTERACTIONS */
 .thought-field{min-height:140px;position:relative;overflow:hidden;
@@ -410,6 +414,7 @@ body.immersion #ground-btn{opacity:.18;pointer-events:all}
       <li>Not self-improvement</li>
       <li>An environment for careful observation</li>
     </ul>
+    <p style="font-size:.875rem;color:var(--dim);opacity:.55;margin-top:1.5rem;line-height:1.7">If this feels destabilizing at any point, stop and orient to your physical surroundings.</p>
   </section>
   <section class="land-sec">
     <p class="land-sec-lbl">Explore through</p>
@@ -526,6 +531,7 @@ body.immersion #ground-btn{opacity:.18;pointer-events:all}
         <button class="icon-btn" id="audio-btn" onclick="toggleAudio()" title="Audio">&#9834;</button>
         <button class="icon-btn" id="breath-btn" onclick="toggleBreath()" title="Breath pacer">&#9675;</button>
         <button class="icon-btn" id="ground-btn" onclick="showGround()" title="Ground">&#8635;</button>
+        <button class="icon-btn" id="simp-btn" onclick="toggleSimplify()" title="Simplify">&#8729;</button>
         <button class="icon-btn" id="imm-btn" onclick="toggleImm()" title="Immersion">&#8865;</button>
       </div>
     </div>
@@ -589,7 +595,7 @@ body.immersion #ground-btn{opacity:.18;pointer-events:all}
 
 <script>
 var S={screen:'onboarding',deepMode:true,
-  journey:0,module:0,plan:'mo',imm:false,audio:false,breath:false,timerInt:null,timerSecs:0,modCount:0};
+  journey:0,module:0,plan:'mo',imm:false,audio:false,breath:false,simp:false,timerInt:null,timerSecs:0,modCount:0};
 
 var J=[
   {id:'obs',title:'The Observer Protocol',purpose:'Examine the relationship between content and awareness.',
@@ -909,7 +915,7 @@ function nextMod(){
   }else backToJourneys();
 }
 
-function backToJourneys(){clearInterval(S.timerInt);document.body.classList.remove('immersion');resetBreath();if(S.audio){toggleAudio();}nav('journey-select');}
+function backToJourneys(){clearInterval(S.timerInt);document.body.classList.remove('immersion');document.body.classList.remove('simplify');resetBreath();if(S.audio){toggleAudio();}S.simp=false;nav('journey-select');}
 
 function buildIact(type,mid){
   if(type==='thoughtStream')return '<div class="thought-field" id="tf-'+mid+'"></div><div class="t-row"><input class="t-input" id="ti-'+mid+'" placeholder="Type a thought, press Enter" onkeydown="submitThought(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitThought({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><p class="dim mt2" style="font-size:.8125rem">Watch it drift.</p>';
@@ -961,10 +967,10 @@ function selectOwn(btn,choice){
   if(r){r.textContent=choice==='mine'?'What came first — the thought or the label?':'What came first — the thought or the label?';r.classList.add('show');}
 }
 
-var LOC_R=['That location is also an object in awareness. Where is the awareness of it?',
-  'You found something. But that something can also be observed. What observes it?',
+var LOC_R=['Could that location itself be an object? Where is the awareness of it?',
+  'Something was found. Can that something also be observed?',
   'You are looking for the looker. Does the looker have a location?',
-  'Whatever you found -- the awareness of it was already present. Can awareness be located?'];
+  'Can awareness be located?'];
 var locC=0;
 function handleLoc(e,canvas){
   var rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
@@ -1151,6 +1157,7 @@ function exportRef(){
 }
 
 function toggleImm(){S.imm=!S.imm;document.body.classList.toggle('immersion',S.imm);document.getElementById('imm-btn').classList.toggle('on',S.imm);}
+function toggleSimplify(){S.simp=!S.simp;document.body.classList.toggle('simplify',S.simp);document.getElementById('simp-btn').classList.toggle('on',S.simp);}
 function exitImm(){if(!S.imm)return;S.imm=false;document.body.classList.remove('immersion');document.getElementById('imm-btn').classList.remove('on');}
 
 /* AMBIENT AUDIO */
