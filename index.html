@@ -1655,7 +1655,7 @@ function toggleAudio(){
 /* BREATH PACER */
 var _breathToneT=null,_breathPhase=0;
 function _breathBeep(){
-  if(!AC||!S.audio)return;
+  if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();
   var freq=_breathPhase===0?396:330;_breathPhase=(_breathPhase+1)%2;
   var o=AC.createOscillator(),g=AC.createGain();
   o.connect(g);g.connect(AC.destination);
@@ -1667,6 +1667,7 @@ function _breathBeep(){
 }
 function startBreathTone(){
   if(_breathToneT)return;
+  if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();
   _breathPhase=0;
   _breathToneT=setInterval(_breathBeep,5000);
 }
