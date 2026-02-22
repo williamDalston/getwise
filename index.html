@@ -138,7 +138,8 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 #screen-module{position:fixed;inset:0}
 #mod-entry{position:absolute;inset:0;background:#0B0C0F;
   display:flex;align-items:center;justify-content:center;
-  z-index:20;transition:opacity 800ms ease;text-align:center;padding:2rem}
+  z-index:20;transition:opacity 800ms ease;text-align:center;padding:2rem;
+  opacity:1;pointer-events:all}
 .me-text{font-size:clamp(1.25rem,3vw,1.75rem);font-weight:300;color:var(--text);
   opacity:0;transition:opacity 1000ms ease;line-height:1.6;margin-bottom:2rem}
 .me-text.show{opacity:1}
@@ -156,7 +157,8 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 #mod-body{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;-webkit-overflow-scrolling:touch}
 #mod-body::-webkit-scrollbar{width:2px}
 #mod-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.04)}
-#mod-content{max-width:600px;margin:0 auto;padding:3.5rem 1.5rem 8rem}
+#mod-content{max-width:600px;margin:0 auto;padding:3.5rem 1.5rem 8rem;opacity:0;transition:opacity 600ms ease}
+#mod-content.show{opacity:1}
 .mod-title{font-size:clamp(2rem,5vw,3rem);font-weight:300;letter-spacing:-.02em;
   color:var(--text);margin-bottom:1.25rem;line-height:1.15}
 .mod-instr{font-size:1.125rem;color:var(--dim);margin-bottom:2.5rem;line-height:1.75}
@@ -896,6 +898,10 @@ function loadModule(){
   var entry=document.getElementById('mod-entry');
   var meText=document.getElementById('me-text');
   var meBtn=document.getElementById('me-btn');
+  var modContent=document.getElementById('mod-content');
+  modContent.classList.remove('show');
+  modContent.style.opacity='0';
+  modContent.innerHTML='';
   entry.style.opacity='1';entry.style.pointerEvents='all';
   meText.classList.remove('show');meBtn.style.display='none';meBtn.style.opacity='0';
   setTimeout(function(){meText.classList.add('show');},300);
@@ -903,12 +909,17 @@ function loadModule(){
     meBtn.style.display='inline-flex';
     requestAnimationFrame(function(){requestAnimationFrame(function(){meBtn.style.opacity='1';});});
   },1800);
-  renderModContent(m);
+  setTimeout(function(){renderModContent(m);},100);
 }
 
 function beginModule(){
   var entry=document.getElementById('mod-entry');
+  var modContent=document.getElementById('mod-content');
   entry.style.opacity='0';entry.style.pointerEvents='none';
+  setTimeout(function(){
+    modContent.classList.add('show');
+    modContent.style.opacity='1';
+  },400);
   S.timerSecs=0;
   S.timerInt=setInterval(function(){S.timerSecs++;updateTimer();},1000);
   S.modCount++;
@@ -956,6 +967,9 @@ function nextMod(){
   clearInterval(S.timerInt);
   if(S.module<j.mods.length-1){
     var body=document.getElementById('mod-body');
+    var modContent=document.getElementById('mod-content');
+    modContent.classList.remove('show');
+    modContent.style.opacity='0';
     body.style.transition='opacity 400ms ease';body.style.opacity='0';
     setTimeout(function(){body.style.opacity='1';S.module++;loadModule();},1500);
   }else backToJourneys();
@@ -972,7 +986,7 @@ function buildIact(type,mid){
   if(type==='sensLoc')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation lives in the body.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div><div class="mt3"><div class="sens-labels"><span>Faint</span><span>Intense</span></div><input class="sens-slider" type="range" min="0" max="10" value="0" oninput="this.nextElementSibling.textContent=\'Intensity: \'+this.value"><p class="dim" style="font-size:.8125rem;margin-top:.25rem">Intensity: 0</p></div>';
   if(type==='nowTrack')return '<div class="now-num" id="now-'+mid+'">0</div><p class="now-lbl">Present moments noticed</p><button class="btn btn-ghost btn-sm now-btn" onclick="tickNow(\''+mid+'\')">Now</button><p class="dim mt2" style="font-size:.8125rem;text-align:center">Each press: a deliberate return to this moment.</p>';
   if(type==='seeker')return '<p class="dim mb2" style="font-size:.875rem">Who is seeking? Type your answer.</p><input class="sk-input" id="ski-'+mid+'" placeholder="The seeker is..." onkeydown="submitSeeker(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="submitSeeker({key:\'Enter\'},\''+mid+'\')">Inquire</button><div class="sk-resp" id="skr-'+mid+'"></div>';
-  if(type==='listening')return '<p class="dim mb2" style="font-size:.875rem">Hold the button while listening without naming what you hear.</p><div class="sil-track"><div class="sil-fill" id="slf-'+mid+'"></div></div><p class="sil-count" id="slc-'+mid+'">0 seconds</p><button class="btn btn-ghost btn-sm mt2 w100" onmousedown="startListen(\''+mid+'\')" ontouchstart="startListen(\''+mid+'\')" onmouseup="stopListen()" ontouchend="stopListen()" onmouseleave="stopListen()">Hold to listen</button>';
+  if(type==='listening')return '<p class="dim mb2" style="font-size:.875rem">Hold while listening to whatever sounds exist in this space right now. Don\'t name them.</p><div class="sil-track"><div class="sil-fill" id="slf-'+mid+'"></div></div><p class="sil-count" id="slc-'+mid+'">0 seconds</p><button class="btn btn-ghost btn-sm mt2 w100" onmousedown="startListen(\''+mid+'\')" ontouchstart="startListen(\''+mid+'\')" onmouseup="stopListen()" ontouchend="stopListen()" onmouseleave="stopListen()">Hold to listen</button>';
   if(type==='bodyMap')return '<p class="dim mb2" style="font-size:.875rem">Touch a region. Notice what is actually there.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
   if(type==='memTransform')return '<p class="dim mb2" style="font-size:.875rem">Type a memory, then press Enter.</p><input class="mem-input" id="memi-'+mid+'" placeholder="A memory..." onkeydown="transformMem(event,\''+mid+'\')"><div class="mem-out" id="memo-'+mid+'"></div>';
   if(type==='agencyTest')return '<p class="dim mb2" style="font-size:.875rem">Press when you decide to. Notice what happens before the press.</p><button class="agency-btn" onclick="logAgency(\''+mid+'\')">I am pressing this now</button><div class="agency-log" id="al-'+mid+'"></div>';
