@@ -1178,7 +1178,7 @@ function nextMod(){
     modContent.classList.remove('show');
     modContent.style.opacity='0';
     body.style.transition='opacity 400ms ease';body.style.opacity='0';
-    if(S.modCount%3===0){
+    if(S.modCount%5===0){
       S._pendingLoad=true;
       setTimeout(function(){S.module++;showPause();},800);
     }else{
