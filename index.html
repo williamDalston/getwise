@@ -43,6 +43,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;
 .screen{position:fixed;inset:0;display:flex;flex-direction:column;
   opacity:0;pointer-events:none;transition:opacity 600ms ease}
 .screen.active{opacity:1;pointer-events:all}
+#screen-onboarding{opacity:1;pointer-events:all;transition:opacity 300ms ease}
 .screen.gone{display:none}
 .scr{overflow-y:auto;overflow-x:hidden}
 .scr::-webkit-scrollbar{width:2px}
@@ -81,7 +82,7 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 .w100{width:100%}.tc{text-align:center}
 .amber{color:var(--amber)}.dim{color:var(--dim)}
 /* ONBOARDING */
-#screen-onboarding{background:#0B0C0F;align-items:center;justify-content:center;text-align:center}
+#screen-onboarding{background:#0B0C0F;align-items:center;justify-content:center;text-align:center;opacity:1;pointer-events:all;transition:opacity 300ms ease}
 .ob-wrap{max-width:520px;padding:2rem}
 .ob-line{font-size:clamp(1.25rem,3vw,1.75rem);font-weight:300;color:var(--text);
   opacity:0;transition:opacity 1200ms ease;line-height:1.6;margin-bottom:1.5rem}
@@ -812,7 +813,7 @@ function nav(t){
     sc.classList.remove('active');sc.classList.add('gone');nav('landing');return;
   }
   localStorage.setItem('dm_v','1');
-  setTimeout(function(){ob1.classList.add('show');},400);
+  setTimeout(function(){ob1.classList.add('show');},200);
   setTimeout(function(){
     ob2.style.display='block';
     requestAnimationFrame(function(){requestAnimationFrame(function(){ob2.style.opacity='1';});});
@@ -838,7 +839,7 @@ function replayOnboarding(){
   ob1.classList.remove('show');ob2.style.opacity='0';ob2.style.display='none';
   cont.style.opacity='0';cont.style.display='none';
   nav('onboarding');
-  setTimeout(function(){ob1.classList.add('show');},400);
+  setTimeout(function(){ob1.classList.add('show');},200);
   setTimeout(function(){ob2.style.display='block';requestAnimationFrame(function(){requestAnimationFrame(function(){ob2.style.opacity='1';});});},5000);
   setTimeout(function(){cont.style.display='inline-flex';requestAnimationFrame(function(){requestAnimationFrame(function(){cont.style.opacity='1';});});},7500);
 }
@@ -1007,7 +1008,7 @@ function buildIact(type,mid){
   if(type==='seeker')return '<p class="dim mb2" style="font-size:.875rem">Who is seeking? Type your answer.</p><input class="sk-input" id="ski-'+mid+'" placeholder="The seeker is..." onkeydown="submitSeeker(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="submitSeeker({key:\'Enter\'},\''+mid+'\')">Inquire</button><div class="sk-resp" id="skr-'+mid+'"></div>';
   if(type==='listening')return '<p class="dim mb2" style="font-size:.875rem">Hold while listening to whatever sounds exist in this space right now. Don\'t name them.</p><div class="sil-track"><div class="sil-fill" id="slf-'+mid+'"></div></div><p class="sil-count" id="slc-'+mid+'">0 seconds</p><button class="btn btn-ghost btn-sm mt2 w100" onmousedown="startListen(\''+mid+'\')" ontouchstart="startListen(\''+mid+'\')" onmouseup="stopListen()" ontouchend="stopListen()" onmouseleave="stopListen()">Hold to listen</button>';
   if(type==='bodyMap')return '<p class="dim mb2" style="font-size:.875rem">Touch a region. Notice what is actually there.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
-  if(type==='memTransform')return '<p class="dim mb2" style="font-size:.875rem">Type a memory.</p><input class="mem-input" id="memi-'+mid+'" placeholder="A memory..." onkeydown="transformMem(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="transformMem({key:'Enter'},\''+mid+'\')">&#8594;</button><div class="mem-out" id="memo-'+mid+'"></div>';
+  if(type==='memTransform')return '<p class="dim mb2" style="font-size:.875rem">Type a memory.</p><input class="mem-input" id="memi-'+mid+'" placeholder="A memory..." onkeydown="transformMem(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="transformMem({key:\'Enter\'},\''+mid+'\')">&#8594;</button><div class="mem-out" id="memo-'+mid+'"></div>';
   if(type==='agencyTest')return '<p class="dim mb2" style="font-size:.875rem">Press when you decide to. Notice what happens before the press.</p><button class="agency-btn" onclick="logAgency(\''+mid+'\')">I am pressing this now</button><div class="agency-log" id="al-'+mid+'"></div>';
   if(type==='idStack')return '<div class="id-layers" id="il-'+mid+'">'+['Your name','Your occupation','Your relationships','Your beliefs','Your history'].map(function(l){return '<div class="id-layer"><span class="id-name">'+l+'</span><button class="id-rm" onclick="rmLayer(this,\''+mid+'\')">Remove</button></div>';}).join('')+'</div><div class="id-reveal mt2" id="idr-'+mid+'">What is present when the attributes are removed?</div>';
   if(type==='contemp')return '<div class="contemp"><p>Sit with this for a moment.<br>No analysis required.</p></div>';
