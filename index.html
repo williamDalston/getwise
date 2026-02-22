@@ -322,6 +322,10 @@ body.simplify .mod-continue-txt{display:none}
 .t-desc{margin-top:1rem;font-size:.9375rem;color:var(--dim);line-height:1.7;font-style:italic}
 .contemp{min-height:100px;display:flex;align-items:center;justify-content:center;text-align:center;padding:1rem 0}
 .contemp p{font-size:1rem;line-height:1.8;font-style:italic;max-width:340px}
+.contemp-check{display:flex;align-items:center;justify-content:center;padding:1.5rem 0}
+.cc-label{display:flex;align-items:center;gap:.875rem;cursor:pointer;font-size:1rem;color:var(--dim);font-weight:300;touch-action:manipulation}
+.cc-box{width:16px;height:16px;accent-color:var(--amber);cursor:pointer;flex-shrink:0}
+.cc-label:has(.cc-box:checked){color:var(--text)}
 .review-q{padding:.75rem 0;border-bottom:1px solid var(--b);font-size:.9375rem;color:var(--dim);line-height:1.65}
 .review-q:last-child{border-bottom:none}
 .return-text{font-size:1.125rem;color:var(--text);font-weight:300;line-height:1.75;text-align:center;padding:.5rem 0}
@@ -765,7 +769,7 @@ var J=[
      instr:'Examine inquiry in the context of ordinary relationships.',
      steps:['These investigations are not achievements.',
             'The moment any investigation becomes status, it becomes obstruction.'],
-     iact:'contemp',prompt:'Is there anyone with whom you carry a sense of superiority about how you see things?'},
+     iact:'contempCheck',prompt:'Is there anyone with whom you carry a sense of superiority about how you see things?'},
     {id:'m21',title:'Curiosity Over Certainty',
      instr:'Maintain inquiry as a way of being, not a conclusion.',
      steps:['Every insight solidified into belief becomes a new limitation.',
@@ -776,8 +780,7 @@ var J=[
      instr:'Return to ordinary activity as the field of inquiry.',
      steps:['The kitchen, the commute, the conversation -- these are the practice.',
             'Nothing special is required.',
-            'Careful attention to ordinary life is sufficient.',
-            'Close this. Go outside.'],
+            'Careful attention to ordinary life is sufficient.'],
      iact:'returnSt',prompt:'What is one ordinary activity where you could bring this quality of attention?'}
    ]
   }
@@ -1032,12 +1035,13 @@ function buildIact(type,mid){
   if(type==='agencyTest')return '<p class="dim mb2" style="font-size:.875rem">Press when you decide to. Notice what happens before the press.</p><button class="agency-btn" onclick="logAgency(\''+mid+'\')">I am pressing this now</button><div class="agency-log" id="al-'+mid+'"></div>';
   if(type==='idStack')return '<div class="id-layers" id="il-'+mid+'">'+['Your name','Your occupation','Your relationships','Your beliefs','Your history'].map(function(l){return '<div class="id-layer"><span class="id-name">'+l+'</span><button class="id-rm" onclick="rmLayer(this,\''+mid+'\')">Remove</button></div>';}).join('')+'</div><div class="id-reveal mt2" id="idr-'+mid+'">What is present when the attributes are removed?</div>';
   if(type==='contemp')return '<div class="contemp"><p>Sit with this for a moment.<br>No analysis required.</p></div>';
+  if(type==='contempCheck')return '<div class="contemp-check"><label class="cc-label"><input type="checkbox" class="cc-box"><span>I can think of someone right now.</span></label></div>';
   if(type==='narToggle')return '<div class="toggle-pair"><button class="t-opt on" id="nts-'+mid+'" onclick="setNar(\'story\',\''+mid+'\')">Story</button><button class="t-opt" id="ntx-'+mid+'" onclick="setNar(\'sens\',\''+mid+'\')">Sensation</button></div><p class="t-desc dim" id="ntd-'+mid+'">Story: "I felt anxious because of what she said, and now I am worried about tomorrow."</p>';
   if(type==='silSpace')return '<div class="toggle-pair"><button class="t-opt on" id="sss-'+mid+'" onclick="setSil(\'sound\',\''+mid+'\')">Sound</button><button class="t-opt" id="ssl-'+mid+'" onclick="setSil(\'sil\',\''+mid+'\')">Silence</button></div><p class="t-desc dim" id="ssd-'+mid+'">Notice: right now, there is sound. And it appears within something.</p>';
   if(type==='reviewInt')return '<div>'+['Where did you expect to find the observer?','What was the emotion without the story?','What remained when the layers were removed?','What, if anything, stood out?'].map(function(q){return '<p class="review-q">'+q+'</p>';}).join('')+'</div><p class="dim mt3" style="font-size:.8125rem;font-style:italic">Use the reflection field below to write freely.</p>';
   if(type==='emotPres')return '<p class="dim mb2" style="font-size:.875rem">Name what is here, without commentary.</p><div class="body-map">'+['Calm','Uneasy','Tender','Heavy','Alert','Open'].map(function(e){return '<div class="bz" onclick="selEmotion(this,\''+mid+'\')">'+e+'</div>';}).join('')+'</div><div class="bz-note show" id="bzn-'+mid+'">Select what is present. Then stay with it.</div>';
   if(type==='certainty')return '<p class="dim mb2" style="font-size:.875rem">What have you concluded from these modules?</p><input class="sk-input" id="cci-'+mid+'" placeholder="I am now certain that..." onkeydown="checkCert(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="checkCert({key:\'Enter\'},\''+mid+'\')">Examine</button><div class="sk-resp" id="ccr-'+mid+'"></div>';
-  if(type==='returnSt')return '<div class="return-text">Nothing special is required.<br><br>The next ordinary moment<br>is the practice.</div>';
+  if(type==='returnSt')return '<div class="return-text">Nothing special is required.<br><br>The next ordinary moment<br>is the practice.</div><p style="text-align:center;font-size:.875rem;color:var(--dim);opacity:.55;margin-top:2rem">Close this. Go outside.</p>';
   return '<p class="dim">Sit quietly for a few moments.</p>';
 }
 
