@@ -576,6 +576,7 @@ body.simplify .mod-continue-txt{display:none}
       </div>
     </div>
   </div>
+  <div id="icon-hint" style="text-align:right;padding:.375rem 1.5rem 0;font-size:.6875rem;color:var(--dim);opacity:0;transition:opacity 1s ease;pointer-events:none">&#9834; audio &nbsp; &#9675; breath &nbsp; &#8635; ground &nbsp; &middot; simplify &nbsp; &#8865; immersion</div>
   <div id="mod-body"><div id="mod-content"></div></div>
   <div id="breath-ring"></div>
 </div>
@@ -875,8 +876,21 @@ function renderJourneys(){
     S.journey=ji;S.module=mi;loadModule();
   };
   body.appendChild(rand);
+  var resetBtn=document.createElement('button');
+  resetBtn.className='btn-link j-random';
+  resetBtn.style.cssText='display:block;margin:.5rem auto 0;font-size:.75rem;opacity:.28';
+  resetBtn.textContent='Reset progress';
+  resetBtn.onclick=function(){
+    if(resetBtn.dataset.confirm==='1'){resetProgress();resetBtn.textContent='Reset progress';resetBtn.dataset.confirm='0';}
+    else{resetBtn.textContent='Tap again to confirm';resetBtn.dataset.confirm='1';setTimeout(function(){resetBtn.textContent='Reset progress';resetBtn.dataset.confirm='0';},3000);}
+  };
+  body.appendChild(resetBtn);
 }
 
+function resetProgress(){
+  for(var i=localStorage.length-1;i>=0;i--){var k=localStorage.key(i);if(k&&k.startsWith('dm_d_'))localStorage.removeItem(k);}
+  renderJourneys();
+}
 function startJourney(ji){
   if(!J[ji])return;
   S.journey=ji;var j=J[ji];var start=0;
@@ -917,6 +931,7 @@ function loadModule(skipEntry){
     entry.style.opacity='1';entry.style.pointerEvents='all';
     meText.classList.remove('show');meBtn.style.display='none';meBtn.style.opacity='0';
     setTimeout(function(){meText.classList.add('show');},300);
+    if(!localStorage.getItem('dm_hint')){localStorage.setItem('dm_hint','1');setTimeout(function(){var h=document.getElementById('icon-hint');if(h){h.style.opacity='.55';setTimeout(function(){h.style.opacity='0';},4000);}},2000);}
     setTimeout(function(){
       meBtn.style.display='inline-flex';
       requestAnimationFrame(function(){requestAnimationFrame(function(){meBtn.style.opacity='1';});});
@@ -1338,9 +1353,9 @@ function trackInteraction(){
 document.addEventListener('click',function(e){
   if(S.screen!=='module')return;
   var t=e.target;
-  if(t.classList.contains('btn')||t.classList.contains('icon-btn')||
+  if((t.classList.contains('btn')||t.classList.contains('icon-btn')||
      t.classList.contains('own-opt')||t.classList.contains('bz')||
-     t.classList.contains('t-opt')){trackInteraction();}
+     t.classList.contains('t-opt'))&&!t.classList.contains('now-btn')){trackInteraction();}
 });
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
