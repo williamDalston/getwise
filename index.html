@@ -13,14 +13,12 @@
 <meta property="og:url" content="https://williamDalston.github.io/getwise/">
 <meta property="og:title" content="Explorations in Consciousness - Direct Inquiry into Awareness">
 <meta property="og:description" content="A contemplative space for direct investigation into the nature of experience. Interactive tools for self-inquiry without doctrine or dogma.">
-<meta property="og:image" content="https://williamDalston.github.io/getwise/og-image.jpg">
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image">
 <meta property="twitter:url" content="https://williamDalston.github.io/getwise/">
 <meta property="twitter:title" content="Explorations in Consciousness - Direct Inquiry into Awareness">
 <meta property="twitter:description" content="A contemplative space for direct investigation into the nature of experience. Interactive tools for self-inquiry without doctrine or dogma.">
-<meta property="twitter:image" content="https://williamDalston.github.io/getwise/og-image.jpg">
 
 <!-- Canonical URL -->
 <link rel="canonical" href="https://williamDalston.github.io/getwise/">
@@ -486,7 +484,7 @@ body.simplify .mod-continue-txt{display:none}
 <div id="screen-explore" class="screen gone">
   <div class="hdr">
     <div class="flex fi g2">
-      <button class="icon-btn" onclick="nav('landing')">&#8592;</button>
+      <button class="icon-btn" onclick="nav('landing')" aria-label="Back">&#8592;</button>
       <span class="hdr-label">Explore</span>
     </div>
     <button class="btn btn-ghost btn-sm" onclick="enterDeep()">Journeys</button>
@@ -545,10 +543,10 @@ body.simplify .mod-continue-txt{display:none}
 <div id="screen-journey-select" class="screen gone">
   <div class="hdr">
     <div class="flex fi g2">
-      <button class="icon-btn" onclick="nav('landing')">&#8592;</button>
+      <button class="icon-btn" onclick="nav('landing')" aria-label="Back">&#8592;</button>
       <span class="hdr-label">Sessions</span>
     </div>
-    <button class="icon-btn" onclick="nav('reflections')" title="Reflections">&#8801;</button>
+    <button class="icon-btn" onclick="nav('reflections')" title="Reflections" aria-label="Reflections">&#8801;</button>
   </div>
   <div class="journey-body" id="journey-body"></div>
 </div>
@@ -564,17 +562,17 @@ body.simplify .mod-continue-txt{display:none}
   <div id="mod-hdr">
     <div class="mod-pbar"><div class="mod-pfill" id="mod-pfill"></div></div>
     <div class="flex fi g2">
-      <button class="icon-btn" onclick="prevMod()">&#8592;</button>
+      <button class="icon-btn" onclick="prevMod()" aria-label="Previous module">&#8592;</button>
       <div class="mp-dots" id="mp-dots"></div>
     </div>
     <div class="flex fi g2">
       <span class="mod-timer" id="mod-timer">0:00</span>
       <div class="mod-controls">
-        <button class="icon-btn" id="audio-btn" onclick="toggleAudio()" title="Audio">&#9834;</button>
-        <button class="icon-btn" id="breath-btn" onclick="toggleBreath()" title="Breath pacer">&#9675;</button>
-        <button class="icon-btn" id="ground-btn" onclick="showGround()" title="Ground">&#8635;</button>
-        <button class="icon-btn" id="simp-btn" onclick="toggleSimplify()" title="Simplify">&#8729;</button>
-        <button class="icon-btn" id="imm-btn" onclick="toggleImm()" title="Immersion">&#8865;</button>
+        <button class="icon-btn" id="audio-btn" onclick="toggleAudio()" title="Audio" aria-label="Toggle audio">&#9834;</button>
+        <button class="icon-btn" id="breath-btn" onclick="toggleBreath()" title="Breath pacer" aria-label="Toggle breath pacer">&#9675;</button>
+        <button class="icon-btn" id="ground-btn" onclick="showGround()" title="Ground" aria-label="Show grounding">&#8635;</button>
+        <button class="icon-btn" id="simp-btn" onclick="toggleSimplify()" title="Simplify" aria-label="Toggle simplify mode">&#8729;</button>
+        <button class="icon-btn" id="imm-btn" onclick="toggleImm()" title="Immersion" aria-label="Toggle immersion mode">&#8865;</button>
       </div>
     </div>
   </div>
@@ -586,10 +584,10 @@ body.simplify .mod-continue-txt{display:none}
 <div id="screen-reflections" class="screen gone">
   <div class="hdr">
     <div class="flex fi g2">
-      <button class="icon-btn" onclick="nav('journey-select')">&#8592;</button>
+      <button class="icon-btn" onclick="nav('journey-select')" aria-label="Back">&#8592;</button>
       <span class="hdr-label">Reflections</span>
     </div>
-    <button class="btn-link btn-sm" onclick="exportRef()">Export</button>
+    <button class="btn-link btn-sm" id="export-btn" onclick="exportRef()">Export</button>
   </div>
   <div class="ref-list" id="ref-list"></div>
 </div>
@@ -605,9 +603,9 @@ body.simplify .mod-continue-txt{display:none}
 </div>
 
 <!-- NOTHING -->
-<div id="screen-nothing" class="screen gone">
-  <div id="nothing-ret" style="position:fixed;bottom:3rem;left:50%;transform:translateX(-50%);opacity:0;transition:opacity 2s ease">
-    <button class="btn btn-ghost" onclick="nav('journey-select')">Return</button>
+<div id="screen-nothing" class="screen gone" onclick="exitNothing()">
+  <div id="nothing-ret" style="position:fixed;bottom:3rem;left:50%;transform:translateX(-50%);opacity:.12;transition:opacity 2s ease">
+    <button class="btn btn-ghost" onclick="event.stopPropagation();exitNothing()">Return</button>
   </div>
 </div>
 
@@ -829,10 +827,11 @@ function enterDeep(){nav('journey-select');}
 function enterNothing(){
   nav('nothing');
   var ret=document.getElementById('nothing-ret');
-  ret.style.opacity='0';
+  ret.style.opacity='.12';
   clearTimeout(window._nothingT);
   window._nothingT=setTimeout(function(){ret.style.opacity='1';},90000);
 }
+function exitNothing(){clearTimeout(window._nothingT);nav('journey-select');}
 function replayOnboarding(){
   var sc=document.getElementById('screen-onboarding');
   var ob1=document.getElementById('ob1'),ob2=document.getElementById('ob2'),cont=document.getElementById('ob-cont');
@@ -888,7 +887,7 @@ function startJourney(ji){
   S.module=start;loadModule();
 }
 
-function loadModule(){
+function loadModule(skipEntry){
   if(!J[S.journey]||!J[S.journey].mods[S.module]){backToJourneys();return;}
   var j=J[S.journey];var m=j.mods[S.module];
   clearInterval(S.timerInt);S.timerSecs=0;updateTimer();
@@ -909,14 +908,21 @@ function loadModule(){
   modContent.classList.remove('show');
   modContent.style.opacity='0';
   modContent.innerHTML='';
-  entry.style.opacity='1';entry.style.pointerEvents='all';
-  meText.classList.remove('show');meBtn.style.display='none';meBtn.style.opacity='0';
-  setTimeout(function(){meText.classList.add('show');},300);
-  setTimeout(function(){
-    meBtn.style.display='inline-flex';
-    requestAnimationFrame(function(){requestAnimationFrame(function(){meBtn.style.opacity='1';});});
-  },1800);
-  setTimeout(function(){renderModContent(m);},100);
+  if(skipEntry){
+    entry.style.opacity='0';entry.style.pointerEvents='none';
+    setTimeout(function(){renderModContent(m);modContent.classList.add('show');modContent.style.opacity='1';},100);
+    S.timerSecs=0;
+    S.timerInt=setInterval(function(){S.timerSecs++;updateTimer();},1000);
+  }else{
+    entry.style.opacity='1';entry.style.pointerEvents='all';
+    meText.classList.remove('show');meBtn.style.display='none';meBtn.style.opacity='0';
+    setTimeout(function(){meText.classList.add('show');},300);
+    setTimeout(function(){
+      meBtn.style.display='inline-flex';
+      requestAnimationFrame(function(){requestAnimationFrame(function(){meBtn.style.opacity='1';});});
+    },1800);
+    setTimeout(function(){renderModContent(m);},100);
+  }
 }
 
 function beginModule(){
@@ -982,14 +988,20 @@ function nextMod(){
   }else backToJourneys();
 }
 
-function prevMod(){if(S.module>0){S.module--;loadModule();}else backToJourneys();}
+function prevMod(){
+  if(S.module>0){
+    var body=document.getElementById('mod-body');
+    body.style.transition='opacity 400ms ease';body.style.opacity='0';
+    setTimeout(function(){body.style.opacity='1';S.module--;loadModule(true);},800);
+  }else backToJourneys();
+}
 function backToJourneys(){clearInterval(S.timerInt);document.body.classList.remove('immersion');document.body.classList.remove('simplify');resetBreath();if(S.audio){toggleAudio();}S.simp=false;nav('journey-select');}
 
 function buildIact(type,mid){
   if(type==='thoughtStream')return '<div class="thought-field" id="tf-'+mid+'"></div><div class="t-row"><input class="t-input" id="ti-'+mid+'" placeholder="Type a thought, press Enter" onkeydown="submitThought(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitThought({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><p class="dim mt2" style="font-size:.8125rem">Watch it drift.</p>';
   if(type==='ownership')return '<p class="own-q">Think of the last thought you had before reading this sentence.</p><div class="own-opts"><button class="own-opt" onclick="selectOwn(this,\'mine\')">It felt like mine</button><button class="own-opt" onclick="selectOwn(this,\'appeared\')">It simply appeared</button></div><p class="own-resp" id="ownr-'+mid+'"></p>';
   if(type==='locationFinder')return '<p class="dim mb2" style="font-size:.875rem">Touch the exact location of the one who is looking.</p><div class="loc-canvas" onclick="handleLoc(event,this)" ontouchstart="handleLoc(event,this)" id="lc-'+mid+'"><div class="loc-grid"></div><div class="loc-marker" id="lm-'+mid+'"></div></div><div class="loc-resp" id="lr-'+mid+'"></div>';
-  if(type==='fieldExp')return '<p class="dim mb2" style="font-size:.875rem">Touch anywhere to locate the center of the visual field.</p><div class="field-area" onclick="handleField(\''+mid+'\')" ontouchstart="handleField(\''+mid+'\')" id="fa-'+mid+'"><div class="field-dot"></div><div class="field-ring"></div><div class="field-ring fr2"></div><div class="field-ring fr3"></div></div><div class="field-resp" id="fr-'+mid+'"></div>';
+  if(type==='fieldExp')return '<p class="dim mb2" style="font-size:.875rem">Touch anywhere to locate the center of the visual field.</p><div class="field-area" onclick="handleField(\''+mid+'\')" id="fa-'+mid+'"><div class="field-dot"></div><div class="field-ring"></div><div class="field-ring fr2"></div><div class="field-ring fr3"></div></div><div class="field-resp" id="fr-'+mid+'"></div>';
   if(type==='sensLoc')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation lives in the body.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div><div class="mt3"><div class="sens-labels"><span>Faint</span><span>Intense</span></div><input class="sens-slider" type="range" min="0" max="10" value="0" oninput="this.nextElementSibling.textContent=\'Intensity: \'+this.value"><p class="dim" style="font-size:.8125rem;margin-top:.25rem">Intensity: 0</p></div>';
   if(type==='nowTrack')return '<div class="now-num" id="now-'+mid+'">0</div><p class="now-lbl">Present moments noticed</p><button class="btn btn-ghost btn-sm now-btn" onclick="tickNow(\''+mid+'\')">Now</button><p class="dim mt2" style="font-size:.8125rem;text-align:center">Each press: a deliberate return to this moment.</p>';
   if(type==='seeker')return '<p class="dim mb2" style="font-size:.875rem">Who is seeking? Type your answer.</p><input class="sk-input" id="ski-'+mid+'" placeholder="The seeker is..." onkeydown="submitSeeker(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="submitSeeker({key:\'Enter\'},\''+mid+'\')">Inquire</button><div class="sk-resp" id="skr-'+mid+'"></div>';
@@ -1225,7 +1237,7 @@ function exportRef(){
     var k=localStorage.key(i);if(!k||!k.startsWith('dm_r_'))continue;
     try{var d=JSON.parse(localStorage.getItem(k));lines.push('## '+d.title+'\n'+d.date+'\n\n'+d.text+'\n\n---\n');}catch{}
   }
-  if(!lines.length){alert('No reflections to export.');return;}
+  if(!lines.length){var eb=document.getElementById('export-btn');if(eb){eb.textContent='Nothing yet.';setTimeout(function(){eb.textContent='Export';},2000);}return;}
   var blob=new Blob([lines.join('\n')],{type:'text/plain'});
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download='deep-mode-reflections.txt';a.click();
@@ -1277,10 +1289,36 @@ function resetBreath(){
   document.getElementById('breath-btn').classList.remove('on');
   document.getElementById('breath-ring').classList.remove('on');
 }
-function showPause(){document.getElementById('pause-overlay').classList.add('on');if(_gain&&AC)_gain.gain.setTargetAtTime(0.005,AC.currentTime,0.8);}
-function hidePause(){document.getElementById('pause-overlay').classList.remove('on');if(S.audio&&_gain&&AC)_gain.gain.setTargetAtTime(0.014,AC.currentTime,1.2);}
-function showGround(){document.getElementById('ground-drawer').classList.add('on');if(_gain&&AC)_gain.gain.setTargetAtTime(0.005,AC.currentTime,0.8);}
-function hideGround(){document.getElementById('ground-drawer').classList.remove('on');if(S.audio&&_gain&&AC)_gain.gain.setTargetAtTime(0.014,AC.currentTime,1.2);}
+function showPause(){
+  var overlay=document.getElementById('pause-overlay');
+  overlay.classList.add('on');
+  if(_gain&&AC)_gain.gain.setTargetAtTime(0.005,AC.currentTime,0.8);
+  setTimeout(function(){
+    var btn=overlay.querySelector('.btn');
+    if(btn)btn.focus();
+  },100);
+}
+function hidePause(){
+  document.getElementById('pause-overlay').classList.remove('on');
+  if(S.audio&&_gain&&AC)_gain.gain.setTargetAtTime(0.014,AC.currentTime,1.2);
+  var groundBtn=document.getElementById('ground-btn');
+  if(groundBtn)groundBtn.focus();
+}
+function showGround(){
+  var drawer=document.getElementById('ground-drawer');
+  drawer.classList.add('on');
+  if(_gain&&AC)_gain.gain.setTargetAtTime(0.005,AC.currentTime,0.8);
+  setTimeout(function(){
+    var btn=drawer.querySelector('.btn');
+    if(btn)btn.focus();
+  },100);
+}
+function hideGround(){
+  document.getElementById('ground-drawer').classList.remove('on');
+  if(S.audio&&_gain&&AC)_gain.gain.setTargetAtTime(0.014,AC.currentTime,1.2);
+  var groundBtn=document.getElementById('ground-btn');
+  if(groundBtn)groundBtn.focus();
+}
 
 /* Rapid-interaction detection */
 var _iactTimes=[];
@@ -1302,6 +1340,30 @@ document.addEventListener('click',function(e){
   if(t.classList.contains('btn')||t.classList.contains('icon-btn')||
      t.classList.contains('own-opt')||t.classList.contains('bz')||
      t.classList.contains('t-opt')){trackInteraction();}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    var pause=document.getElementById('pause-overlay');
+    var ground=document.getElementById('ground-drawer');
+    if(pause&&pause.classList.contains('on')){
+      e.preventDefault();
+      hidePause();
+      return;
+    }
+    if(ground&&ground.classList.contains('on')){
+      e.preventDefault();
+      hideGround();
+      return;
+    }
+  }
+  if(e.key==='Enter'&&S.screen==='module'){
+    var entry=document.getElementById('mod-entry');
+    var meBtn=document.getElementById('me-btn');
+    if(entry&&entry.style.opacity==='1'&&meBtn&&meBtn.style.display!=='none'&&meBtn.style.opacity!=='0'){
+      e.preventDefault();
+      beginModule();
+    }
+  }
 });
 
 document.addEventListener('DOMContentLoaded',function(){S.deepMode=true;});
