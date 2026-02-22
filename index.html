@@ -684,7 +684,7 @@ var J=[
      iact:'seeker',prompt:'What happened when you looked for the seeker?'}
    ]
   },
-  {id:'lab',title:'Exercise',purpose:'Examine assumptions about perception and identity.',
+  {id:'lab',title:'Perception',purpose:'Examine assumptions about perception and identity.',
    mods:[
     {id:'m08',title:'Visual Field Experiment',
      instr:'Examine the structure of seeing itself.',
@@ -708,7 +708,7 @@ var J=[
      instr:'Notice that memory does not take you to the past.',
      steps:['Recall a memory.',
             'Where is it happening? The past -- or here, now, as a thought?',
-            'The memory is a present mental event. The past is gone. Only now remains.'],
+            'Notice: where is the past right now? What can actually be found?'],
      iact:'memTransform',prompt:'Did this change anything about how the past feels?'},
     {id:'m12',title:'Agency Simulation',
      instr:'Examine the mechanics of choice.',
@@ -739,7 +739,7 @@ var J=[
             'Now notice the silence that contains the sound.',
             'Which came first: sound or silence?'],
      iact:'silSpace',prompt:'Is silence the absence of sound, or is sound an interruption of silence?'},
-    {id:'m17',title:'Integration',
+    {id:'m17',title:'Looking Back',
      instr:'Sit with what has emerged.',
      steps:['No new concept is introduced here.',
             'Review what you have noticed across these modules.',
@@ -747,13 +747,13 @@ var J=[
      iact:'reviewInt',prompt:'What, if anything, stood out?'}
    ]
   },
-  {id:'int',title:'Integration',purpose:'Examine dissociation and spiritual identity.',
+  {id:'int',title:'Ordinary',purpose:'Examine dissociation and spiritual identity.',
    mods:[
     {id:'m18',title:'Functioning Without a Center',
      instr:'Examine how ordinary activity continues without a fixed self.',
      steps:['Notice that actions happen -- words appear, hands move, decisions occur.',
             'Do these require a persistent center to coordinate them?',
-            'Ordinary functioning does not depend on a located self.'],
+            'Has any of this required a located self to coordinate it?'],
      iact:'contemp',prompt:'What does functioning feel like when the center is not in focus?'},
     {id:'m19',title:'Emotional Grounding',
      instr:'Ensure that open inquiry does not create disconnection.',
@@ -911,6 +911,7 @@ function loadModule(skipEntry){
   clearInterval(S.timerInt);S.timerSecs=0;updateTimer();
   document.body.classList.remove('immersion');S.imm=false;
   document.getElementById('imm-btn').classList.remove('on');
+  fieldC=0;locC=0;
   nav('module');
   syncAudioFreq();
   var dots=document.getElementById('mp-dots');
