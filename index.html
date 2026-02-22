@@ -431,78 +431,6 @@ body.simplify .mod-continue-txt{display:none}
     "description": "Direct investigation into the nature of consciousness and experience"
   }
 }
-/* ATTENTION WATCH */
-var _attnC=0;
-function tapAttn(mid){
-  _attnC++;
-  var cnt=document.getElementById('attn-count-'+mid);
-  if(cnt)cnt.textContent=_attnC+' shift'+(_attnC===1?'':'s')+' noticed';
-}
-
-/* LANGUAGE DISSOLVE */
-function submitLangD(e,mid){
-  if(e.key!=='Enter')return;
-  var inp=document.getElementById('ldi-'+mid);
-  var txt=inp.value.trim();if(!txt)return;
-  inp.value='';inp.disabled=true;inp.style.opacity='.3';
-  var display=document.getElementById('ldp-'+mid);
-  var after=document.getElementById('lda-'+mid);
-  display.textContent=txt;display.style.opacity='1';
-  setTimeout(function(){display.style.transition='opacity 3s ease';display.style.opacity='0';},400);
-  setTimeout(function(){if(after){after.textContent='The experience continues.';after.style.opacity='1';}},3800);
-}
-
-/* DREAM DISSOLVE */
-function submitDream(e,mid){
-  if(e.key!=='Enter')return;
-  var inp=document.getElementById('ddi-'+mid);
-  var txt=inp.value.trim();if(!txt)return;
-  inp.value='';inp.disabled=true;inp.style.opacity='.3';
-  var display=document.getElementById('ddp-'+mid);
-  var after=document.getElementById('dda-'+mid);
-  display.textContent=txt;display.style.opacity='1';
-  setTimeout(function(){display.style.transition='opacity 3s ease';display.style.opacity='0';},400);
-  setTimeout(function(){if(after){after.textContent='Where is that world now?';after.style.opacity='1';}},3800);
-}
-
-/* REACT CHAIN */
-var _reactPhase={};
-var _reactLabels=['What arose in the body?','What was the thought?','What was the impulse?'];
-function reactNext(e,mid){
-  if(e.key!=='Enter')return;
-  if(!_reactPhase[mid])_reactPhase[mid]=0;
-  var phase=_reactPhase[mid];
-  var inp=document.getElementById('rci-'+mid);
-  var btn=document.getElementById('rcb-'+mid);
-  var respEl=document.getElementById('rcr-'+mid);
-  if(phase===0){
-    _reactPhase[mid]=1;
-    var container=document.getElementById('rc-'+mid);
-    if(container){container.innerHTML='<p class="dim mb2" style="font-size:.875rem">'+_reactLabels[1]+'</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="A thought..." onkeydown="reactNext(event,\''+mid+'\')" ><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:\'Enter\'},\''+mid+'\')" >&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p>';}
-  }else if(phase===1){
-    _reactPhase[mid]=2;
-    var container=document.getElementById('rc-'+mid);
-    if(container){container.innerHTML='<p class="dim mb2" style="font-size:.875rem">'+_reactLabels[2]+'</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="An impulse..." onkeydown="reactNext(event,''+mid+'')"><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p>';}
-  }else if(phase===2){
-    if(btn)btn.style.display='none';
-  }
-}
-
-/* STABILITY CHECK */
-function selectStability(choice,mid){
-  var opts=document.getElementById('sc-'+mid);
-  if(opts)opts.querySelectorAll('.sc-btn').forEach(function(b){b.disabled=true;b.style.opacity='.3';b.classList.remove('on');});
-  var btn=opts?opts.querySelector('.sc-btn[onclick*="''+choice+''"]'):null;
-  if(btn){btn.style.opacity='1';btn.classList.add('on');}
-  var resp=document.getElementById('scr-'+mid);
-  if(choice==='distant'||choice==='unsettled'){
-    if(resp){resp.textContent='Nothing needs to happen.';resp.classList.add('show');}
-    if(choice==='distant')setTimeout(function(){showGround();},600);
-  }else{
-    if(resp){resp.textContent='Continue when ready.';resp.classList.add('show');}
-  }
-}
-
 </script>
 
 <script type="application/ld+json">
@@ -731,6 +659,79 @@ function selectStability(choice,mid){
 <div class="imm-strip" onclick="exitImm()"></div>
 
 <script>
+/* ATTENTION WATCH */
+var _attnC=0;
+function tapAttn(mid){
+  _attnC++;
+  var cnt=document.getElementById('attn-count-'+mid);
+  if(cnt)cnt.textContent=_attnC+' shift'+(_attnC===1?'':'s')+' noticed';
+}
+
+/* LANGUAGE DISSOLVE */
+function submitLangD(e,mid){
+  if(e.key!=='Enter')return;
+  var inp=document.getElementById('ldi-'+mid);
+  var txt=inp.value.trim();if(!txt)return;
+  inp.value='';inp.disabled=true;inp.style.opacity='.3';
+  var display=document.getElementById('ldp-'+mid);
+  var after=document.getElementById('lda-'+mid);
+  display.textContent=txt;display.style.opacity='1';
+  setTimeout(function(){display.style.transition='opacity 3s ease';display.style.opacity='0';},400);
+  setTimeout(function(){if(after){after.textContent='The experience continues.';after.style.opacity='1';}},3800);
+}
+
+/* DREAM DISSOLVE */
+function submitDream(e,mid){
+  if(e.key!=='Enter')return;
+  var inp=document.getElementById('ddi-'+mid);
+  var txt=inp.value.trim();if(!txt)return;
+  inp.value='';inp.disabled=true;inp.style.opacity='.3';
+  var display=document.getElementById('ddp-'+mid);
+  var after=document.getElementById('dda-'+mid);
+  display.textContent=txt;display.style.opacity='1';
+  setTimeout(function(){display.style.transition='opacity 3s ease';display.style.opacity='0';},400);
+  setTimeout(function(){if(after){after.textContent='Where is that world now?';after.style.opacity='1';}},3800);
+}
+
+/* REACT CHAIN */
+var _reactPhase={};
+var _reactLabels=['What arose in the body?','What was the thought?','What was the impulse?'];
+function reactNext(e,mid){
+  if(e.key!=='Enter')return;
+  if(!_reactPhase[mid])_reactPhase[mid]=0;
+  var phase=_reactPhase[mid];
+  var inp=document.getElementById('rci-'+mid);
+  var btn=document.getElementById('rcb-'+mid);
+  var respEl=document.getElementById('rcr-'+mid);
+  if(phase===0){
+    _reactPhase[mid]=1;
+    var container=document.getElementById('rc-'+mid);
+    if(container){container.innerHTML='<p class="dim mb2" style="font-size:.875rem">'+_reactLabels[1]+'</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="A thought..." onkeydown="reactNext(event,\''+mid+'\')" ><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:\'Enter\'},\''+mid+'\')" >&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p>';}
+  }else if(phase===1){
+    _reactPhase[mid]=2;
+    var container=document.getElementById('rc-'+mid);
+    if(container){container.innerHTML='<p class="dim mb2" style="font-size:.875rem">'+_reactLabels[2]+'</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="An impulse..." onkeydown="reactNext(event,''+mid+'')"><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p>';}
+  }else if(phase===2){
+    if(btn)btn.style.display='none';
+  }
+}
+
+/* STABILITY CHECK */
+function selectStability(choice,mid){
+  var opts=document.getElementById('sc-'+mid);
+  if(opts)opts.querySelectorAll('.sc-btn').forEach(function(b){b.disabled=true;b.style.opacity='.3';b.classList.remove('on');});
+  var btn=opts?opts.querySelector('.sc-btn[onclick*="''+choice+''"]'):null;
+  if(btn){btn.style.opacity='1';btn.classList.add('on');}
+  var resp=document.getElementById('scr-'+mid);
+  if(choice==='distant'||choice==='unsettled'){
+    if(resp){resp.textContent='Nothing needs to happen.';resp.classList.add('show');}
+    if(choice==='distant')setTimeout(function(){showGround();},600);
+  }else{
+    if(resp){resp.textContent='Continue when ready.';resp.classList.add('show');}
+  }
+}
+
+
 var S={screen:'onboarding',deepMode:true,
   journey:0,module:0,plan:'mo',imm:false,audio:false,breath:false,simp:false,timerInt:null,timerSecs:0,modCount:0};
 
@@ -862,9 +863,9 @@ var J=[
     {id:'m28',title:'Waking From Dream',
      instr:'Investigate the dissolution of a world.',
      steps:['Recall this morning, the moment you woke.',
-            'There was a world. Then it wasn\'t there.',
+            'There was a world. Then it wasn't there.',
             'What changed -- the world, or something else?'],
-     iact:'dreamDissolve',prompt:'What is the difference between a world that is real and one that isn\'t?'},
+     iact:'dreamDissolve',prompt:'What is the difference between a world that is real and one that isn't?'},
     {id:'m16',title:'Silence Interruption',
      instr:'Investigate the space between sounds.',
      steps:['Notice the presence of sound.',
@@ -1204,7 +1205,7 @@ function buildIact(type,mid){
   if(type==='reactChain'){return '<div id="rc-'+mid+'"><p class="dim mb2" style="font-size:.875rem">What arose in the body?</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="A sensation..." onkeydown="reactNext(event,''+mid+'')"><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p></div>';}
   if(type==='stabilityCheck')return '<p class="dim mb2" style="font-size:.875rem">How does this moment feel?</p><div class="sc-opts" id="sc-'+mid+'"><button class="sc-btn" onclick="selectStability('clear',''+mid+'')">Clear</button><button class="sc-btn" onclick="selectStability('spacious',''+mid+'')">Spacious</button><button class="sc-btn" onclick="selectStability('unsettled',''+mid+'')">Unsettled</button><button class="sc-btn" onclick="selectStability('distant',''+mid+'')">Distant</button></div><p class="sc-resp dim" id="scr-'+mid+'" style="min-height:1.5rem;margin-top:1rem;text-align:center"></p>';
   if(type==='screenAware')return '';
-  if(type==='dreamDissolve')return '<p class="dim mb2" style="font-size:.875rem">Type a fragment of the dream.</p><div class="t-row"><input class="t-input" id="ddi-'+mid+'" placeholder="A fragment..." onkeydown="submitDream(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitDream({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><p class="lang-display" id="ddp-'+mid+'"></p><p class="lang-after dim" id="dda-'+mid+'" style="opacity:0;transition:opacity 1.5s ease;text-align:center;margin-top:1rem;font-size:.875rem"></p>';
+  if(type==='dreamDissolve')return '<p class="dim mb2" style="font-size:.875rem">Type a fragment of the dream.</p><div class="t-row"><input class="t-input" id="ddi-'+mid+'" placeholder="A fragment..." onkeydown="submitDream(event,''+mid+'')"><button class="btn btn-ghost btn-sm" onclick="submitDream({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="lang-display" id="ddp-'+mid+'"></p><p class="lang-after dim" id="dda-'+mid+'" style="opacity:0;transition:opacity 1.5s ease;text-align:center;margin-top:1rem;font-size:.875rem"></p>';
   if(type==='kindWarmth')return '<p class="dim mb2" style="font-size:.875rem">Select where the warmth appears.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,''+mid+'')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
   if(type==='compSens')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation was felt.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,''+mid+'')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
   if(type==='gazeHold')return '<div class="gaze-field" id="gf-'+mid+'"><div class="gaze-center"></div></div><p class="gaze-status dim" id="gs-'+mid+'">Hold for 10 seconds.</p>';
