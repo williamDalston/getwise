@@ -747,8 +747,6 @@ function selectStability(choice,mid){
   if(choice==='distant'||choice==='unsettled'){
     if(resp){resp.textContent='Nothing needs to happen.';resp.classList.add('show');}
     if(choice==='distant')setTimeout(function(){showGround();},600);
-  }else{
-    if(resp){resp.textContent='Continue when ready.';resp.classList.add('show');}
   }
 }
 
@@ -1096,7 +1094,7 @@ function loadModule(skipEntry){
   }).join('');
   var pfill=document.getElementById('mod-pfill');if(pfill)pfill.style.width=((S.module/j.mods.length)*100)+'%';
   window._jMids=j.mods.map(function(x){return x.id;});
-  document.getElementById('mod-timer').style.visibility=(S.journey===2||m.id==='m09'||m.id==='m14')?'hidden':'visible';
+  document.getElementById('mod-timer').style.visibility=(S.journey===2||m.id==='m09'||m.id==='m14'||m.airlock)?'hidden':'visible';
   var entry=document.getElementById('mod-entry');
   var meText=document.getElementById('me-text');
   var meBtn=document.getElementById('me-btn');
