@@ -239,7 +239,7 @@ body.simplify .mod-continue-txt{display:none}
 .t-bubble.up{opacity:.6}
 .t-ghost{display:block;text-align:center;color:var(--dim);opacity:.3;cursor:pointer;font-size:1.5rem;line-height:1;margin-top:.5rem;transition:opacity .3s ease;user-select:none}
 .t-ghost:hover{opacity:.6}
-.t-echo{text-align:center;font-size:.8125rem;color:var(--dim);opacity:.4;margin-top:.75rem;font-style:italic;line-height:1.6}
+.t-echo{text-align:center;font-size:.8125rem;color:var(--dim);opacity:.2;margin-top:.75rem;font-style:italic;line-height:1.6}
 .own-q{font-size:1.125rem;color:var(--text);font-weight:300;text-align:center;padding:1rem 0;line-height:1.6}
 .own-opts{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;margin-top:1rem}
 .own-opt{padding:.625rem 1.25rem;border:1px solid var(--b);border-radius:3px;
@@ -715,23 +715,25 @@ function submitDream(e,mid){
 /* REACT CHAIN */
 var _reactPhase={};
 var _reactLabels=['What arose in the body?','What was the thought?','What was the impulse?'];
+var _reactPlaceholders=['A sensation...','A thought...','An impulse...'];
 function reactNext(e,mid){
   if(e.key!=='Enter')return;
   if(!_reactPhase[mid])_reactPhase[mid]=0;
   var phase=_reactPhase[mid];
-  var inp=document.getElementById('rci-'+mid);
-  var btn=document.getElementById('rcb-'+mid);
-  var respEl=document.getElementById('rcr-'+mid);
-  if(phase===0){
-    _reactPhase[mid]=1;
+  var inp=document.getElementById('rci-'+mid+'-'+phase);
+  if(!inp||!inp.value.trim())return;
+  inp.disabled=true;inp.style.opacity='.35';
+  var btn=document.getElementById('rcb-'+mid+'-'+phase);
+  if(btn)btn.style.display='none';
+  _reactPhase[mid]=phase+1;
+  if(phase<2){
     var container=document.getElementById('rc-'+mid);
-    if(container){container.innerHTML='<p class="dim mb2" style="font-size:.875rem">'+_reactLabels[1]+'</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="A thought..." onkeydown="reactNext(event,\''+mid+'\')" ><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:\'Enter\'},\''+mid+'\')" >&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p>';}
-  }else if(phase===1){
-    _reactPhase[mid]=2;
-    var container=document.getElementById('rc-'+mid);
-    if(container){container.innerHTML='<p class="dim mb2" style="font-size:.875rem">'+_reactLabels[2]+'</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="An impulse..." onkeydown="reactNext(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p>';}
-  }else if(phase===2){
-    if(btn)btn.style.display='none';
+    if(container){
+      var next=document.createElement('div');next.style.marginTop='.875rem';
+      next.innerHTML='<p class="dim mb2" style="font-size:.875rem">'+_reactLabels[phase+1]+'</p><div class="t-row"><input class="t-input" id="rci-'+mid+'-'+(phase+1)+'" placeholder="'+_reactPlaceholders[phase+1]+'" onkeydown="reactNext(event,\''+mid+'\')" autofocus><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'-'+(phase+1)+'" onclick="reactNext({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div>';
+      container.appendChild(next);
+      setTimeout(function(){var ni=document.getElementById('rci-'+mid+'-'+(phase+1));if(ni)ni.focus();},50);
+    }
   }
 }
 
@@ -872,7 +874,7 @@ var J=[
             'Light is entering your eyes.',
             'Words are guiding attention.',
             'Notice this.'],
-     iact:'screenAware',prompt:'What changed when the medium became visible?'},
+     iact:'screenAware',noRef:true,prompt:''},
     {id:'m15',title:'Narrative vs Sensation',
      instr:'Notice the difference between story and direct experience.',
      steps:['Attend to what is present.',
@@ -893,8 +895,7 @@ var J=[
      iact:'silSpace',prompt:'Is silence the absence of sound, or is sound an interruption of silence?'},
     {id:'m17',title:'Looking Back',
      instr:'Sit with what has emerged.',
-     steps:['No new concept is introduced here.',
-            'Review what you have noticed across these modules.',
+     steps:['Review what you have noticed across these modules.',
             'What, if anything, has shifted in how experience appears?'],
      iact:'reviewInt',silent:true,prompt:'What, if anything, stood out?<br><br>Across all of this, was anything constant?'}
    ]
@@ -1084,15 +1085,19 @@ function loadModule(skipEntry){
   nav('module');
   syncAudioFreq();
   var dots=document.getElementById('mp-dots');
-  dots.innerHTML=j.mods.map(function(mod,i){
-    var c='mpd';if(i<S.module)c+=' done';if(i===S.module)c+=' active';
-    var dot='<div class="'+c+'"></div>';
-    if(S.journey===1&&mod.id==='m14'){dot+='<div style="width:1px;height:5px;background:rgba(255,255,255,0.1);flex-shrink:0;align-self:center;margin:0 2px"></div>';}
+  var visibleMods=j.mods.filter(function(m){return !m.airlock;});
+  var currentMod=j.mods[S.module];
+  var pastDivider=false;
+  dots.innerHTML=visibleMods.map(function(mod){
+    var origIdx=j.mods.indexOf(mod);
+    var c='mpd';if(origIdx<S.module)c+=' done';if(!currentMod.airlock&&mod.id===currentMod.id)c+=' active';
+    var dot='<div class="'+c+'"'+(S.journey===1&&pastDivider?' style="opacity:.42"':'')+' ></div>';
+    if(S.journey===1&&mod.id==='m14'){dot+='<div style="width:1px;height:5px;background:rgba(255,255,255,0.1);flex-shrink:0;align-self:center;margin:0 2px"></div>';pastDivider=true;}
     return dot;
   }).join('');
   var pfill=document.getElementById('mod-pfill');if(pfill)pfill.style.width=((S.module/j.mods.length)*100)+'%';
   window._jMids=j.mods.map(function(x){return x.id;});
-  document.getElementById('mod-timer').style.visibility=(S.journey===2||m.id==='m09')?'hidden':'visible';
+  document.getElementById('mod-timer').style.visibility=(S.journey===2||m.id==='m09'||m.id==='m14')?'hidden':'visible';
   var entry=document.getElementById('mod-entry');
   var meText=document.getElementById('me-text');
   var meBtn=document.getElementById('me-btn');
@@ -1150,13 +1155,12 @@ function renderModContent(m){
     +(m.instr?'<p class="mod-instr">'+m.instr+'</p>':'')
     +(steps?'<ul class="mod-steps">'+steps+'</ul>':'')
     +(iactHtml?'<div class="mod-div"></div><div class="iact">'+(isScreenAware?'':'<p class="iact-lbl">Experiment</p>')+iactHtml+'</div>':'')
-    +'<div class="mod-div" id="ref-div-'+m.id+'"'+(isScreenAware?' style="opacity:0;transition:opacity 800ms ease"':'')+'>'
-    +'</div>'
-    +'<div id="ref-section-'+m.id+'"'+(isScreenAware?' style="opacity:0;pointer-events:none;transition:opacity 1200ms ease"':'')+'>'
-    +(m.prompt?'<p class="ref-prompt">'+m.prompt+'</p>':'')
-    +'<textarea class="ref-area" id="ra-'+m.id+'" placeholder="Write here, or simply sit." oninput="autoSaveRef(\''+m.id+'\')">' +saved+'</textarea>'
-    +(m.silent?'':'<div class="ref-row"><button class="btn btn-ghost btn-sm" onclick="saveRef(\''+m.id+'\')" >Save</button><span class="ref-saved" id="rs-'+m.id+'">Saved.</span></div>')
-    +'</div>'
+    +(m.noRef?''
+      :'<div class="mod-div" id="ref-div-'+m.id+'"'+(isScreenAware?' style="opacity:0;transition:opacity 800ms ease"':'')+'></div>'
+      +'<div id="ref-section-'+m.id+'"'+(isScreenAware?' style="opacity:0;pointer-events:none;transition:opacity 1200ms ease"':'')+'>'
+      +(m.prompt?'<p class="ref-prompt">'+m.prompt+'</p>':'')
+      +'<textarea class="ref-area" id="ra-'+m.id+'" placeholder="Write here, or simply sit." oninput="autoSaveRef(\''+m.id+'\')" onblur="autoSaveRef(\''+m.id+'\')">' +saved+'</textarea>'
+      +'</div>')
     +'<div class="mod-foot">'
     +'<span class="mod-continue-txt">Continue when ready.</span>'
     +'<button class="btn btn-primary" onclick="nextMod()">'+(isLast?'Return':'Next')+'</button>'
@@ -1170,6 +1174,7 @@ function nextMod(){
   var j=J[S.journey];
   var mod=j.mods[S.module];
   if(!mod.airlock)localStorage.setItem('dm_d_'+mod.id,'1');
+  if(mod.id==='m26'&&!document.body.classList.contains('journey2-complete')){document.body.classList.add('journey2-complete');}
   clearInterval(S.timerInt);
   if(S.module<j.mods.length-1){
     var body=document.getElementById('mod-body');
@@ -1217,7 +1222,7 @@ function buildIact(type,mid){
   if(type==='memTransform')return '<p class="dim mb2" style="font-size:.875rem">Type a memory.</p><input class="mem-input" id="memi-'+mid+'" placeholder="A memory..." onkeydown="transformMem(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="transformMem({key:\'Enter\'},\''+mid+'\')">&#8594;</button><div class="mem-out" id="memo-'+mid+'"></div>';
   if(type==='agencyTest')return '<p class="dim mb2" style="font-size:.875rem">Press when you decide to. Notice what happens before the press.</p><button class="agency-btn" onclick="logAgency(\''+mid+'\')">I am pressing this now</button><div class="agency-log" id="al-'+mid+'"></div>';
   if(type==='idStack')return '<div class="id-layers" id="il-'+mid+'">'+['Your name','Your occupation','Your relationships','Your beliefs','Your history'].map(function(l){return '<div class="id-layer"><span class="id-name">'+l+'</span><button class="id-rm" onclick="rmLayer(this,\''+mid+'\')">Remove</button></div>';}).join('')+'</div><div class="id-reveal mt2" id="idr-'+mid+'">What is present when the attributes are removed?</div>';
-  if(type==='contemp')return '<div class="contemp"><p>Sit with this for a moment.<br>No analysis required.</p></div>';
+  if(type==='contemp'){var ctxt=mid==='m09'?'Sit with this.':'Sit with this for a moment.<br>No analysis required.';return '<div class="contemp"><p>'+ctxt+'</p></div>';}
   if(type==='contempCheck')return '<div class="contemp-check"><label class="cc-label"><input type="checkbox" class="cc-box"><span>I can think of someone right now.</span></label></div>';
   if(type==='narToggle')return '<div class="toggle-pair"><button class="t-opt on" id="nts-'+mid+'" onclick="setNar(\'story\',\''+mid+'\')">Story</button><button class="t-opt" id="ntx-'+mid+'" onclick="setNar(\'sens\',\''+mid+'\')">Sensation</button></div><p class="t-desc dim" id="ntd-'+mid+'">Story: "I felt anxious because of what she said, and now I am worried about tomorrow."</p>';
   if(type==='silSpace')return '<div class="toggle-pair"><button class="t-opt on" id="sss-'+mid+'" onclick="setSil(\'sound\',\''+mid+'\')">Sound</button><button class="t-opt" id="ssl-'+mid+'" onclick="setSil(\'sil\',\''+mid+'\')">Silence</button></div><p class="t-desc dim" id="ssd-'+mid+'">Notice: right now, there is sound. And it appears within something.</p>';
@@ -1236,9 +1241,9 @@ function buildIact(type,mid){
   if(type==='emotPres')return '<p class="dim mb2" style="font-size:.875rem">Name what is here, without commentary.</p><div class="body-map">'+['Calm','Uneasy','Tender','Heavy','Alert','Open'].map(function(e){return '<div class="bz" onclick="selEmotion(this,\''+mid+'\')">'+e+'</div>';}).join('')+'</div><div class="bz-note show" id="bzn-'+mid+'">Select what is present. Then stay with it.</div>';
   if(type==='certainty')return '<p class="dim mb2" style="font-size:.875rem">What have you concluded from these modules?</p><input class="sk-input" id="cci-'+mid+'" placeholder="I am now certain that..." onkeydown="checkCert(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="checkCert({key:\'Enter\'},\''+mid+'\')">Examine</button><div class="sk-resp" id="ccr-'+mid+'"></div>';
   if(type==='returnSt')return '<div class="return-text">Nothing special is required.<br><br>The next ordinary moment<br>is the practice.</div><p style="text-align:center;font-size:.875rem;color:var(--dim);opacity:.55;margin-top:2rem">Close this. Go outside.</p>';
-  if(type==='attnWatch')return '<p class="dim mb2" style="font-size:.875rem">Tap when you notice attention has shifted.</p><div class="attn-field" id="af-'+mid+'" onclick="tapAttn(\''+mid+'\')" ontouchstart="tapAttn(\''+mid+'\')"></div><p class="attn-count dim" id="attn-count-'+mid+'">0 shifts noticed</p>';
+  if(type==='attnWatch')return '<p class="dim mb2" style="font-size:.875rem">Tap when you notice attention has shifted.</p><div class="attn-field" id="af-'+mid+'" onclick="tapAttn(\''+mid+'\')" ontouchstart="tapAttn(\''+mid+'\')"></div><p class="attn-count dim" id="attn-count-'+mid+'"></p>';
   if(type==='langDissolve')return '<p class="dim mb2" style="font-size:.875rem">Type what is present.</p><div class="t-row"><input class="t-input" id="ldi-'+mid+'" placeholder="What is present..." onkeydown="submitLangD(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitLangD({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><p class="lang-display" id="ldp-'+mid+'"></p><p class="lang-after dim" id="lda-'+mid+'" style="opacity:0;transition:opacity 1.5s ease;text-align:center;margin-top:1rem;font-size:.875rem"></p>';
-  if(type==='reactChain'){return '<div id="rc-'+mid+'"><p class="dim mb2" style="font-size:.875rem">What arose in the body?</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="A sensation..." onkeydown="reactNext(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p></div>';}
+  if(type==='reactChain'){return '<div id="rc-'+mid+'"><p class="dim mb2" style="font-size:.875rem">'+_reactLabels[0]+'</p><div class="t-row"><input class="t-input" id="rci-'+mid+'-0" placeholder="A sensation..." onkeydown="reactNext(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'-0" onclick="reactNext({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div></div>';}
   if(type==='stabilityCheck')return '<p class="dim mb2" style="font-size:.875rem">How does this moment feel?</p><div class="sc-opts" id="sc-'+mid+'"><button class="sc-btn" onclick="selectStability(\'clear\',\''+mid+'\')">Clear</button><button class="sc-btn" onclick="selectStability(\'spacious\',\''+mid+'\')">Spacious</button><button class="sc-btn" onclick="selectStability(\'unsettled\',\''+mid+'\')">Unsettled</button><button class="sc-btn" onclick="selectStability(\'distant\',\''+mid+'\')">Distant</button></div><p class="sc-resp dim" id="scr-'+mid+'" style="min-height:1.5rem;margin-top:1rem;text-align:center"></p>';
   if(type==='screenAware')return '';
   if(type==='dreamDissolve')return '<p class="dim mb2" style="font-size:.875rem">Type a fragment of the dream.</p><div class="t-row"><input class="t-input" id="ddi-'+mid+'" placeholder="A fragment..." onkeydown="submitDream(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitDream({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><p class="lang-display" id="ddp-'+mid+'"></p><p class="lang-after dim" id="dda-'+mid+'" style="opacity:0;transition:opacity 1.5s ease;text-align:center;margin-top:1rem;font-size:.875rem"></p>';
@@ -1250,6 +1255,8 @@ function buildIact(type,mid){
 
 function initIact(type,mid){
   if(type==='agencyTest'){delete _agencyFirst[mid];agencyC=0;}
+  if(type==='attnWatch'){_attnC=0;}
+  if(type==='reactChain'){_reactPhase[mid]=0;}
   if(type==='narToggle')setNar('story',mid);
   if(type==='silSpace')setSil('sound',mid);
   if(type==='reviewInt'){var el=document.getElementById('rq-'+mid);if(el&&el.classList.contains('review-q-saved'))setTimeout(function(){el.style.opacity='1';},100);}
@@ -1257,7 +1264,7 @@ function initIact(type,mid){
     var gs=document.getElementById('gs-'+mid);var n=10;
     var t=setInterval(function(){
       n--;if(n>0){if(gs)gs.textContent='Hold for '+n+(n===1?' second.':' seconds.');}
-      else{clearInterval(t);if(gs){gs.textContent='Continue when ready.';gs.style.opacity='1';}}
+      else{clearInterval(t);if(gs){gs.style.transition='opacity 1.5s ease';gs.style.opacity='0';}}
     },1000);
   }
   if(type==='screenAware'){
@@ -1310,7 +1317,7 @@ function selectOwn(btn,choice){
 }
 
 var LOC_R=['Could that location itself be an object? Where is the awareness of it?',
-  'Something was found. Can that something also be observed?',
+  'If it was found, can it be observed?',
   'You are looking for the looker. Does the looker have a location?',
   'Can awareness be located?'];
 var locC=0;
@@ -1353,7 +1360,7 @@ function selZone(el,mid){
     var txt;
     if(mid==='m31'){txt='Does the warmth have a shape?';}
     else if(mid==='m32'){txt='Stay with the sensation, before the story.';}
-    else{txt='Notice: is there a solid '+el.textContent.toLowerCase()+', or is there sensation?';}
+    else{txt='Is there a solid '+el.textContent.toLowerCase()+', or is there sensation?';}
     note.textContent=txt;note.classList.add('show');
   }
 }
@@ -1361,7 +1368,7 @@ function selEmotion(el,mid){
   el.closest('.body-map').querySelectorAll('.bz').forEach(function(b){b.classList.remove('on');});
   el.classList.add('on');
   var note=document.getElementById('bzn-'+mid);
-  if(note){note.textContent=el.textContent+' is present. Stay with it without trying to change it.';note.classList.add('show');}
+  if(note){note.textContent=el.textContent+' is present.';note.classList.add('show');}
 }
 
 function tickNow(mid){var el=document.getElementById('now-'+mid);if(!el)return;el.textContent=parseInt(el.textContent)+1;}
@@ -1370,7 +1377,7 @@ var SK_R=['And who is the one saying that?','Can that seeker find itself?',
   'Look for the one who just offered that answer.',
   'Before that thought, was there a seeker?',
   'Is the seeker something you find -- or something you assume?',
-  'Notice what has been happening for the last few minutes.'];
+  'Right now — is there a seeker?'];
 var skC=0;
 function submitSeeker(e,mid){
   if(e.key!=='Enter')return;
@@ -1397,7 +1404,7 @@ function transformMem(e,mid){
   var inp=document.getElementById('memi-'+mid);if(!inp||!inp.value.trim())return;
   var txt=inp.value.trim();
   var out=document.getElementById('memo-'+mid);
-  if(out){out.textContent='"'+txt+'" — this memory is appearing now.';out.classList.add('show');}
+  if(out){out.innerHTML='\u201c'+txt+'\u201d<small style="display:block;margin-top:.625rem;opacity:.45;font-style:normal;letter-spacing:.08em;text-transform:uppercase;font-size:.6875rem">Appearing now.</small>';out.classList.add('show');}
 }
 
 var agencyC=0;
