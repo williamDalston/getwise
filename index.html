@@ -750,7 +750,7 @@ function selectStability(choice,mid){
 
 
 var S={screen:'onboarding',deepMode:true,
-  journey:0,module:0,plan:'mo',imm:false,audio:false,breath:false,simp:false,timerInt:null,timerSecs:0,modCount:0};
+  journey:0,module:0,plan:'mo',imm:false,audio:false,breath:false,simp:false,timerInt:null,timerSecs:0,modCount:0,entryShown:false};
 
 var J=[
   {id:'obs',title:'Inquiry',purpose:'Examine the relationship between content and awareness.',
@@ -1068,7 +1068,7 @@ function startJourney(ji){
     if(!localStorage.getItem('dm_d_'+j.mods[i].id)){start=i;break;}
     if(i===j.mods.length-1)start=0;
   }
-  S.module=start;loadModule();
+  S.module=start;S.entryShown=false;loadModule();
 }
 
 function loadModule(skipEntry){
@@ -1100,12 +1100,13 @@ function loadModule(skipEntry){
   modContent.classList.remove('show');
   modContent.style.opacity='0';
   modContent.innerHTML='';
-  if(skipEntry){
+  if(skipEntry||S.entryShown){
     entry.style.opacity='0';entry.style.pointerEvents='none';
     setTimeout(function(){renderModContent(m);modContent.classList.add('show');modContent.style.opacity='1';},100);
     S.timerSecs=0;
     S.timerInt=setInterval(function(){S.timerSecs++;updateTimer();},1000);
   }else{
+    S.entryShown=true;
     entry.style.opacity='1';entry.style.pointerEvents='all';
     meText.classList.remove('show');meBtn.style.display='none';meBtn.style.opacity='0';
     setTimeout(function(){meText.classList.add('show');},300);
