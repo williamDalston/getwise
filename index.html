@@ -1084,9 +1084,11 @@ function loadModule(skipEntry){
   nav('module');
   syncAudioFreq();
   var dots=document.getElementById('mp-dots');
-  dots.innerHTML=j.mods.map(function(_,i){
+  dots.innerHTML=j.mods.map(function(mod,i){
     var c='mpd';if(i<S.module)c+=' done';if(i===S.module)c+=' active';
-    return '<div class="'+c+'"></div>';
+    var dot='<div class="'+c+'"></div>';
+    if(S.journey===1&&mod.id==='m14'){dot+='<div style="width:1px;height:5px;background:rgba(255,255,255,0.1);flex-shrink:0;align-self:center;margin:0 2px"></div>';}
+    return dot;
   }).join('');
   var pfill=document.getElementById('mod-pfill');if(pfill)pfill.style.width=((S.module/j.mods.length)*100)+'%';
   window._jMids=j.mods.map(function(x){return x.id;});
@@ -1208,7 +1210,7 @@ function buildIact(type,mid){
   if(type==='locationFinder')return '<p class="dim mb2" style="font-size:.875rem">Touch the exact location of the one who is looking.</p><div class="loc-canvas" onclick="handleLoc(event,this)" ontouchstart="handleLoc(event,this)" id="lc-'+mid+'"><div class="loc-grid"></div><div class="loc-marker" id="lm-'+mid+'"></div></div><div class="loc-resp" id="lr-'+mid+'"></div>';
   if(type==='fieldExp'){var flbl=mid==='m08'?'When ready, tap once.':'Touch anywhere to locate the center of the visual field.';return '<p class="dim mb2" style="font-size:.875rem">'+flbl+'</p><div class="field-area" onclick="handleField(\''+mid+'\')" ontouchstart="handleField(\''+mid+'\')" id="fa-'+mid+'"><div class="field-dot"></div><div class="field-ring"></div><div class="field-ring fr2"></div><div class="field-ring fr3"></div></div><div class="field-resp" id="fr-'+mid+'"></div>';}
   if(type==='sensLoc')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation lives in the body.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div><div class="mt3"><div class="sens-labels"><span>Faint</span><span>Intense</span></div><input class="sens-slider" type="range" min="0" max="10" value="0" oninput="this.nextElementSibling.textContent=\'Intensity: \'+this.value"><p class="dim" style="font-size:.8125rem;margin-top:.25rem">Intensity: 0</p></div>';
-  if(type==='nowTrack')return '<div class="now-num" id="now-'+mid+'">0</div><p class="now-lbl">Present moments noticed</p><button class="btn btn-ghost btn-sm now-btn" onclick="tickNow(\''+mid+'\')">Now</button><p class="dim mt2" style="font-size:.8125rem;text-align:center">Each press: a deliberate return to this moment.</p>';
+  if(type==='nowTrack')return '<div class="now-num" id="now-'+mid+'">0</div><p class="now-lbl">Present moments noticed</p><button class="btn btn-ghost btn-sm now-btn" onclick="tickNow(\''+mid+'\')">Now</button>';
   if(type==='seeker')return '<p class="dim mb2" style="font-size:.875rem">Who is seeking? Type your answer.</p><input class="sk-input" id="ski-'+mid+'" placeholder="The seeker is..." onkeydown="submitSeeker(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="submitSeeker({key:\'Enter\'},\''+mid+'\')">Inquire</button><div class="sk-resp" id="skr-'+mid+'"></div>';
   if(type==='listening')return '<p class="dim mb2" style="font-size:.875rem">Hold while listening to whatever sounds exist in this space right now. Don\'t name them.</p><div class="sil-track"><div class="sil-fill" id="slf-'+mid+'"></div></div><p class="sil-count" id="slc-'+mid+'">0 seconds</p><button class="btn btn-ghost btn-sm mt2 w100" onmousedown="startListen(\''+mid+'\')" ontouchstart="startListen(\''+mid+'\')" onmouseup="stopListen()" ontouchend="stopListen()" onmouseleave="stopListen()">Hold to listen</button>';
   if(type==='bodyMap')return '<p class="dim mb2" style="font-size:.875rem">Touch a region. Notice what is actually there.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
@@ -1247,6 +1249,7 @@ function buildIact(type,mid){
 }
 
 function initIact(type,mid){
+  if(type==='agencyTest'){delete _agencyFirst[mid];agencyC=0;}
   if(type==='narToggle')setNar('story',mid);
   if(type==='silSpace')setSil('sound',mid);
   if(type==='reviewInt'){var el=document.getElementById('rq-'+mid);if(el&&el.classList.contains('review-q-saved'))setTimeout(function(){el.style.opacity='1';},100);}
@@ -1303,7 +1306,7 @@ function selectOwn(btn,choice){
   btn.closest('.own-opts').querySelectorAll('.own-opt').forEach(function(b){b.classList.remove('chosen');});
   btn.classList.add('chosen');
   var r=btn.closest('.iact').querySelector('.own-resp');
-  if(r){r.textContent=choice==='mine'?'Did you choose it — or did the sense of ownership arrive with it?':'If it appeared — was there a recipient it appeared to?';r.classList.add('show');}
+  if(r){r.textContent=choice==='mine'?'Did ownership arrive with it?':'Did it appear to someone?';r.classList.add('show');}
 }
 
 var LOC_R=['Could that location itself be an object? Where is the awareness of it?',
@@ -1346,7 +1349,13 @@ function selZone(el,mid){
   el.closest('.body-map').querySelectorAll('.bz').forEach(function(b){b.classList.remove('on');});
   el.classList.add('on');
   var note=document.getElementById('bzn-'+mid);
-  if(note){note.textContent='Notice: is there a solid '+el.textContent.toLowerCase()+', or is there sensation?';note.classList.add('show');}
+  if(note){
+    var txt;
+    if(mid==='m31'){txt='Does the warmth have a shape?';}
+    else if(mid==='m32'){txt='Stay with the sensation, before the story.';}
+    else{txt='Notice: is there a solid '+el.textContent.toLowerCase()+', or is there sensation?';}
+    note.textContent=txt;note.classList.add('show');
+  }
 }
 function selEmotion(el,mid){
   el.closest('.body-map').querySelectorAll('.bz').forEach(function(b){b.classList.remove('on');});
