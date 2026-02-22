@@ -35,11 +35,15 @@
   --text:#E6E8EB;--dim:#9BA1A6;
   --amber:#B48A4A;--amber-bg:rgba(180,138,74,0.1);--amber-b:rgba(180,138,74,0.3);
   --b:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.1);
+  transition:background-color 1200ms ease;
+}
+body.journey2-complete{
+  --base:#111216;--amber:#BA8F52;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;
   background:var(--base);color:var(--text);-webkit-font-smoothing:antialiased;
-  -webkit-text-size-adjust:100%;text-size-adjust:100%}
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;transition:background-color 1200ms ease}
 .screen{position:fixed;inset:0;display:flex;flex-direction:column;
   opacity:0;pointer-events:none;transition:opacity 600ms ease}
 .screen.active{opacity:1;pointer-events:all}
@@ -152,6 +156,13 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 .mpd.active{background:var(--amber)}
 .mod-timer{font-size:.8125rem;color:var(--dim);font-variant-numeric:tabular-nums;min-width:3ch}
 .mod-controls{display:flex;gap:.625rem}
+#tools-overlay{position:fixed;bottom:0;left:0;right:0;background:var(--base);border-top:1px solid var(--b);padding:1.5rem;display:flex;justify-content:center;gap:1rem;opacity:0;pointer-events:none;transition:opacity 400ms ease;z-index:15}
+#tools-overlay.show{opacity:1;pointer-events:all}
+#tools-glyph{position:fixed;bottom:1.5rem;right:1.5rem;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:1.125rem;color:var(--dim);cursor:pointer;transition:all 300ms ease;z-index:14;opacity:0;pointer-events:none}
+#screen-module:not(.gone) #tools-glyph{opacity:0.4;pointer-events:all}
+#tools-glyph:hover{opacity:0.6;background:rgba(255,255,255,0.05)}
+#tools-glyph.active{opacity:0.7;background:rgba(255,255,255,0.08)}
+body.tools-open #mod-content{opacity:0.92}
 #mod-body{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;-webkit-overflow-scrolling:touch}
 #mod-body::-webkit-scrollbar{width:2px}
 #mod-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.04)}
@@ -604,6 +615,14 @@ body.simplify .mod-continue-txt{display:none}
   <div id="icon-hint" style="text-align:right;padding:.375rem 1.5rem 0;font-size:.6875rem;color:var(--dim);opacity:0;transition:opacity 1s ease;pointer-events:none">&#9834; audio &nbsp; &#9675; breath &nbsp; &#8635; ground &nbsp; &middot; simplify &nbsp; &#8865; immersion</div>
   <div id="mod-body"><div id="mod-content"></div></div>
   <div id="breath-ring"></div>
+  <button id="tools-glyph" onclick="toggleTools()" aria-label="Tools">&#8729;</button>
+  <div id="tools-overlay" onclick="if(event.target===this)toggleTools()">
+    <button class="icon-btn" id="audio-btn-overlay" onclick="toggleAudio();toggleTools();" title="Audio" aria-label="Toggle audio">&#9834;</button>
+    <button class="icon-btn" id="breath-btn-overlay" onclick="toggleBreath();toggleTools();" title="Breath pacer" aria-label="Toggle breath pacer">&#9675;</button>
+    <button class="icon-btn" id="ground-btn-overlay" onclick="showGround();toggleTools();" title="Ground" aria-label="Show grounding">&#8635;</button>
+    <button class="icon-btn" id="simp-btn-overlay" onclick="toggleSimplify();toggleTools();" title="Simplify" aria-label="Toggle simplify mode">&#8729;</button>
+    <button class="icon-btn" id="imm-btn-overlay" onclick="toggleImm();toggleTools();" title="Immersion" aria-label="Toggle immersion mode">&#8865;</button>
+  </div>
 </div>
 
 <!-- REFLECTIONS -->
@@ -1046,6 +1065,7 @@ function resetProgress(){
 }
 function startJourney(ji){
   if(!J[ji])return;
+  checkJourney2Complete();
   S.journey=ji;var j=J[ji];var start=0;
   for(var i=0;i<j.mods.length;i++){
     if(!localStorage.getItem('dm_d_'+j.mods[i].id)){start=i;break;}
@@ -1156,7 +1176,21 @@ function nextMod(){
     modContent.style.opacity='0';
     body.style.transition='opacity 400ms ease';body.style.opacity='0';
     setTimeout(function(){body.style.opacity='1';S.module++;loadModule();},1500);
-  }else backToJourneys();
+  }else{
+    checkJourney2Complete();
+    backToJourneys();
+  }
+}
+function checkJourney2Complete(){
+  var j2=J[1];
+  if(!j2)return;
+  var allComplete=true;
+  for(var i=0;i<j2.mods.length;i++){
+    if(!j2.mods[i].airlock&&!localStorage.getItem('dm_d_'+j2.mods[i].id)){allComplete=false;break;}
+  }
+  if(allComplete&&!document.body.classList.contains('journey2-complete')){
+    document.body.classList.add('journey2-complete');
+  }
 }
 
 function prevMod(){
@@ -1506,8 +1540,22 @@ function exportRef(){
   a.download='deep-mode-reflections.txt';a.click();
 }
 
-function toggleImm(){S.imm=!S.imm;document.body.classList.toggle('immersion',S.imm);var btn=document.getElementById('imm-btn');if(btn)btn.classList.toggle('on',S.imm);}
-function toggleSimplify(){S.simp=!S.simp;document.body.classList.toggle('simplify',S.simp);var btn=document.getElementById('simp-btn');if(btn)btn.classList.toggle('on',S.simp);}
+function toggleTools(){
+  var overlay=document.getElementById('tools-overlay');
+  var glyph=document.getElementById('tools-glyph');
+  var isOpen=overlay.classList.contains('show');
+  if(isOpen){
+    overlay.classList.remove('show');
+    glyph.classList.remove('active');
+    document.body.classList.remove('tools-open');
+  }else{
+    overlay.classList.add('show');
+    glyph.classList.add('active');
+    document.body.classList.add('tools-open');
+  }
+}
+function toggleImm(){S.imm=!S.imm;document.body.classList.toggle('immersion',S.imm);var btn=document.getElementById('imm-btn');var btnOverlay=document.getElementById('imm-btn-overlay');if(btn)btn.classList.toggle('on',S.imm);if(btnOverlay)btnOverlay.classList.toggle('on',S.imm);}
+function toggleSimplify(){S.simp=!S.simp;document.body.classList.toggle('simplify',S.simp);var btn=document.getElementById('simp-btn');var btnOverlay=document.getElementById('simp-btn-overlay');if(btn)btn.classList.toggle('on',S.simp);if(btnOverlay)btnOverlay.classList.toggle('on',S.simp);}
 function exitImm(){if(!S.imm)return;S.imm=false;document.body.classList.remove('immersion');document.getElementById('imm-btn').classList.remove('on');}
 
 /* AMBIENT AUDIO */
@@ -1543,7 +1591,10 @@ function audioStop(){
 }
 function toggleAudio(){
   S.audio=!S.audio;
-  document.getElementById('audio-btn').classList.toggle('on',S.audio);
+  var btn=document.getElementById('audio-btn');
+  var btnOverlay=document.getElementById('audio-btn-overlay');
+  if(btn)btn.classList.toggle('on',S.audio);
+  if(btnOverlay)btnOverlay.classList.toggle('on',S.audio);
   if(S.audio)audioStart();else audioStop();
 }
 
@@ -1568,7 +1619,10 @@ function startBreathTone(){
 function stopBreathTone(){clearInterval(_breathToneT);_breathToneT=null;}
 function toggleBreath(){
   S.breath=!S.breath;
-  document.getElementById('breath-btn').classList.toggle('on',S.breath);
+  var btn=document.getElementById('breath-btn');
+  var btnOverlay=document.getElementById('breath-btn-overlay');
+  if(btn)btn.classList.toggle('on',S.breath);
+  if(btnOverlay)btnOverlay.classList.toggle('on',S.breath);
   document.getElementById('breath-ring').classList.toggle('on',S.breath);
   if(S.breath)startBreathTone();else stopBreathTone();
 }
@@ -1597,6 +1651,8 @@ function hidePause(){
 function showGround(){
   var drawer=document.getElementById('ground-drawer');
   drawer.classList.add('on');
+  var overlay=document.getElementById('tools-overlay');
+  if(overlay&&overlay.classList.contains('show'))toggleTools();
   if(_gain&&AC)_gain.gain.setTargetAtTime(0.005,AC.currentTime,0.8);
   setTimeout(function(){
     var btn=drawer.querySelector('.btn');
@@ -1656,7 +1712,7 @@ document.addEventListener('keydown',function(e){
   }
 });
 
-document.addEventListener('DOMContentLoaded',function(){S.deepMode=true;});
+document.addEventListener('DOMContentLoaded',function(){S.deepMode=true;checkJourney2Complete();});
 </script>
 </body>
 </html>
