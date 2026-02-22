@@ -794,8 +794,16 @@ function nav(t){
   nxt.classList.remove('gone');
   requestAnimationFrame(function(){requestAnimationFrame(function(){nxt.classList.add('active');});});
   S.screen=t;
-  if(t==='journey-select')renderJourneys();
-  if(t==='reflections')renderReflections();
+  if(t==='journey-select'){
+    var body=document.getElementById('journey-body');
+    if(body)body.innerHTML='';
+    setTimeout(function(){renderJourneys();},50);
+  }
+  if(t==='reflections'){
+    var body=document.getElementById('ref-list');
+    if(body)body.innerHTML='';
+    setTimeout(function(){renderReflections();},50);
+  }
 }
 
 (function initOb(){
@@ -1163,11 +1171,14 @@ function checkCert(e,mid){
 var goldMode=false;
 function toggleGold(){
   goldMode=!goldMode;
-  document.getElementById('gold-state').textContent=goldMode?'The substance -- gold -- is one. The forms are temporary appearances of the same underlying reality.':'The forms -- rings, necklaces, bracelets -- appear distinct and separate.';
-  document.getElementById('gold-btn').textContent=goldMode?'Observe forms':'Observe substance';
+  var state=document.getElementById('gold-state');
+  var btn=document.getElementById('gold-btn');
+  if(state)state.textContent=goldMode?'The substance -- gold -- is one. The forms are temporary appearances of the same underlying reality.':'The forms -- rings, necklaces, bracelets -- appear distinct and separate.';
+  if(btn)btn.textContent=goldMode?'Observe forms':'Observe substance';
 }
 function setSky(mode){
-  document.getElementById('sky-state').textContent=mode==='in'?'Participating: you are inside the thought, moved by it, identified with it.':'Witnessing: the thought passes through awareness the way a cloud passes through sky. The sky is not the cloud.';
+  var state=document.getElementById('sky-state');
+  if(state)state.textContent=mode==='in'?'Participating: you are inside the thought, moved by it, identified with it.':'Witnessing: the thought passes through awareness the way a cloud passes through sky. The sky is not the cloud.';
 }
 
 function saveRef(mid){
@@ -1221,8 +1232,8 @@ function exportRef(){
   a.download='deep-mode-reflections.txt';a.click();
 }
 
-function toggleImm(){S.imm=!S.imm;document.body.classList.toggle('immersion',S.imm);document.getElementById('imm-btn').classList.toggle('on',S.imm);}
-function toggleSimplify(){S.simp=!S.simp;document.body.classList.toggle('simplify',S.simp);document.getElementById('simp-btn').classList.toggle('on',S.simp);}
+function toggleImm(){S.imm=!S.imm;document.body.classList.toggle('immersion',S.imm);var btn=document.getElementById('imm-btn');if(btn)btn.classList.toggle('on',S.imm);}
+function toggleSimplify(){S.simp=!S.simp;document.body.classList.toggle('simplify',S.simp);var btn=document.getElementById('simp-btn');if(btn)btn.classList.toggle('on',S.simp);}
 function exitImm(){if(!S.imm)return;S.imm=false;document.body.classList.remove('immersion');document.getElementById('imm-btn').classList.remove('on');}
 
 /* AMBIENT AUDIO */
