@@ -92,10 +92,11 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 .w100{width:100%}.tc{text-align:center}
 .amber{color:var(--amber)}.dim{color:var(--dim)}
 /* ONBOARDING */
-#screen-onboarding{background:#0B0C0F;align-items:center;justify-content:center;text-align:center;opacity:1;pointer-events:all;transition:opacity 300ms ease}
+@keyframes obBreath{0%{background:#0B0C0F}50%{background:#0D0E12}100%{background:#0B0C0F}}
+#screen-onboarding{background:#0B0C0F;align-items:center;justify-content:center;text-align:center;opacity:1;pointer-events:all;transition:opacity 300ms ease;animation:obBreath 6s ease-in-out 1 forwards}
 .ob-wrap{max-width:520px;padding:2rem}
 .ob-line{font-size:clamp(1.25rem,3vw,1.75rem);font-weight:300;color:var(--text);
-  opacity:0;transition:opacity 1200ms ease;line-height:1.6;margin-bottom:1.5rem}
+  opacity:0;transition:opacity 900ms ease;line-height:1.6;margin-bottom:1.5rem}
 .ob-line.show{opacity:1}
 /* LANDING */
 #screen-landing{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
@@ -475,10 +476,10 @@ body.simplify .iact,body.simplify .ref-prompt,body.simplify .ref-area{display:no
 <div id="screen-onboarding" class="screen active">
   <div class="ob-wrap">
     <p class="ob-line" id="ob1">Before continuing, pause for a moment.</p>
-    <div id="ob2" style="font-size:clamp(1.25rem,3vw,1.75rem);font-weight:300;color:var(--text);opacity:0;transition:opacity 1200ms ease;line-height:1.6;margin-bottom:1.5rem;display:none">
+    <div id="ob2" style="font-size:clamp(1.25rem,3vw,1.75rem);font-weight:300;color:var(--text);opacity:0;transition:opacity 1100ms ease;line-height:1.6;margin-bottom:1.5rem;display:none">
       Notice that you are aware.
     </div>
-    <button class="btn btn-ghost" id="ob-cont" style="display:none;opacity:0;transition:opacity 800ms ease" onclick="nav('landing')">Continue</button>
+    <button class="btn btn-ghost" id="ob-cont" style="display:none;opacity:0;transition:opacity 700ms ease;pointer-events:none" onclick="nav('landing')">Continue</button>
   </div>
 </div>
 
@@ -988,15 +989,16 @@ function nav(t){
     sc.classList.remove('active');sc.classList.add('gone');nav('landing');return;
   }
   safeStorageSet('dm_v','1');
-  setTimeout(function(){ob1.classList.add('show');},200);
+  setTimeout(function(){ob1.classList.add('show');},150);
   setTimeout(function(){
     ob2.style.display='block';
     requestAnimationFrame(function(){requestAnimationFrame(function(){ob2.style.opacity='1';});});
-  },5000);
+  },2400);
   setTimeout(function(){
     cont.style.display='inline-flex';
-    requestAnimationFrame(function(){requestAnimationFrame(function(){cont.style.opacity='1';});});
-  },7500);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){cont.style.opacity='.65';});});
+    setTimeout(function(){cont.style.pointerEvents='all';},700);
+  },5200);
 })();
 
 function enterDeep(){nav('journey-select');}
@@ -1012,11 +1014,12 @@ function replayOnboarding(){
   var sc=document.getElementById('screen-onboarding');
   var ob1=document.getElementById('ob1'),ob2=document.getElementById('ob2'),cont=document.getElementById('ob-cont');
   ob1.classList.remove('show');ob2.style.opacity='0';ob2.style.display='none';
-  cont.style.opacity='0';cont.style.display='none';
+  cont.style.opacity='0';cont.style.display='none';cont.style.pointerEvents='none';
   nav('onboarding');
-  setTimeout(function(){ob1.classList.add('show');},200);
-  setTimeout(function(){ob2.style.display='block';requestAnimationFrame(function(){requestAnimationFrame(function(){ob2.style.opacity='1';});});},5000);
-  setTimeout(function(){cont.style.display='inline-flex';requestAnimationFrame(function(){requestAnimationFrame(function(){cont.style.opacity='1';});});},7500);
+  var sc=document.getElementById('screen-onboarding');sc.style.animation='none';sc.offsetHeight;sc.style.animation='';
+  setTimeout(function(){ob1.classList.add('show');},150);
+  setTimeout(function(){ob2.style.display='block';requestAnimationFrame(function(){requestAnimationFrame(function(){ob2.style.opacity='1';});});},2400);
+  setTimeout(function(){cont.style.display='inline-flex';requestAnimationFrame(function(){requestAnimationFrame(function(){cont.style.opacity='.65';});});setTimeout(function(){cont.style.pointerEvents='all';},700);},5200);
 }
 
 
