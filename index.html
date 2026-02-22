@@ -165,7 +165,6 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 .mod-timer.visible{opacity:.4}
 #timer-toggle{opacity:.25;font-size:.875rem;transition:opacity 400ms ease}
 #timer-toggle.active{opacity:.5}
-.mod-controls{display:flex;gap:.625rem}
 #tools-overlay{position:fixed;bottom:0;left:0;right:0;background:var(--base);border-top:1px solid var(--b);padding:1.5rem;display:flex;justify-content:center;gap:1rem;opacity:0;pointer-events:none;transition:opacity 400ms ease;z-index:15}
 #tools-overlay.show{opacity:1;pointer-events:all}
 #tools-glyph{position:fixed;bottom:1.5rem;right:1.5rem;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:1.125rem;color:var(--dim);cursor:pointer;transition:all 300ms ease;z-index:14;opacity:0;pointer-events:none}
@@ -230,7 +229,6 @@ body.tools-open #mod-content{opacity:0.92}
 .ground-btns{display:flex;gap:1rem}
 /* IMMERSION */
 body.immersion #mod-hdr{opacity:0;pointer-events:none}
-body.immersion #ground-btn{opacity:.18;pointer-events:all}
 /* SIMPLIFY */
 body.simplify .iact,body.simplify .ref-prompt,body.simplify .ref-area{display:none}
 .imm-strip{position:fixed;top:0;left:0;right:0;height:4px;z-index:300;cursor:pointer}
@@ -372,7 +370,6 @@ body.simplify .iact,body.simplify .ref-prompt,body.simplify .ref-area{display:no
 /* MOBILE / iOS / ANDROID */
 @media(pointer:coarse){
   .icon-btn{width:40px;height:40px}
-  .mod-controls{gap:.375rem}
   .bz{padding:.875rem .5rem;min-height:44px}
   .own-opt{padding:.75rem 1.25rem;min-height:44px}
   .t-opt{padding:.875rem 1rem;min-height:44px}
@@ -607,16 +604,8 @@ body.simplify .iact,body.simplify .ref-prompt,body.simplify .ref-area{display:no
     <div class="flex fi g2">
       <button class="icon-btn" id="timer-toggle" onclick="toggleTimer()" title="Timer" aria-label="Toggle timer">&#9201;</button>
       <span class="mod-timer" id="mod-timer">0:00</span>
-      <div class="mod-controls">
-        <button class="icon-btn" id="audio-btn" onclick="toggleAudio()" title="Audio" aria-label="Toggle audio">&#9834;</button>
-        <button class="icon-btn" id="breath-btn" onclick="toggleBreath()" title="Breath pacer" aria-label="Toggle breath pacer">&#9675;</button>
-        <button class="icon-btn" id="ground-btn" onclick="showGround()" title="Ground" aria-label="Show grounding">&#8635;</button>
-        <button class="icon-btn" id="simp-btn" onclick="toggleSimplify()" title="Simplify" aria-label="Toggle simplify mode">&#8729;</button>
-        <button class="icon-btn" id="imm-btn" onclick="toggleImm()" title="Immersion" aria-label="Toggle immersion mode">&#8865;</button>
-      </div>
     </div>
   </div>
-  <div id="icon-hint" style="text-align:right;padding:.375rem 1.5rem 0;font-size:.6875rem;color:var(--dim);opacity:0;transition:opacity 1s ease;pointer-events:none">&#9834; audio &nbsp; &#9675; breath &nbsp; &#8635; ground &nbsp; &middot; simplify &nbsp; &#8865; immersion</div>
   <div id="mod-body"><div id="mod-content"></div></div>
   <div id="breath-ring"></div>
   <button id="tools-glyph" onclick="toggleTools()" aria-label="Tools">&#8729;</button>
@@ -1082,7 +1071,7 @@ function loadModule(skipEntry){
   var j=J[S.journey];var m=j.mods[S.module];
   clearInterval(S.timerInt);S.timerSecs=0;updateTimer();
   document.body.classList.remove('immersion');S.imm=false;
-  document.getElementById('imm-btn').classList.remove('on');
+  document.getElementById('imm-btn-overlay').classList.remove('on');
   fieldC=0;locC=0;
   nav('module');
   syncAudioFreq();
@@ -1115,7 +1104,6 @@ function loadModule(skipEntry){
     entry.style.opacity='1';entry.style.pointerEvents='all';
     meText.classList.remove('show');meBtn.style.display='none';meBtn.style.opacity='0';
     setTimeout(function(){meText.classList.add('show');},300);
-    if(!localStorage.getItem('dm_hint')){localStorage.setItem('dm_hint','1');setTimeout(function(){var h=document.getElementById('icon-hint');if(h){h.style.opacity='.55';setTimeout(function(){h.style.opacity='0';},6000);}},2000);}
     setTimeout(function(){
       meBtn.style.display='inline-flex';
       requestAnimationFrame(function(){requestAnimationFrame(function(){meBtn.style.opacity='1';});});
@@ -1583,9 +1571,9 @@ function toggleTools(){
     document.body.classList.add('tools-open');
   }
 }
-function toggleImm(){S.imm=!S.imm;document.body.classList.toggle('immersion',S.imm);var btn=document.getElementById('imm-btn');var btnOverlay=document.getElementById('imm-btn-overlay');if(btn)btn.classList.toggle('on',S.imm);if(btnOverlay)btnOverlay.classList.toggle('on',S.imm);}
-function toggleSimplify(){S.simp=!S.simp;document.body.classList.toggle('simplify',S.simp);var btn=document.getElementById('simp-btn');var btnOverlay=document.getElementById('simp-btn-overlay');if(btn)btn.classList.toggle('on',S.simp);if(btnOverlay)btnOverlay.classList.toggle('on',S.simp);}
-function exitImm(){if(!S.imm)return;S.imm=false;document.body.classList.remove('immersion');document.getElementById('imm-btn').classList.remove('on');}
+function toggleImm(){S.imm=!S.imm;document.body.classList.toggle('immersion',S.imm);document.getElementById('imm-btn-overlay').classList.toggle('on',S.imm);}
+function toggleSimplify(){S.simp=!S.simp;document.body.classList.toggle('simplify',S.simp);document.getElementById('simp-btn-overlay').classList.toggle('on',S.simp);}
+function exitImm(){if(!S.imm)return;S.imm=false;document.body.classList.remove('immersion');document.getElementById('imm-btn-overlay').classList.remove('on');}
 
 /* AMBIENT AUDIO */
 var AC=null,_osc=null,_gain=null,_lfo=null,_lfoGain=null,_flt=null;
@@ -1626,10 +1614,7 @@ function toggleTimer(){
 }
 function toggleAudio(){
   S.audio=!S.audio;
-  var btn=document.getElementById('audio-btn');
-  var btnOverlay=document.getElementById('audio-btn-overlay');
-  if(btn)btn.classList.toggle('on',S.audio);
-  if(btnOverlay)btnOverlay.classList.toggle('on',S.audio);
+  document.getElementById('audio-btn-overlay').classList.toggle('on',S.audio);
   if(S.audio)audioStart();else audioStop();
 }
 
@@ -1654,17 +1639,14 @@ function startBreathTone(){
 function stopBreathTone(){clearInterval(_breathToneT);_breathToneT=null;}
 function toggleBreath(){
   S.breath=!S.breath;
-  var btn=document.getElementById('breath-btn');
-  var btnOverlay=document.getElementById('breath-btn-overlay');
-  if(btn)btn.classList.toggle('on',S.breath);
-  if(btnOverlay)btnOverlay.classList.toggle('on',S.breath);
+  document.getElementById('breath-btn-overlay').classList.toggle('on',S.breath);
   document.getElementById('breath-ring').classList.toggle('on',S.breath);
   if(S.breath)startBreathTone();else stopBreathTone();
 }
 function resetBreath(){
   if(!S.breath)return;
   S.breath=false;
-  document.getElementById('breath-btn').classList.remove('on');
+  document.getElementById('breath-btn-overlay').classList.remove('on');
   document.getElementById('breath-ring').classList.remove('on');
   stopBreathTone();
 }
@@ -1686,7 +1668,7 @@ function hidePause(){
     if(body){body.style.transition='opacity 400ms ease';body.style.opacity='1';}
     loadModule();
   }else{
-    var groundBtn=document.getElementById('ground-btn');
+    var groundBtn=document.getElementById('ground-btn-overlay');
     if(groundBtn)groundBtn.focus();
   }
 }
