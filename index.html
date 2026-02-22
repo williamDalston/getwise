@@ -862,9 +862,9 @@ var J=[
     {id:'m28',title:'Waking From Dream',
      instr:'Investigate the dissolution of a world.',
      steps:['Recall this morning, the moment you woke.',
-            'There was a world. Then it wasn't there.',
+            'There was a world. Then it wasn\'t there.',
             'What changed -- the world, or something else?'],
-     iact:'dreamDissolve',prompt:'What is the difference between a world that is real and one that isn't?'},
+     iact:'dreamDissolve',prompt:'What is the difference between a world that is real and one that isn\'t?'},
     {id:'m16',title:'Silence Interruption',
      instr:'Investigate the space between sounds.',
      steps:['Notice the presence of sound.',
@@ -1204,7 +1204,7 @@ function buildIact(type,mid){
   if(type==='reactChain'){return '<div id="rc-'+mid+'"><p class="dim mb2" style="font-size:.875rem">What arose in the body?</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="A sensation..." onkeydown="reactNext(event,''+mid+'')"><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p></div>';}
   if(type==='stabilityCheck')return '<p class="dim mb2" style="font-size:.875rem">How does this moment feel?</p><div class="sc-opts" id="sc-'+mid+'"><button class="sc-btn" onclick="selectStability('clear',''+mid+'')">Clear</button><button class="sc-btn" onclick="selectStability('spacious',''+mid+'')">Spacious</button><button class="sc-btn" onclick="selectStability('unsettled',''+mid+'')">Unsettled</button><button class="sc-btn" onclick="selectStability('distant',''+mid+'')">Distant</button></div><p class="sc-resp dim" id="scr-'+mid+'" style="min-height:1.5rem;margin-top:1rem;text-align:center"></p>';
   if(type==='screenAware')return '';
-  if(type==='dreamDissolve')return '<p class="dim mb2" style="font-size:.875rem">Type a fragment of the dream.</p><div class="t-row"><input class="t-input" id="ddi-'+mid+'" placeholder="A fragment..." onkeydown="submitDream(event,''+mid+'')"><button class="btn btn-ghost btn-sm" onclick="submitDream({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="lang-display" id="ddp-'+mid+'"></p><p class="lang-after dim" id="dda-'+mid+'" style="opacity:0;transition:opacity 1.5s ease;text-align:center;margin-top:1rem;font-size:.875rem"></p>';
+  if(type==='dreamDissolve')return '<p class="dim mb2" style="font-size:.875rem">Type a fragment of the dream.</p><div class="t-row"><input class="t-input" id="ddi-'+mid+'" placeholder="A fragment..." onkeydown="submitDream(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitDream({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><p class="lang-display" id="ddp-'+mid+'"></p><p class="lang-after dim" id="dda-'+mid+'" style="opacity:0;transition:opacity 1.5s ease;text-align:center;margin-top:1rem;font-size:.875rem"></p>';
   if(type==='kindWarmth')return '<p class="dim mb2" style="font-size:.875rem">Select where the warmth appears.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,''+mid+'')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
   if(type==='compSens')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation was felt.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,''+mid+'')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
   if(type==='gazeHold')return '<div class="gaze-field" id="gf-'+mid+'"><div class="gaze-center"></div></div><p class="gaze-status dim" id="gs-'+mid+'">Hold for 10 seconds.</p>';
