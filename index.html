@@ -1221,7 +1221,7 @@ function buildIact(type,mid){
   if(type==='memTransform')return '<p class="dim mb2" style="font-size:.875rem">Type a memory.</p><input class="mem-input" id="memi-'+mid+'" placeholder="A memory..." onkeydown="transformMem(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="transformMem({key:\'Enter\'},\''+mid+'\')">&#8594;</button><div class="mem-out" id="memo-'+mid+'"></div>';
   if(type==='agencyTest')return '<p class="dim mb2" style="font-size:.875rem">Press when you decide to. Notice what happens before the press.</p><button class="agency-btn" onclick="logAgency(\''+mid+'\')">I am pressing this now</button><div class="agency-log" id="al-'+mid+'"></div>';
   if(type==='idStack')return '<div class="id-layers" id="il-'+mid+'">'+['Your name','Your occupation','Your relationships','Your beliefs','Your history'].map(function(l){return '<div class="id-layer"><span class="id-name">'+l+'</span><button class="id-rm" onclick="rmLayer(this,\''+mid+'\')">Remove</button></div>';}).join('')+'</div><div class="id-reveal mt2" id="idr-'+mid+'">What is present when the attributes are removed?</div>';
-  if(type==='contemp'){var ctxt=mid==='m09'?'Sit with this.':'Sit with this for a moment.<br>No analysis required.';return '<div class="contemp"><p>'+ctxt+'</p></div>';}
+  if(type==='contemp')return '<div class="contemp"><p>Sit with this.</p></div>';
   if(type==='contempCheck')return '<div class="contemp-check"><label class="cc-label"><input type="checkbox" class="cc-box"><span>I can think of someone right now.</span></label></div>';
   if(type==='narToggle')return '<div class="toggle-pair"><button class="t-opt on" id="nts-'+mid+'" onclick="setNar(\'story\',\''+mid+'\')">Story</button><button class="t-opt" id="ntx-'+mid+'" onclick="setNar(\'sens\',\''+mid+'\')">Sensation</button></div><p class="t-desc dim" id="ntd-'+mid+'">Story: "I felt anxious because of what she said, and now I am worried about tomorrow."</p>';
   if(type==='silSpace')return '<div class="toggle-pair"><button class="t-opt on" id="sss-'+mid+'" onclick="setSil(\'sound\',\''+mid+'\')">Sound</button><button class="t-opt" id="ssl-'+mid+'" onclick="setSil(\'sil\',\''+mid+'\')">Silence</button></div><p class="t-desc dim" id="ssd-'+mid+'">Notice: right now, there is sound. And it appears within something.</p>';
@@ -1477,10 +1477,10 @@ function nextReview(mid,used,isSaved){
   }
 }
 
-var CERT_R=['Hold that conclusion lightly. Could the opposite also have something true in it?',
-  'Certainty closes inquiry. What would remain if you held this as a question instead?',
+var CERT_R=['What is holding that conclusion right now?',
+  'Is that certainty something you found — or something that formed?',
   'Who is certain? Can you find them?',
-  'Is this a realization -- or a new belief to protect?'];
+  'Is this a realization — or a new belief to protect?'];
 var certC=0;
 function checkCert(e,mid){
   if(e.key!=='Enter')return;
