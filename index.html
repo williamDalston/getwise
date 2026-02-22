@@ -386,10 +386,12 @@ body.simplify .mod-continue-txt{display:none}
   .journey-body{padding-bottom:max(3rem,calc(1.5rem + env(safe-area-inset-bottom)))}
 }
 /* ATTENTION WATCH */
-.attn-field{min-height:160px;position:relative;border-radius:3px;background:var(--base);border:1px solid var(--b);cursor:pointer;touch-action:manipulation}
-.attn-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--amber);opacity:.55;transition:left 2.4s ease,top 2.4s ease;transform:translate(-50%,-50%);pointer-events:none}
+.attn-field{min-height:140px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:var(--base);border:1px solid var(--b);cursor:pointer;touch-action:manipulation}
 .attn-count{font-size:.8125rem;text-align:center;margin-top:.625rem}
-.attn-resp{font-size:.875rem;text-align:center;margin-top:.5rem;min-height:1.25rem;transition:opacity .4s ease}
+/* GAZE HOLD */
+.gaze-field{display:flex;align-items:center;justify-content:center;min-height:140px;border:1px solid var(--b);border-radius:3px;background:var(--base)}
+.gaze-center{width:6px;height:6px;border-radius:50%;background:var(--amber);opacity:.5}
+.gaze-status{font-size:.875rem;text-align:center;margin-top:.75rem;transition:opacity .6s ease}
 /* LANGUAGE / DREAM DISSOLVE */
 .lang-display{font-size:1rem;color:var(--text);text-align:center;padding:.75rem 0;opacity:0;transition:opacity .3s ease;font-style:italic}
 /* REACT CHAIN */
@@ -430,18 +432,11 @@ body.simplify .mod-continue-txt{display:none}
   }
 }
 /* ATTENTION WATCH */
-var ATTN_R=['What noticed the shift?','Was there a choice in that noticing?','Can attention watch itself?','What chose where to land?'];
-var _attnMoveT=null,_attnC=0;
-function startAttnMove(mid){
-  var dot=document.getElementById('attn-dot-'+mid);if(!dot)return;
-  function move(){var x=8+Math.random()*82,y=8+Math.random()*82;dot.style.left=x+'%';dot.style.top=y+'%';}
-  move();_attnMoveT=setInterval(move,3200);
-}
+var _attnC=0;
 function tapAttn(mid){
   _attnC++;
-  var cnt=document.getElementById('attn-count-'+mid),resp=document.getElementById('attn-resp-'+mid);
+  var cnt=document.getElementById('attn-count-'+mid);
   if(cnt)cnt.textContent=_attnC+' shift'+(_attnC===1?'':'s')+' noticed';
-  if(resp){resp.textContent=ATTN_R[(_attnC-1)%ATTN_R.length];resp.classList.add('show');}
 }
 
 /* LANGUAGE DISSOLVE */
@@ -489,7 +484,6 @@ function reactNext(e,mid){
     var container=document.getElementById('rc-'+mid);
     if(container){container.innerHTML='<p class="dim mb2" style="font-size:.875rem">'+_reactLabels[2]+'</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="An impulse..." onkeydown="reactNext(event,''+mid+'')"><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p>';}
   }else if(phase===2){
-    if(respEl){respEl.textContent='The chain is visible now.';respEl.style.opacity='1';respEl.classList.add('show');}
     if(btn)btn.style.display='none';
   }
 }
@@ -502,9 +496,8 @@ function selectStability(choice,mid){
   if(btn){btn.style.opacity='1';btn.classList.add('on');}
   var resp=document.getElementById('scr-'+mid);
   if(choice==='distant'||choice==='unsettled'){
-    if(resp)resp.textContent=choice==='distant'?'Opening the grounding drawer.':'Nothing needs to happen.';
-    if(resp)resp.classList.add('show');
-    setTimeout(function(){showGround();},600);
+    if(resp){resp.textContent='Nothing needs to happen.';resp.classList.add('show');}
+    if(choice==='distant')setTimeout(function(){showGround();},600);
   }else{
     if(resp){resp.textContent='Continue when ready.';resp.classList.add('show');}
   }
@@ -797,10 +790,10 @@ var J=[
    mods:[
     {id:'m08',title:'Visual Field Experiment',
      instr:'Examine seeing itself.',
-     steps:['Hold your gaze at a single point on the screen.',
-            'Notice what is present outside the point of focus.',
-            'When ready, tap once.'],
-     iact:'fieldExp',prompt:'Where does seeing happen -- in the eyes, or somewhere else?'},
+     steps:['Hold your gaze on the center point.',
+            'Without shifting focus, notice what is present in the periphery.',
+            'Remain still.'],
+     iact:'gazeHold',prompt:'Where does seeing happen -- in the eyes, or somewhere else?'},
     {id:'m09',title:'Sound Without Listener',
      instr:'Listen without constructing a listener.',
      steps:['Attend to whatever sounds are present.',
@@ -888,11 +881,11 @@ var J=[
   },
   {id:'int',title:'Ordinary',purpose:'Examine dissociation and spiritual identity.',
    mods:[
-    {id:'m29',title:'',
+    {id:'m29',title:'',airlock:true,
      instr:'',
      steps:['Notice if you are waiting for something to happen.'],
      iact:'contemp',prompt:''},
-    {id:'m30',title:'',
+    {id:'m30',title:'',airlock:true,
      instr:'',
      steps:[],
      iact:'stabilityCheck',prompt:''},
@@ -1002,8 +995,9 @@ function replayOnboarding(){
 function renderJourneys(){
   var body=document.getElementById('journey-body');body.innerHTML='';
   J.forEach(function(j,ji){
-    var done=j.mods.filter(function(m){return localStorage.getItem('dm_d_'+m.id);}).length;
-    var dots=j.mods.map(function(m,mi){
+    var vis=j.mods.filter(function(m){return !m.airlock;});
+    var done=vis.filter(function(m){return localStorage.getItem('dm_d_'+m.id);}).length;
+    var dots=vis.map(function(m,mi){
       var c='jd';if(mi<done)c+=' done';else if(mi===done)c+=' active';
       return '<div class="'+c+'"></div>';
     }).join('');
@@ -1026,7 +1020,7 @@ function renderJourneys(){
     var unseen=[];
     J.forEach(function(j,ji){
       j.mods.forEach(function(m,mi){
-        if(!localStorage.getItem('dm_d_'+m.id))unseen.push({ji:ji,mi:mi});
+        if(!m.airlock&&!localStorage.getItem('dm_d_'+m.id))unseen.push({ji:ji,mi:mi});
       });
     });
     var pool=unseen.length?unseen:(function(){var a=[];J.forEach(function(j,ji){j.mods.forEach(function(_,mi){a.push({ji:ji,mi:mi});});});return a;})();
@@ -1122,24 +1116,24 @@ function updateTimer(){
 
 function renderModContent(m){
   var j=J[S.journey];
-  var steps=m.steps.map(function(s){return '<li>'+s+'</li>';}).join('');
+  var steps=m.steps&&m.steps.length?m.steps.map(function(s){return '<li>'+s+'</li>';}).join(''):'';
   var saved=getSavedRef(m.id);
   var isLast=S.module===j.mods.length-1;
+  var iactHtml=buildIact(m.iact,m.id);
+  var isScreenAware=m.iact==='screenAware';
   document.getElementById('mod-content').innerHTML=
     '<p style="font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:1.5rem">'+j.title+'</p>'
-    +'<h1 class="mod-title">'+m.title+'</h1>'
-    +'<p class="mod-instr">'+m.instr+'</p>'
-    +'<ul class="mod-steps">'+steps+'</ul>'
-    +'<div class="mod-div"></div>'
-    +'<div class="iact"><p class="iact-lbl">Experiment</p>'+buildIact(m.iact,m.id)+'</div>'
-    +'<div class="mod-div"></div>'
-    +'<div>'
-    +'<p class="ref-prompt">'+m.prompt+'</p>'
-    +'<textarea class="ref-area" id="ra-'+m.id+'" placeholder="Write here, or simply sit." oninput="autoSaveRef(\''+m.id+'\')">'+saved+'</textarea>'
-    +'<div class="ref-row">'
-    +'<button class="btn btn-ghost btn-sm" onclick="saveRef(\''+m.id+'\')">Save</button>'
-    +'<span class="ref-saved" id="rs-'+m.id+'">Saved.</span>'
-    +'</div></div>'
+    +(m.title?'<h1 class="mod-title">'+m.title+'</h1>':'')
+    +(m.instr?'<p class="mod-instr">'+m.instr+'</p>':'')
+    +(steps?'<ul class="mod-steps">'+steps+'</ul>':'')
+    +(iactHtml?'<div class="mod-div"></div><div class="iact">'+(isScreenAware?'':'<p class="iact-lbl">Experiment</p>')+iactHtml+'</div>':'')
+    +'<div class="mod-div" id="ref-div-'+m.id+'"'+(isScreenAware?' style="opacity:0;transition:opacity 800ms ease"':'')+'>'
+    +'</div>'
+    +'<div id="ref-section-'+m.id+'"'+(isScreenAware?' style="opacity:0;pointer-events:none;transition:opacity 1200ms ease"':'')+'>'
+    +(m.prompt?'<p class="ref-prompt">'+m.prompt+'</p>':'')
+    +'<textarea class="ref-area" id="ra-'+m.id+'" placeholder="Write here, or simply sit." oninput="autoSaveRef(\''+m.id+'\')">' +saved+'</textarea>'
+    +(m.silent?'':'<div class="ref-row"><button class="btn btn-ghost btn-sm" onclick="saveRef(\''+m.id+'\')" >Save</button><span class="ref-saved" id="rs-'+m.id+'">Saved.</span></div>')
+    +'</div>'
     +'<div class="mod-foot">'
     +'<span class="mod-continue-txt">Continue when ready.</span>'
     +'<button class="btn btn-primary" onclick="nextMod()">'+(isLast?'Return':'Next')+'</button>'
@@ -1148,11 +1142,11 @@ function renderModContent(m){
   document.getElementById('mod-body').scrollTop=0;
   initIact(m.iact,m.id);
 }
-
 function nextMod(){
   if(!J[S.journey]||!J[S.journey].mods[S.module]){backToJourneys();return;}
   var j=J[S.journey];
-  localStorage.setItem('dm_d_'+j.mods[S.module].id,'1');
+  var mod=j.mods[S.module];
+  if(!mod.airlock)localStorage.setItem('dm_d_'+mod.id,'1');
   clearInterval(S.timerInt);
   if(S.module<j.mods.length-1){
     var body=document.getElementById('mod-body');
@@ -1205,7 +1199,7 @@ function buildIact(type,mid){
   if(type==='emotPres')return '<p class="dim mb2" style="font-size:.875rem">Name what is here, without commentary.</p><div class="body-map">'+['Calm','Uneasy','Tender','Heavy','Alert','Open'].map(function(e){return '<div class="bz" onclick="selEmotion(this,\''+mid+'\')">'+e+'</div>';}).join('')+'</div><div class="bz-note show" id="bzn-'+mid+'">Select what is present. Then stay with it.</div>';
   if(type==='certainty')return '<p class="dim mb2" style="font-size:.875rem">What have you concluded from these modules?</p><input class="sk-input" id="cci-'+mid+'" placeholder="I am now certain that..." onkeydown="checkCert(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="checkCert({key:\'Enter\'},\''+mid+'\')">Examine</button><div class="sk-resp" id="ccr-'+mid+'"></div>';
   if(type==='returnSt')return '<div class="return-text">Nothing special is required.<br><br>The next ordinary moment<br>is the practice.</div><p style="text-align:center;font-size:.875rem;color:var(--dim);opacity:.55;margin-top:2rem">Close this. Go outside.</p>';
-  if(type==='attnWatch')return '<p class="dim mb2" style="font-size:.875rem">Tap when you notice attention shift.</p><div class="attn-field" id="af-'+mid+'" onclick="tapAttn(''+mid+'')" ontouchstart="tapAttn(''+mid+'')"><div class="attn-dot" id="attn-dot-'+mid+'"></div></div><p class="attn-count dim" id="attn-count-'+mid+'">0 shifts noticed</p><p class="attn-resp dim" id="attn-resp-'+mid+'" style="min-height:1.5rem"></p>';
+  if(type==='attnWatch')return '<p class="dim mb2" style="font-size:.875rem">Tap when you notice attention has shifted.</p><div class="attn-field" id="af-'+mid+'" onclick="tapAttn(''+mid+'')" ontouchstart="tapAttn(''+mid+'')"></div><p class="attn-count dim" id="attn-count-'+mid+'">0 shifts noticed</p>';
   if(type==='langDissolve')return '<p class="dim mb2" style="font-size:.875rem">Type what is present.</p><div class="t-row"><input class="t-input" id="ldi-'+mid+'" placeholder="What is present..." onkeydown="submitLangD(event,''+mid+'')"><button class="btn btn-ghost btn-sm" onclick="submitLangD({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="lang-display" id="ldp-'+mid+'"></p><p class="lang-after dim" id="lda-'+mid+'" style="opacity:0;transition:opacity 1.5s ease;text-align:center;margin-top:1rem;font-size:.875rem"></p>';
   if(type==='reactChain'){return '<div id="rc-'+mid+'"><p class="dim mb2" style="font-size:.875rem">What arose in the body?</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="A sensation..." onkeydown="reactNext(event,''+mid+'')"><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p></div>';}
   if(type==='stabilityCheck')return '<p class="dim mb2" style="font-size:.875rem">How does this moment feel?</p><div class="sc-opts" id="sc-'+mid+'"><button class="sc-btn" onclick="selectStability('clear',''+mid+'')">Clear</button><button class="sc-btn" onclick="selectStability('spacious',''+mid+'')">Spacious</button><button class="sc-btn" onclick="selectStability('unsettled',''+mid+'')">Unsettled</button><button class="sc-btn" onclick="selectStability('distant',''+mid+'')">Distant</button></div><p class="sc-resp dim" id="scr-'+mid+'" style="min-height:1.5rem;margin-top:1rem;text-align:center"></p>';
@@ -1213,6 +1207,7 @@ function buildIact(type,mid){
   if(type==='dreamDissolve')return '<p class="dim mb2" style="font-size:.875rem">Type a fragment of the dream.</p><div class="t-row"><input class="t-input" id="ddi-'+mid+'" placeholder="A fragment..." onkeydown="submitDream(event,''+mid+'')"><button class="btn btn-ghost btn-sm" onclick="submitDream({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="lang-display" id="ddp-'+mid+'"></p><p class="lang-after dim" id="dda-'+mid+'" style="opacity:0;transition:opacity 1.5s ease;text-align:center;margin-top:1rem;font-size:.875rem"></p>';
   if(type==='kindWarmth')return '<p class="dim mb2" style="font-size:.875rem">Select where the warmth appears.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,''+mid+'')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
   if(type==='compSens')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation was felt.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,''+mid+'')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
+  if(type==='gazeHold')return '<div class="gaze-field" id="gf-'+mid+'"><div class="gaze-center"></div></div><p class="gaze-status dim" id="gs-'+mid+'">Hold for 10 seconds.</p>';
   return '<p class="dim">Sit quietly for a few moments.</p>';
 }
 
@@ -1220,7 +1215,26 @@ function initIact(type,mid){
   if(type==='narToggle')setNar('story',mid);
   if(type==='silSpace')setSil('sound',mid);
   if(type==='reviewInt'){var el=document.getElementById('rq-'+mid);if(el&&el.classList.contains('review-q-saved'))setTimeout(function(){el.style.opacity='1';},100);}
-  if(type==='attnWatch')startAttnMove(mid);
+  if(type==='gazeHold'){
+    var gs=document.getElementById('gs-'+mid);var n=10;
+    var t=setInterval(function(){
+      n--;if(n>0){if(gs)gs.textContent='Hold for '+n+(n===1?' second.':' seconds.');}
+      else{clearInterval(t);if(gs){gs.textContent='Continue when ready.';gs.style.opacity='1';}}
+    },1000);
+  }
+  if(type==='screenAware'){
+    var mc=document.getElementById('mod-content');if(!mc)return;
+    var refSec=document.getElementById('ref-section-'+mid);
+    var refDiv=document.getElementById('ref-div-'+mid);
+    setTimeout(function(){
+      var els=[mc.querySelector('.mod-title'),mc.querySelector('.mod-steps'),mc.querySelector('p[style*="letter-spacing"]')];
+      els.forEach(function(el){if(el){el.style.transition='opacity 800ms ease';el.style.opacity='0';}});
+      setTimeout(function(){
+        if(refSec){refSec.style.opacity='1';refSec.style.pointerEvents='all';}
+        if(refDiv){refDiv.style.transition='opacity 800ms ease';refDiv.style.opacity='1';}
+      },2000);
+    },4000);
+  }
 }
 
 function submitThought(e,mid){
