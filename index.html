@@ -222,9 +222,7 @@ body.tools-open #mod-content{opacity:0.92}
 body.immersion #mod-hdr{opacity:0;pointer-events:none}
 body.immersion #ground-btn{opacity:.18;pointer-events:all}
 /* SIMPLIFY */
-body.simplify .iact,body.simplify .ref-prompt,body.simplify .ref-area,
-body.simplify .ref-row,body.simplify .ref-saved,body.simplify .mp-dots,
-body.simplify .mod-continue-txt{display:none}
+body.simplify .iact,body.simplify .ref-prompt,body.simplify .ref-area{display:none}
 .imm-strip{position:fixed;top:0;left:0;right:0;height:4px;z-index:300;cursor:pointer}
 /* INTERACTIONS */
 .thought-field{min-height:140px;position:relative;overflow:hidden;
@@ -500,15 +498,15 @@ body.simplify .mod-continue-txt{display:none}
         <p>Conceptual frameworks that point without asserting.</p>
       </div>
       <div class="lens-item" onclick="nav('explore')">
-        <h4>Phenomenology</h4>
+        <h4>Perception</h4>
         <p>Direct mapping of immediate experience.</p>
       </div>
       <div class="lens-item" onclick="nav('explore')">
-        <h4>Inquiry</h4>
+        <h4>Attention</h4>
         <p>Questions that exhaust the analytical mind.</p>
       </div>
       <div class="lens-item" onclick="nav('explore')">
-        <h4>Psychological</h4>
+        <h4>Ordinary</h4>
         <p>Identity, narrative, and the constructed self.</p>
       </div>
     </div>
@@ -1022,7 +1020,7 @@ function renderJourneys(){
     }).join('');
     var card=document.createElement('div');card.className='j-card';
     card.onclick=function(){startJourney(ji);};
-    var ranges=['Sessions 1–7','Sessions 8–17','Sessions 18–22'];
+    var ranges=['Short','Long','Closing'];
     card.innerHTML='<h2>'+j.title+'</h2>'
       +'<p class="j-range">'+ranges[ji]+'</p>'
       +'<div class="j-dots">'+dots+'</div>';
@@ -1039,10 +1037,10 @@ function renderJourneys(){
     var unseen=[];
     J.forEach(function(j,ji){
       j.mods.forEach(function(m,mi){
-        if(!m.airlock&&!localStorage.getItem('dm_d_'+m.id))unseen.push({ji:ji,mi:mi});
+        if(!m.airlock&&!m.noRef&&!localStorage.getItem('dm_d_'+m.id))unseen.push({ji:ji,mi:mi});
       });
     });
-    var pool=unseen.length?unseen:(function(){var a=[];J.forEach(function(j,ji){j.mods.forEach(function(_,mi){a.push({ji:ji,mi:mi});});});return a;})();
+    var pool=unseen.length?unseen:(function(){var a=[];J.forEach(function(j,ji){j.mods.forEach(function(m,mi){if(!m.airlock&&!m.noRef)a.push({ji:ji,mi:mi});});});return a;})();
     var pick=pool[Math.floor(Math.random()*pool.length)];
     S.journey=pick.ji;S.module=pick.mi;loadModule();
   };
@@ -1111,7 +1109,7 @@ function loadModule(skipEntry){
     entry.style.opacity='1';entry.style.pointerEvents='all';
     meText.classList.remove('show');meBtn.style.display='none';meBtn.style.opacity='0';
     setTimeout(function(){meText.classList.add('show');},300);
-    if(!localStorage.getItem('dm_hint')){localStorage.setItem('dm_hint','1');setTimeout(function(){var h=document.getElementById('icon-hint');if(h){h.style.opacity='.55';setTimeout(function(){h.style.opacity='0';},4000);}},2000);}
+    if(!localStorage.getItem('dm_hint')){localStorage.setItem('dm_hint','1');setTimeout(function(){var h=document.getElementById('icon-hint');if(h){h.style.opacity='.55';setTimeout(function(){h.style.opacity='0';},6000);}},2000);}
     setTimeout(function(){
       meBtn.style.display='inline-flex';
       requestAnimationFrame(function(){requestAnimationFrame(function(){meBtn.style.opacity='1';});});
@@ -1130,8 +1128,6 @@ function beginModule(){
   },400);
   S.timerSecs=0;
   S.timerInt=setInterval(function(){S.timerSecs++;updateTimer();},1000);
-  S.modCount++;
-  if(S.modCount>0&&S.modCount%3===0)setTimeout(showPause,1000);
 }
 
 function updateTimer(){
@@ -1159,7 +1155,6 @@ function renderModContent(m){
       +'<textarea class="ref-area" id="ra-'+m.id+'" placeholder="Write here, or simply sit." oninput="autoSaveRef(\''+m.id+'\')" onblur="autoSaveRef(\''+m.id+'\')">' +saved+'</textarea>'
       +'</div>')
     +'<div class="mod-foot">'
-    +'<span class="mod-continue-txt">Continue when ready.</span>'
     +'<button class="btn btn-primary" onclick="nextMod()">'+(isLast?'Return':'Next')+'</button>'
     +'<button class="btn-link" style="display:block;margin:1rem auto 0" onclick="backToJourneys()">Return</button>'
     +'</div>';
@@ -1173,13 +1168,19 @@ function nextMod(){
   if(!mod.airlock)localStorage.setItem('dm_d_'+mod.id,'1');
   if(mod.id==='m26'&&!document.body.classList.contains('journey2-complete')){document.body.classList.add('journey2-complete');}
   clearInterval(S.timerInt);
+  S.modCount++;
   if(S.module<j.mods.length-1){
     var body=document.getElementById('mod-body');
     var modContent=document.getElementById('mod-content');
     modContent.classList.remove('show');
     modContent.style.opacity='0';
     body.style.transition='opacity 400ms ease';body.style.opacity='0';
-    setTimeout(function(){body.style.opacity='1';S.module++;loadModule();},1500);
+    if(S.modCount%3===0){
+      S._pendingLoad=true;
+      setTimeout(function(){S.module++;showPause();},800);
+    }else{
+      setTimeout(function(){body.style.opacity='1';S.module++;loadModule();},1500);
+    }
   }else{
     checkJourney2Complete();
     backToJourneys();
@@ -1534,7 +1535,12 @@ function renderReflections(){
   if(entries.length>1){
     var pick=entries[Math.floor(Math.random()*entries.length)];
     var surf=document.createElement('div');surf.className='ref-surface';
-    surf.innerHTML='<p class="rs-text">'+pick.text+'</p>';
+    surf.style.cursor='pointer';
+    surf.innerHTML='<p class="rs-text">'+pick.text+'</p>'
+      +'<div class="rs-meta" style="opacity:0;transition:opacity 400ms ease;font-size:.75rem;color:var(--dim);margin-top:.875rem;letter-spacing:.04em">'
+      +(pick.title?'<span style="color:var(--amber);margin-right:.75rem">'+pick.title+'</span>':'')
+      +(pick.date||'')+'</div>';
+    surf.onclick=function(){var m=surf.querySelector('.rs-meta');if(m)m.style.opacity=m.style.opacity==='1'?'0':'1';};
     body.appendChild(surf);
     var hr=document.createElement('div');hr.className='ref-surface-div';
     body.appendChild(hr);
@@ -1577,7 +1583,7 @@ function exitImm(){if(!S.imm)return;S.imm=false;document.body.classList.remove('
 
 /* AMBIENT AUDIO */
 var AC=null,_osc=null,_gain=null,_lfo=null,_lfoGain=null,_flt=null;
-var TONE={obs:174,lab:210,int:192};
+var TONE={obs:140,lab:256,int:96};
 function audioStart(){
   if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();
   if(_osc)return;
@@ -1662,8 +1668,15 @@ function showPause(){
 function hidePause(){
   document.getElementById('pause-overlay').classList.remove('on');
   if(S.audio&&_gain&&AC)_gain.gain.setTargetAtTime(0.014,AC.currentTime,1.2);
-  var groundBtn=document.getElementById('ground-btn');
-  if(groundBtn)groundBtn.focus();
+  if(S._pendingLoad){
+    S._pendingLoad=false;
+    var body=document.getElementById('mod-body');
+    if(body){body.style.transition='opacity 400ms ease';body.style.opacity='1';}
+    loadModule();
+  }else{
+    var groundBtn=document.getElementById('ground-btn');
+    if(groundBtn)groundBtn.focus();
+  }
 }
 function showGround(){
   var drawer=document.getElementById('ground-drawer');
