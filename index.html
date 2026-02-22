@@ -704,7 +704,7 @@ var J=[
      steps:['Attend to whatever sounds are present.',
             'Notice the space in which sound appears.',
             'Rest here for a moment.'],
-     iact:'contemp',prompt:'Was there a listener, or just listening?'},
+     iact:'contemp',prompt:'What did you notice about listening?'},
     {id:'m10',title:'Body As Sensation Field',
      instr:'Examine what the body actually is.',
      steps:['Without looking, attend to any part of the body.',
@@ -1359,7 +1359,7 @@ function toggleAudio(){
 /* BREATH PACER */
 var _breathToneT=null,_breathPhase=0;
 function _breathBeep(){
-  if(!AC)return;
+  if(!AC||!S.audio)return;
   var freq=_breathPhase===0?396:330;_breathPhase=(_breathPhase+1)%2;
   var o=AC.createOscillator(),g=AC.createGain();
   o.connect(g);g.connect(AC.destination);
