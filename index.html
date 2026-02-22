@@ -517,11 +517,11 @@ body.simplify .mod-continue-txt{display:none}
       <h2>Locate the Observer</h2>
       <p>Look at the screen. Notice that you are looking. Now -- without pointing -- find the exact location of the one who is looking.</p>
       <div class="exp-interact">
-        <div class="loc-canvas" onclick="handleExpLoc(event,this)" ontouchstart="handleExpLoc(event,this)">
+        <div class="loc-canvas" onclick="handleExpLoc(event,this)">
           <div class="loc-grid"></div>
           <div class="loc-marker" id="explm"></div>
         </div>
-        <div class="loc-resp show" id="explr">Click to mark the location of the observer.</div>
+        <div class="loc-resp show" id="explr">Touch to mark the location of the observer.</div>
       </div>
     </div>
     <div class="exp-card">
@@ -546,7 +546,7 @@ body.simplify .mod-continue-txt{display:none}
   <div class="hdr">
     <div class="flex fi g2">
       <button class="icon-btn" onclick="nav('landing')">&#8592;</button>
-      <span class="hdr-label">Deep Mode</span>
+      <span class="hdr-label">Sessions</span>
     </div>
     <button class="icon-btn" onclick="nav('reflections')" title="Reflections">&#8801;</button>
   </div>
@@ -558,7 +558,7 @@ body.simplify .mod-continue-txt{display:none}
   <div id="mod-entry">
     <div>
       <p class="me-text" id="me-text">Move slowly.</p>
-      <button class="btn btn-ghost" id="me-btn" style="display:none;opacity:0;transition:opacity 600ms" onclick="beginModule()">Begin</button>
+      <button class="btn btn-ghost" id="me-btn" style="display:none;opacity:0;transition:opacity 600ms" onclick="beginModule()">Continue</button>
     </div>
   </div>
   <div id="mod-hdr">
@@ -630,7 +630,6 @@ body.simplify .mod-continue-txt{display:none}
   </ul>
   <div class="ground-btns">
     <button class="btn btn-ghost" onclick="hideGround()">Return</button>
-    <button class="btn btn-ghost" onclick="hideGround()">Close</button>
   </div>
 </div>
 <div class="imm-strip" onclick="exitImm()"></div>
@@ -640,7 +639,7 @@ var S={screen:'onboarding',deepMode:true,
   journey:0,module:0,plan:'mo',imm:false,audio:false,breath:false,simp:false,timerInt:null,timerSecs:0,modCount:0};
 
 var J=[
-  {id:'obs',title:'The Observer Protocol',purpose:'Examine the relationship between content and awareness.',
+  {id:'obs',title:'Inquiry',purpose:'Examine the relationship between content and awareness.',
    mods:[
     {id:'m01',title:'Watching Thought',
      instr:'Notice the difference between being inside a thought and observing it.',
@@ -686,7 +685,7 @@ var J=[
      iact:'seeker',prompt:'What happened when you looked for the seeker?'}
    ]
   },
-  {id:'lab',title:'The Perception Lab',purpose:'Examine assumptions about perception and identity.',
+  {id:'lab',title:'Exercise',purpose:'Examine assumptions about perception and identity.',
    mods:[
     {id:'m08',title:'Visual Field Experiment',
      instr:'Examine the structure of seeing itself.',
@@ -749,7 +748,7 @@ var J=[
      iact:'reviewInt',prompt:'What, if anything, stood out?'}
    ]
   },
-  {id:'int',title:'Integration Mode',purpose:'Examine dissociation and spiritual identity.',
+  {id:'int',title:'Integration',purpose:'Examine dissociation and spiritual identity.',
    mods:[
     {id:'m18',title:'Functioning Without a Center',
      instr:'Examine how ordinary activity continues without a fixed self.',
@@ -961,7 +960,7 @@ function renderModContent(m){
     +'</div></div>'
     +'<div class="mod-foot">'
     +'<span class="mod-continue-txt">Continue when ready.</span>'
-    +'<button class="btn btn-primary" onclick="nextMod()">'+(isLast?'Return':'Next Module')+'</button>'
+    +'<button class="btn btn-primary" onclick="nextMod()">'+(isLast?'Return':'Next')+'</button>'
     +'<button class="btn-link" style="display:block;margin:1rem auto 0" onclick="backToJourneys()">Return</button>'
     +'</div>';
   document.getElementById('mod-body').scrollTop=0;
