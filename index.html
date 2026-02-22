@@ -228,6 +228,9 @@ body.tools-open #mod-content{opacity:0.92}
 .ground-btns{display:flex;gap:1rem}
 /* IMMERSION */
 body.immersion #mod-hdr{opacity:0;pointer-events:none}
+body.immersion #tools-glyph{opacity:.15}
+@keyframes glyphPulse{0%{opacity:.15}50%{opacity:.5}100%{opacity:.15}}
+body.immersion #tools-glyph.glyph-pulse{animation:glyphPulse 1.4s ease forwards}
 /* SIMPLIFY */
 body.simplify .iact,body.simplify .ref-prompt,body.simplify .ref-area{display:none}
 .imm-strip{position:fixed;top:0;left:0;right:0;height:4px;z-index:300;cursor:pointer}
@@ -615,12 +618,12 @@ body.simplify .iact,body.simplify .ref-prompt,body.simplify .ref-area{display:no
   </div>
   <div id="mod-body"><div id="mod-content"></div></div>
   <div id="breath-ring"></div>
-  <button id="tools-glyph" onclick="toggleTools()" aria-label="Tools">&#8729;</button>
+  <button id="tools-glyph" onclick="toggleTools()" aria-label="Tools">&#10022;</button>
   <div id="tools-overlay" onclick="if(event.target===this)toggleTools()">
     <button class="icon-btn" id="audio-btn-overlay" onclick="toggleAudio();toggleTools();" title="Audio" aria-label="Toggle audio">&#9834;</button>
     <button class="icon-btn" id="breath-btn-overlay" onclick="toggleBreath();toggleTools();" title="Breath pacer" aria-label="Toggle breath pacer">&#9675;</button>
     <button class="icon-btn" id="ground-btn-overlay" onclick="showGround();toggleTools();" title="Ground" aria-label="Show grounding">&#8635;</button>
-    <button class="icon-btn" id="simp-btn-overlay" onclick="toggleSimplify();toggleTools();" title="Simplify" aria-label="Toggle simplify mode">&#8729;</button>
+    <button class="icon-btn" id="simp-btn-overlay" onclick="toggleSimplify();toggleTools();" title="Simplify" aria-label="Toggle simplify mode">&#9633;</button>
     <button class="icon-btn" id="imm-btn-overlay" onclick="toggleImm();toggleTools();" title="Immersion" aria-label="Toggle immersion mode">&#8865;</button>
   </div>
 </div>
@@ -1595,7 +1598,12 @@ function toggleTools(){
     },100);
   }
 }
-function toggleImm(){S.imm=!S.imm;document.body.classList.toggle('immersion',S.imm);document.getElementById('imm-btn-overlay').classList.toggle('on',S.imm);}
+function toggleImm(){
+  S.imm=!S.imm;
+  document.body.classList.toggle('immersion',S.imm);
+  document.getElementById('imm-btn-overlay').classList.toggle('on',S.imm);
+  if(S.imm){var g=document.getElementById('tools-glyph');g.classList.add('glyph-pulse');setTimeout(function(){g.classList.remove('glyph-pulse');},1400);}
+}
 function toggleSimplify(){S.simp=!S.simp;document.body.classList.toggle('simplify',S.simp);document.getElementById('simp-btn-overlay').classList.toggle('on',S.simp);}
 function exitImm(){if(!S.imm)return;S.imm=false;document.body.classList.remove('immersion');document.getElementById('imm-btn-overlay').classList.remove('on');}
 
