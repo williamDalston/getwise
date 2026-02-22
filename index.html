@@ -666,7 +666,7 @@ var J=[
      steps:['Soften your gaze.',
             'Without fixing on any point, notice the entire visual field at once.',
             'Try to find the center of what is seen.'],
-     iact:'fieldExp',prompt:'Did the field have a center? What was the quality of seeing without a fixed point?'},
+     iact:'fieldExp',prompt:'Did the field have a center? What happened when you looked?'},
     {id:'m05',title:'Emotion Without Story',
      instr:'Notice the physical sensation of emotion, separated from its narrative.',
      steps:['Recall a mild recent emotion.',
@@ -690,17 +690,17 @@ var J=[
   {id:'lab',title:'Perception',purpose:'Examine assumptions about perception and identity.',
    mods:[
     {id:'m08',title:'Visual Field Experiment',
-     instr:'Examine the structure of seeing itself.',
+     instr:'Examine seeing itself.',
      steps:['Hold your gaze at a single point on the screen.',
-            'Notice that the periphery is still present in awareness.',
-            'Notice it is not sharply seen, yet it exists.'],
+            'Notice what is present outside the point of focus.',
+            'When ready, tap once.'],
      iact:'fieldExp',prompt:'Where does seeing happen -- in the eyes, or somewhere else?'},
     {id:'m09',title:'Sound Without Listener',
      instr:'Listen without constructing a listener.',
      steps:['Attend to whatever sounds are present.',
             'Notice the space in which sound appears.',
-            'Ask: who is listening?'],
-     iact:'listening',prompt:'Was there a listener, or just listening?'},
+            'Rest here for a moment.'],
+     iact:'contemp',prompt:'Was there a listener, or just listening?'},
     {id:'m10',title:'Body As Sensation Field',
      instr:'Examine what the body actually is.',
      steps:['Without looking, attend to any part of the body.',
@@ -766,8 +766,8 @@ var J=[
      iact:'emotPres',prompt:'What emotion is here right now? Can you stay with it without changing it?'},
     {id:'m20',title:'Relationships Without Superiority',
      instr:'Examine inquiry in the context of ordinary relationships.',
-     steps:['These investigations are not achievements.',
-            'The moment any investigation becomes status, it becomes obstruction.'],
+     steps:['Has anything here become a distinction you carry between yourself and others?',
+            'Rest here for a moment.'],
      iact:'contempCheck',prompt:'Is there anyone with whom you carry a sense of superiority about how you see things?'},
     {id:'m21',title:'Curiosity Over Certainty',
      instr:'Maintain inquiry as a way of being, not a conclusion.',
@@ -1021,7 +1021,7 @@ function buildIact(type,mid){
   if(type==='thoughtStream')return '<p class="dim mb2" style="font-size:.875rem">Type a thought. Watch it drift.</p><div class="t-row"><input class="t-input" id="ti-'+mid+'" placeholder="A thought..." onkeydown="submitThought(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitThought({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><div class="thought-field" id="tf-'+mid+'"></div>';
   if(type==='ownership')return '<p class="own-q">Think of the last thought you had before reading this sentence.</p><div class="own-opts"><button class="own-opt" onclick="selectOwn(this,\'mine\')">It felt like mine</button><button class="own-opt" onclick="selectOwn(this,\'appeared\')">It simply appeared</button></div><p class="own-resp" id="ownr-'+mid+'"></p>';
   if(type==='locationFinder')return '<p class="dim mb2" style="font-size:.875rem">Touch the exact location of the one who is looking.</p><div class="loc-canvas" onclick="handleLoc(event,this)" ontouchstart="handleLoc(event,this)" id="lc-'+mid+'"><div class="loc-grid"></div><div class="loc-marker" id="lm-'+mid+'"></div></div><div class="loc-resp" id="lr-'+mid+'"></div>';
-  if(type==='fieldExp')return '<p class="dim mb2" style="font-size:.875rem">Touch anywhere to locate the center of the visual field.</p><div class="field-area" onclick="handleField(\''+mid+'\')" ontouchstart="handleField(\''+mid+'\')" id="fa-'+mid+'"><div class="field-dot"></div><div class="field-ring"></div><div class="field-ring fr2"></div><div class="field-ring fr3"></div></div><div class="field-resp" id="fr-'+mid+'"></div>';
+  if(type==='fieldExp'){var flbl=mid==='m08'?'When ready, tap once.':'Touch anywhere to locate the center of the visual field.';return '<p class="dim mb2" style="font-size:.875rem">'+flbl+'</p><div class="field-area" onclick="handleField(\''+mid+'\')" ontouchstart="handleField(\''+mid+'\')" id="fa-'+mid+'"><div class="field-dot"></div><div class="field-ring"></div><div class="field-ring fr2"></div><div class="field-ring fr3"></div></div><div class="field-resp" id="fr-'+mid+'"></div>';}
   if(type==='sensLoc')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation lives in the body.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div><div class="mt3"><div class="sens-labels"><span>Faint</span><span>Intense</span></div><input class="sens-slider" type="range" min="0" max="10" value="0" oninput="this.nextElementSibling.textContent=\'Intensity: \'+this.value"><p class="dim" style="font-size:.8125rem;margin-top:.25rem">Intensity: 0</p></div>';
   if(type==='nowTrack')return '<div class="now-num" id="now-'+mid+'">0</div><p class="now-lbl">Present moments noticed</p><button class="btn btn-ghost btn-sm now-btn" onclick="tickNow(\''+mid+'\')">Now</button><p class="dim mt2" style="font-size:.8125rem;text-align:center">Each press: a deliberate return to this moment.</p>';
   if(type==='seeker')return '<p class="dim mb2" style="font-size:.875rem">Who is seeking? Type your answer.</p><input class="sk-input" id="ski-'+mid+'" placeholder="The seeker is..." onkeydown="submitSeeker(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="submitSeeker({key:\'Enter\'},\''+mid+'\')">Inquire</button><div class="sk-resp" id="skr-'+mid+'"></div>';
@@ -1034,7 +1034,7 @@ function buildIact(type,mid){
   if(type==='contempCheck')return '<div class="contemp-check"><label class="cc-label"><input type="checkbox" class="cc-box"><span>I can think of someone right now.</span></label></div>';
   if(type==='narToggle')return '<div class="toggle-pair"><button class="t-opt on" id="nts-'+mid+'" onclick="setNar(\'story\',\''+mid+'\')">Story</button><button class="t-opt" id="ntx-'+mid+'" onclick="setNar(\'sens\',\''+mid+'\')">Sensation</button></div><p class="t-desc dim" id="ntd-'+mid+'">Story: "I felt anxious because of what she said, and now I am worried about tomorrow."</p>';
   if(type==='silSpace')return '<div class="toggle-pair"><button class="t-opt on" id="sss-'+mid+'" onclick="setSil(\'sound\',\''+mid+'\')">Sound</button><button class="t-opt" id="ssl-'+mid+'" onclick="setSil(\'sil\',\''+mid+'\')">Silence</button></div><p class="t-desc dim" id="ssd-'+mid+'">Notice: right now, there is sound. And it appears within something.</p>';
-  if(type==='reviewInt')return '<div>'+['Where did you expect to find the observer?','What was the emotion without the story?','What remained when the layers were removed?','What, if anything, stood out?'].map(function(q){return '<p class="review-q">'+q+'</p>';}).join('')+'</div><p class="dim mt3" style="font-size:.8125rem;font-style:italic">Use the reflection field below to write freely.</p>';
+  if(type==='reviewInt'){var rqs=['Where did you expect to find the observer?','What was the emotion without the story?','What remained when the layers were removed?','Across all of this, was anything constant?'];var ri=Math.floor(Math.random()*rqs.length);return '<p class="review-q" id="rq-'+mid+'">'+rqs[ri]+'</p><button class="btn-link" id="rn-'+mid+'" style="display:block;font-size:.8125rem;margin-top:1rem;opacity:.45" onclick="nextReview(\''+mid+'\','+ri+')">Show another</button>';}
   if(type==='emotPres')return '<p class="dim mb2" style="font-size:.875rem">Name what is here, without commentary.</p><div class="body-map">'+['Calm','Uneasy','Tender','Heavy','Alert','Open'].map(function(e){return '<div class="bz" onclick="selEmotion(this,\''+mid+'\')">'+e+'</div>';}).join('')+'</div><div class="bz-note show" id="bzn-'+mid+'">Select what is present. Then stay with it.</div>';
   if(type==='certainty')return '<p class="dim mb2" style="font-size:.875rem">What have you concluded from these modules?</p><input class="sk-input" id="cci-'+mid+'" placeholder="I am now certain that..." onkeydown="checkCert(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="checkCert({key:\'Enter\'},\''+mid+'\')">Examine</button><div class="sk-resp" id="ccr-'+mid+'"></div>';
   if(type==='returnSt')return '<div class="return-text">Nothing special is required.<br><br>The next ordinary moment<br>is the practice.</div><p style="text-align:center;font-size:.875rem;color:var(--dim);opacity:.55;margin-top:2rem">Close this. Go outside.</p>';
@@ -1094,10 +1094,14 @@ function handleExpLoc(e,canvas){
 var FIELD_R=['Where is the center?',
   'Is the center fixed?',
   'What happens if you stop searching?'];
+var FIELD_R8=['What was present beyond the point of focus?',
+  'Is the periphery less real than what is held in focus?',
+  'What contains both the point and the edge?'];
 var fieldC=0;
 function handleField(mid){
   var r=document.getElementById('fr-'+mid);
-  if(r){r.textContent=FIELD_R[fieldC%FIELD_R.length];r.classList.add('show');fieldC++;}
+  var arr=mid==='m08'?FIELD_R8:FIELD_R;
+  if(r){r.textContent=arr[fieldC%arr.length];r.classList.add('show');fieldC++;}
 }
 
 function selZone(el,mid){
@@ -1185,6 +1189,15 @@ function setSil(mode,mid){
   if(s)s.classList.toggle('on',mode==='sound');
   if(l)l.classList.toggle('on',mode==='sil');
   if(d)d.textContent=mode==='sound'?'Notice: right now, there is sound. And it appears within something.':'There is silence between sounds. What is the relationship between sound and silence?';
+}
+function nextReview(mid,used){
+  var rqs=['Where did you expect to find the observer?','What was the emotion without the story?','What remained when the layers were removed?','Across all of this, was anything constant?'];
+  var pool=rqs.filter(function(_,i){return i!==used;});
+  var q=pool[Math.floor(Math.random()*pool.length)];
+  var el=document.getElementById('rq-'+mid);
+  var btn=document.getElementById('rn-'+mid);
+  if(el)el.textContent=q;
+  if(btn)btn.style.display='none';
 }
 
 var CERT_R=['Hold that conclusion lightly. Could the opposite also have something true in it?',
