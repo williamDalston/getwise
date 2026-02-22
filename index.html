@@ -1052,8 +1052,9 @@ function renderJourneys(){
       });
     });
     var pool=unseen.length?unseen:(function(){var a=[];J.forEach(function(j,ji){j.mods.forEach(function(m,mi){if(!m.airlock&&!m.noRef)a.push({ji:ji,mi:mi});});});return a;})();
+    if(!pool.length)return;
     var pick=pool[Math.floor(Math.random()*pool.length)];
-    S.journey=pick.ji;S.module=pick.mi;loadModule();
+    if(pick){S.journey=pick.ji;S.module=pick.mi;loadModule();}
   };
   body.appendChild(rand);
   var resetBtn=document.createElement('button');
@@ -1096,13 +1097,15 @@ function loadModule(skipEntry){
   var dots=document.getElementById('mp-dots');
   var visibleMods=j.mods.filter(function(m){return !m.airlock;});
   var currentMod=j.mods[S.module];
-  dots.innerHTML=visibleMods.map(function(mod){
-    var origIdx=j.mods.indexOf(mod);
-    var c='mpd';if(origIdx<S.module)c+=' done';if(!currentMod.airlock&&mod.id===currentMod.id)c+=' active';
-    var dot='<div class="'+c+'"></div>';
-    if(S.journey===1&&mod.id==='m14'){dot+='<div style="width:1px;height:5px;background:rgba(255,255,255,0.1);flex-shrink:0;align-self:center;margin:0 2px"></div>';}
-    return dot;
-  }).join('');
+  if(dots){
+    dots.innerHTML=visibleMods.map(function(mod){
+      var origIdx=j.mods.indexOf(mod);
+      var c='mpd';if(origIdx<S.module)c+=' done';if(!currentMod.airlock&&mod.id===currentMod.id)c+=' active';
+      var dot='<div class="'+c+'"></div>';
+      if(S.journey===1&&mod.id==='m14'){dot+='<div style="width:1px;height:5px;background:rgba(255,255,255,0.1);flex-shrink:0;align-self:center;margin:0 2px"></div>';}
+      return dot;
+    }).join('');
+  }
   var pfill=document.getElementById('mod-pfill');if(pfill)pfill.style.width=((S.module/j.mods.length)*100)+'%';
   window._jMids=j.mods.map(function(x){return x.id;});
   var entry=document.getElementById('mod-entry');
@@ -1155,7 +1158,9 @@ function renderModContent(m){
   var isLast=S.module===j.mods.length-1;
   var iactHtml=buildIact(m.iact,m.id);
   var isScreenAware=m.iact==='screenAware';
-  document.getElementById('mod-content').innerHTML=
+  var modContent=document.getElementById('mod-content');
+  if(!modContent)return;
+  modContent.innerHTML=
     '<p style="font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:1.5rem">'+j.title+'</p>'
     +(m.title?'<h1 class="mod-title">'+m.title+'</h1>':'')
     +(m.instr?'<p class="mod-instr">'+m.instr+'</p>':'')
@@ -1542,12 +1547,15 @@ function getSavedRef(mid){
   try{var d=JSON.parse(safeStorageGet('dm_r_'+mid)||'null');return d?d.text:'';}catch{return '';}
 }
 function renderReflections(){
-  var body=document.getElementById('ref-list');body.innerHTML='';
+  var body=document.getElementById('ref-list');if(!body)return;
+  body.innerHTML='';
   var entries=[];
-  for(var i=0;i<localStorage.length;i++){
-    var k=localStorage.key(i);if(!k||!k.startsWith('dm_r_'))continue;
-    try{var d=JSON.parse(safeStorageGet(k)||'null');if(d&&d.text)entries.push(d);}catch{}
-  }
+  try{
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i);if(!k||!k.startsWith('dm_r_'))continue;
+      try{var d=JSON.parse(safeStorageGet(k)||'null');if(d&&d.text)entries.push(d);}catch{}
+    }
+  }catch(e){console.error('localStorage read failed:',e);}
   entries.sort(function(a,b){return new Date(b.date||0)-new Date(a.date||0);});
   if(!entries.length){body.innerHTML='<div class="empty-state"><span style="font-size:2rem">&#9711;</span><p>No reflections saved yet.</p></div>';return;}
   if(entries.length>1){
@@ -1571,10 +1579,12 @@ function renderReflections(){
 }
 function exportRef(){
   var lines=[];
-  for(var i=0;i<localStorage.length;i++){
-    var k=localStorage.key(i);if(!k||!k.startsWith('dm_r_'))continue;
-    try{var d=JSON.parse(safeStorageGet(k)||'null');if(d&&d.text)lines.push('## '+d.title+'\n'+d.date+'\n\n'+d.text+'\n\n---\n');}catch{}
-  }
+  try{
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i);if(!k||!k.startsWith('dm_r_'))continue;
+      try{var d=JSON.parse(safeStorageGet(k)||'null');if(d&&d.text)lines.push('## '+d.title+'\n'+d.date+'\n\n'+d.text+'\n\n---\n');}catch{}
+    }
+  }catch(e){console.error('localStorage export failed:',e);}
   if(!lines.length){var eb=document.getElementById('export-btn');if(eb){eb.textContent='Nothing yet.';setTimeout(function(){eb.textContent='Export';},2000);}return;}
   var blob=new Blob([lines.join('\n')],{type:'text/plain'});
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);
