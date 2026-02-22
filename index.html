@@ -1024,7 +1024,7 @@ function renderJourneys(){
   var body=document.getElementById('journey-body');body.innerHTML='';
   J.forEach(function(j,ji){
     var vis=j.mods.filter(function(m){return !m.airlock;});
-    var done=vis.filter(function(m){return localStorage.getItem('dm_d_'+m.id);}).length;
+    var done=vis.filter(function(m){return safeStorageGet('dm_d_'+m.id);}).length;
     var dots=vis.map(function(m,mi){
       var c='jd';if(mi<done)c+=' done';else if(mi===done)c+=' active';
       return '<div class="'+c+'"></div>';
@@ -1048,7 +1048,7 @@ function renderJourneys(){
     var unseen=[];
     J.forEach(function(j,ji){
       j.mods.forEach(function(m,mi){
-        if(!m.airlock&&!m.noRef&&!localStorage.getItem('dm_d_'+m.id))unseen.push({ji:ji,mi:mi});
+        if(!m.airlock&&!m.noRef&&!safeStorageGet('dm_d_'+m.id))unseen.push({ji:ji,mi:mi});
       });
     });
     var pool=unseen.length?unseen:(function(){var a=[];J.forEach(function(j,ji){j.mods.forEach(function(m,mi){if(!m.airlock&&!m.noRef)a.push({ji:ji,mi:mi});});});return a;})();
@@ -1068,7 +1068,9 @@ function renderJourneys(){
 }
 
 function resetProgress(){
-  for(var i=localStorage.length-1;i>=0;i--){var k=localStorage.key(i);if(k&&k.startsWith('dm_d_'))localStorage.removeItem(k);}
+  try{
+    for(var i=localStorage.length-1;i>=0;i--){var k=localStorage.key(i);if(k&&k.startsWith('dm_d_'))localStorage.removeItem(k);}
+  }catch(e){console.error('localStorage reset failed:',e);}
   renderJourneys();
 }
 function startJourney(ji){
@@ -1076,7 +1078,7 @@ function startJourney(ji){
   checkJourney2Complete();
   S.journey=ji;var j=J[ji];var start=0;
   for(var i=0;i<j.mods.length;i++){
-    if(!localStorage.getItem('dm_d_'+j.mods[i].id)){start=i;break;}
+    if(!safeStorageGet('dm_d_'+j.mods[i].id)){start=i;break;}
     if(i===j.mods.length-1)start=0;
   }
   S.module=start;S.entryShown=false;loadModule();
@@ -1202,7 +1204,7 @@ function checkJourney2Complete(){
   if(!j2)return;
   var allComplete=true;
   for(var i=0;i<j2.mods.length;i++){
-    if(!j2.mods[i].airlock&&!localStorage.getItem('dm_d_'+j2.mods[i].id)){allComplete=false;break;}
+    if(!j2.mods[i].airlock&&!safeStorageGet('dm_d_'+j2.mods[i].id)){allComplete=false;break;}
   }
   if(allComplete&&!document.body.classList.contains('journey2-complete')){
     document.body.classList.add('journey2-complete');
@@ -1223,11 +1225,11 @@ function buildIact(type,mid){
   if(type==='ownership')return '<p class="own-q">Think of the last thought you had before reading this sentence.</p><div class="own-opts"><button class="own-opt" onclick="selectOwn(this,\'mine\')">It felt like mine</button><button class="own-opt" onclick="selectOwn(this,\'appeared\')">It simply appeared</button></div><p class="own-resp" id="ownr-'+mid+'"></p>';
   if(type==='locationFinder')return '<p class="dim mb2" style="font-size:.875rem">Touch the exact location of the one who is looking.</p><div class="loc-canvas" onclick="handleLoc(event,this)" ontouchstart="handleLoc(event,this)" id="lc-'+mid+'"><div class="loc-grid"></div><div class="loc-marker" id="lm-'+mid+'"></div></div><div class="loc-resp" id="lr-'+mid+'"></div>';
   if(type==='fieldExp'){var flbl=mid==='m08'?'When ready, tap once.':'Touch anywhere to locate the center of the visual field.';return '<p class="dim mb2" style="font-size:.875rem">'+flbl+'</p><div class="field-area" onclick="handleField(\''+mid+'\')" ontouchstart="handleField(\''+mid+'\')" id="fa-'+mid+'"><div class="field-dot"></div><div class="field-ring"></div><div class="field-ring fr2"></div><div class="field-ring fr3"></div></div><div class="field-resp" id="fr-'+mid+'"></div>';}
-  if(type==='sensLoc')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation lives in the body.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div><div class="mt3"><div class="sens-labels"><span>Faint</span><span>Intense</span></div><input class="sens-slider" type="range" min="0" max="10" value="0" oninput="this.nextElementSibling.textContent=\'Intensity: \'+this.value"><p class="dim" style="font-size:.8125rem;margin-top:.25rem">Intensity: 0</p></div>';
+  if(type==='sensLoc')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation lives in the body.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<button type="button" class="bz" onclick="selZone(this,\''+mid+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();selZone(this,\''+mid+'\');}">'+z+'</button>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div><div class="mt3"><div class="sens-labels"><span>Faint</span><span>Intense</span></div><input class="sens-slider" type="range" min="0" max="10" value="0" oninput="this.nextElementSibling.textContent=\'Intensity: \'+this.value"><p class="dim" style="font-size:.8125rem;margin-top:.25rem">Intensity: 0</p></div>';
   if(type==='nowTrack')return '<div class="now-num" id="now-'+mid+'">0</div><p class="now-lbl">Present moments noticed</p><button class="btn btn-ghost btn-sm now-btn" onclick="tickNow(\''+mid+'\')">Now</button>';
   if(type==='seeker')return '<p class="dim mb2" style="font-size:.875rem">Who is seeking? Type your answer.</p><input class="sk-input" id="ski-'+mid+'" placeholder="The seeker is..." onkeydown="submitSeeker(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="submitSeeker({key:\'Enter\'},\''+mid+'\')">Inquire</button><div class="sk-resp" id="skr-'+mid+'"></div>';
   if(type==='listening')return '<p class="dim mb2" style="font-size:.875rem">Hold while listening to whatever sounds exist in this space right now. Don\'t name them.</p><div class="sil-track"><div class="sil-fill" id="slf-'+mid+'"></div></div><p class="sil-count" id="slc-'+mid+'">0 seconds</p><button class="btn btn-ghost btn-sm mt2 w100" onmousedown="startListen(\''+mid+'\')" ontouchstart="startListen(\''+mid+'\')" onmouseup="stopListen()" ontouchend="stopListen()" onmouseleave="stopListen()">Hold to listen</button>';
-  if(type==='bodyMap')return '<p class="dim mb2" style="font-size:.875rem">Touch a region. Notice what is actually there.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
+  if(type==='bodyMap')return '<p class="dim mb2" style="font-size:.875rem">Touch a region. Notice what is actually there.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<button type="button" class="bz" onclick="selZone(this,\''+mid+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();selZone(this,\''+mid+'\');}">'+z+'</button>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
   if(type==='memTransform')return '<p class="dim mb2" style="font-size:.875rem">Type a memory.</p><input class="mem-input" id="memi-'+mid+'" placeholder="A memory..." onkeydown="transformMem(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="transformMem({key:\'Enter\'},\''+mid+'\')">&#8594;</button><div class="mem-out" id="memo-'+mid+'"></div>';
   if(type==='agencyTest')return '<p class="dim mb2" style="font-size:.875rem">Press when you decide to. Notice what happens before the press.</p><button class="agency-btn" onclick="logAgency(\''+mid+'\')">I am pressing this now</button><div class="agency-log" id="al-'+mid+'"></div>';
   if(type==='idStack')return '<div class="id-layers" id="il-'+mid+'">'+['Your name','Your occupation','Your relationships','Your beliefs','Your history'].map(function(l){return '<div class="id-layer"><span class="id-name">'+l+'</span><button class="id-rm" onclick="rmLayer(this,\''+mid+'\')">Remove</button></div>';}).join('')+'</div><div class="id-reveal mt2" id="idr-'+mid+'">What is present when the attributes are removed?</div>';
@@ -1237,7 +1239,7 @@ function buildIact(type,mid){
   if(type==='silSpace')return '<div class="toggle-pair"><button class="t-opt on" id="sss-'+mid+'" onclick="setSil(\'sound\',\''+mid+'\')">Sound</button><button class="t-opt" id="ssl-'+mid+'" onclick="setSil(\'sil\',\''+mid+'\')">Silence</button></div><p class="t-desc dim" id="ssd-'+mid+'">Notice: right now, there is sound. And it appears within something.</p>';
   if(type==='reviewInt'){
     var mids=window._jMids||[];var saved=[];
-    mids.forEach(function(id){try{var d=JSON.parse(localStorage.getItem('dm_r_'+id));if(d&&d.text&&d.text.trim())saved.push(d.text.trim());}catch{}});
+    mids.forEach(function(id){try{var d=JSON.parse(safeStorageGet('dm_r_'+id)||'null');if(d&&d.text&&d.text.trim())saved.push(d.text.trim());}catch{}});
     var rqs=['Where did you expect to find the observer?','What was the emotion without the story?','What remained when the layers were removed?','Across all of this, was anything constant?'];
     if(saved.length){
       var si=Math.floor(Math.random()*saved.length);
@@ -1247,7 +1249,7 @@ function buildIact(type,mid){
       return '<p class="review-q" id="rq-'+mid+'">'+rqs[ri]+'</p><button class="btn-link" id="rn-'+mid+'" style="display:block;font-size:.8125rem;margin-top:1rem;opacity:.35" onclick="nextReview(\''+mid+'\','+ri+',false)">Show another</button>';
     }
   }
-  if(type==='emotPres')return '<p class="dim mb2" style="font-size:.875rem">Name what is here, without commentary.</p><div class="body-map">'+['Calm','Uneasy','Tender','Heavy','Alert','Open'].map(function(e){return '<div class="bz" onclick="selEmotion(this,\''+mid+'\')">'+e+'</div>';}).join('')+'</div><div class="bz-note show" id="bzn-'+mid+'">Select what is present. Then stay with it.</div>';
+  if(type==='emotPres')return '<p class="dim mb2" style="font-size:.875rem">Name what is here, without commentary.</p><div class="body-map">'+['Calm','Uneasy','Tender','Heavy','Alert','Open'].map(function(e){return '<button type="button" class="bz" onclick="selEmotion(this,\''+mid+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();selEmotion(this,\''+mid+'\');}">'+e+'</button>';}).join('')+'</div><div class="bz-note show" id="bzn-'+mid+'">Select what is present. Then stay with it.</div>';
   if(type==='certainty')return '<p class="dim mb2" style="font-size:.875rem">What have you concluded from these modules?</p><input class="sk-input" id="cci-'+mid+'" placeholder="I am now certain that..." onkeydown="checkCert(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="checkCert({key:\'Enter\'},\''+mid+'\')">Examine</button><div class="sk-resp" id="ccr-'+mid+'"></div>';
   if(type==='returnSt')return '<div class="return-text">Nothing special is required.<br><br>The next ordinary moment<br>is the practice.</div><p style="text-align:center;font-size:.875rem;color:var(--dim);opacity:.55;margin-top:2rem">Close this. Go outside.</p>';
   if(type==='attnWatch')return '<p class="dim mb2" style="font-size:.875rem">Tap when you notice attention has shifted.</p><div class="attn-field" id="af-'+mid+'" onclick="tapAttn(\''+mid+'\')" ontouchstart="tapAttn(\''+mid+'\')"></div><p class="attn-count dim" id="attn-count-'+mid+'"></p>';
@@ -1256,8 +1258,8 @@ function buildIact(type,mid){
   if(type==='stabilityCheck')return '<p class="dim mb2" style="font-size:.875rem">How does this moment feel?</p><div class="sc-opts" id="sc-'+mid+'"><button class="sc-btn" onclick="selectStability(\'clear\',\''+mid+'\')">Clear</button><button class="sc-btn" onclick="selectStability(\'spacious\',\''+mid+'\')">Spacious</button><button class="sc-btn" onclick="selectStability(\'unsettled\',\''+mid+'\')">Unsettled</button><button class="sc-btn" onclick="selectStability(\'distant\',\''+mid+'\')">Distant</button></div><p class="sc-resp dim" id="scr-'+mid+'" style="min-height:1.5rem;margin-top:1rem;text-align:center"></p>';
   if(type==='screenAware')return '';
   if(type==='dreamDissolve')return '<p class="dim mb2" style="font-size:.875rem">Type a fragment of the dream.</p><div class="t-row"><input class="t-input" id="ddi-'+mid+'" placeholder="A fragment..." onkeydown="submitDream(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitDream({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><p class="lang-display" id="ddp-'+mid+'"></p><p class="lang-after dim" id="dda-'+mid+'" style="opacity:0;transition:opacity 1.5s ease;text-align:center;margin-top:1rem;font-size:.875rem"></p>';
-  if(type==='kindWarmth')return '<p class="dim mb2" style="font-size:.875rem">Select where the warmth appears.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
-  if(type==='compSens')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation was felt.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
+  if(type==='kindWarmth')return '<p class="dim mb2" style="font-size:.875rem">Select where the warmth appears.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<button type="button" class="bz" onclick="selZone(this,\''+mid+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();selZone(this,\''+mid+'\');}">'+z+'</button>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
+  if(type==='compSens')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation was felt.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<button type="button" class="bz" onclick="selZone(this,\''+mid+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();selZone(this,\''+mid+'\');}">'+z+'</button>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
   if(type==='gazeHold')return '<div class="gaze-field" id="gf-'+mid+'"><div class="gaze-center"></div></div><p class="gaze-status dim" id="gs-'+mid+'">Hold for 10 seconds.</p>';
   return '<p class="dim">Sit quietly for a few moments.</p>';
 }
@@ -1479,7 +1481,7 @@ function nextReview(mid,used,isSaved){
   if(btn)btn.style.display='none';
   if(isSaved){
     var mids=window._jMids||[];var saved=[];
-    mids.forEach(function(id){try{var d=JSON.parse(localStorage.getItem('dm_r_'+id));if(d&&d.text&&d.text.trim())saved.push(d.text.trim());}catch{}});
+    mids.forEach(function(id){try{var d=JSON.parse(safeStorageGet('dm_r_'+id)||'null');if(d&&d.text&&d.text.trim())saved.push(d.text.trim());}catch{}});
     var pool=saved.filter(function(_,i){return i!==used;});
     if(pool.length&&el){
       el.style.opacity='0';
@@ -1544,7 +1546,7 @@ function renderReflections(){
   var entries=[];
   for(var i=0;i<localStorage.length;i++){
     var k=localStorage.key(i);if(!k||!k.startsWith('dm_r_'))continue;
-    try{var d=JSON.parse(localStorage.getItem(k));if(d&&d.text)entries.push(d);}catch{}
+    try{var d=JSON.parse(safeStorageGet(k)||'null');if(d&&d.text)entries.push(d);}catch{}
   }
   entries.sort(function(a,b){return new Date(b.date||0)-new Date(a.date||0);});
   if(!entries.length){body.innerHTML='<div class="empty-state"><span style="font-size:2rem">&#9711;</span><p>No reflections saved yet.</p></div>';return;}
@@ -1571,7 +1573,7 @@ function exportRef(){
   var lines=[];
   for(var i=0;i<localStorage.length;i++){
     var k=localStorage.key(i);if(!k||!k.startsWith('dm_r_'))continue;
-    try{var d=JSON.parse(localStorage.getItem(k));lines.push('## '+d.title+'\n'+d.date+'\n\n'+d.text+'\n\n---\n');}catch{}
+    try{var d=JSON.parse(safeStorageGet(k)||'null');if(d&&d.text)lines.push('## '+d.title+'\n'+d.date+'\n\n'+d.text+'\n\n---\n');}catch{}
   }
   if(!lines.length){var eb=document.getElementById('export-btn');if(eb){eb.textContent='Nothing yet.';setTimeout(function(){eb.textContent='Export';},2000);}return;}
   var blob=new Blob([lines.join('\n')],{type:'text/plain'});
