@@ -385,6 +385,21 @@ body.simplify .mod-continue-txt{display:none}
   #mod-content{padding-bottom:max(8rem,calc(4rem + env(safe-area-inset-bottom)))}
   .journey-body{padding-bottom:max(3rem,calc(1.5rem + env(safe-area-inset-bottom)))}
 }
+/* ATTENTION WATCH */
+.attn-field{min-height:160px;position:relative;border-radius:3px;background:var(--base);border:1px solid var(--b);cursor:pointer;touch-action:manipulation}
+.attn-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--amber);opacity:.55;transition:left 2.4s ease,top 2.4s ease;transform:translate(-50%,-50%);pointer-events:none}
+.attn-count{font-size:.8125rem;text-align:center;margin-top:.625rem}
+.attn-resp{font-size:.875rem;text-align:center;margin-top:.5rem;min-height:1.25rem;transition:opacity .4s ease}
+/* LANGUAGE / DREAM DISSOLVE */
+.lang-display{font-size:1rem;color:var(--text);text-align:center;padding:.75rem 0;opacity:0;transition:opacity .3s ease;font-style:italic}
+/* REACT CHAIN */
+.react-resp{font-size:.875rem;text-align:center;line-height:1.6}
+/* STABILITY CHECK */
+.sc-opts{display:flex;gap:.625rem;flex-wrap:wrap;justify-content:center;margin-top:.5rem}
+.sc-btn{padding:.5rem 1.125rem;border:1px solid var(--b);border-radius:3px;background:transparent;color:var(--dim);font-family:inherit;font-size:.9375rem;cursor:pointer;transition:border-color .2s,color .2s;touch-action:manipulation}
+.sc-btn:hover,.sc-btn.on{border-color:var(--amber-b);color:var(--text)}
+.sc-resp{font-size:.875rem;min-height:1.25rem}
+
 </style>
 
 <!-- Structured Data for SEO -->
@@ -414,6 +429,87 @@ body.simplify .mod-continue-txt{display:none}
     "description": "Direct investigation into the nature of consciousness and experience"
   }
 }
+/* ATTENTION WATCH */
+var ATTN_R=['What noticed the shift?','Was there a choice in that noticing?','Can attention watch itself?','What chose where to land?'];
+var _attnMoveT=null,_attnC=0;
+function startAttnMove(mid){
+  var dot=document.getElementById('attn-dot-'+mid);if(!dot)return;
+  function move(){var x=8+Math.random()*82,y=8+Math.random()*82;dot.style.left=x+'%';dot.style.top=y+'%';}
+  move();_attnMoveT=setInterval(move,3200);
+}
+function tapAttn(mid){
+  _attnC++;
+  var cnt=document.getElementById('attn-count-'+mid),resp=document.getElementById('attn-resp-'+mid);
+  if(cnt)cnt.textContent=_attnC+' shift'+(_attnC===1?'':'s')+' noticed';
+  if(resp){resp.textContent=ATTN_R[(_attnC-1)%ATTN_R.length];resp.classList.add('show');}
+}
+
+/* LANGUAGE DISSOLVE */
+function submitLangD(e,mid){
+  if(e.key!=='Enter')return;
+  var inp=document.getElementById('ldi-'+mid);
+  var txt=inp.value.trim();if(!txt)return;
+  inp.value='';inp.disabled=true;inp.style.opacity='.3';
+  var display=document.getElementById('ldp-'+mid);
+  var after=document.getElementById('lda-'+mid);
+  display.textContent=txt;display.style.opacity='1';
+  setTimeout(function(){display.style.transition='opacity 3s ease';display.style.opacity='0';},400);
+  setTimeout(function(){if(after){after.textContent='The experience continues.';after.style.opacity='1';}},3800);
+}
+
+/* DREAM DISSOLVE */
+function submitDream(e,mid){
+  if(e.key!=='Enter')return;
+  var inp=document.getElementById('ddi-'+mid);
+  var txt=inp.value.trim();if(!txt)return;
+  inp.value='';inp.disabled=true;inp.style.opacity='.3';
+  var display=document.getElementById('ddp-'+mid);
+  var after=document.getElementById('dda-'+mid);
+  display.textContent=txt;display.style.opacity='1';
+  setTimeout(function(){display.style.transition='opacity 3s ease';display.style.opacity='0';},400);
+  setTimeout(function(){if(after){after.textContent='Where is that world now?';after.style.opacity='1';}},3800);
+}
+
+/* REACT CHAIN */
+var _reactPhase={};
+var _reactLabels=['What arose in the body?','What was the thought?','What was the impulse?'];
+function reactNext(e,mid){
+  if(e.key!=='Enter')return;
+  if(!_reactPhase[mid])_reactPhase[mid]=0;
+  var phase=_reactPhase[mid];
+  var inp=document.getElementById('rci-'+mid);
+  var btn=document.getElementById('rcb-'+mid);
+  var respEl=document.getElementById('rcr-'+mid);
+  if(phase===0){
+    _reactPhase[mid]=1;
+    var container=document.getElementById('rc-'+mid);
+    if(container){container.innerHTML='<p class="dim mb2" style="font-size:.875rem">'+_reactLabels[1]+'</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="A thought..." onkeydown="reactNext(event,\''+mid+'\')" ><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:\'Enter\'},\''+mid+'\')" >&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p>';}
+  }else if(phase===1){
+    _reactPhase[mid]=2;
+    var container=document.getElementById('rc-'+mid);
+    if(container){container.innerHTML='<p class="dim mb2" style="font-size:.875rem">'+_reactLabels[2]+'</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="An impulse..." onkeydown="reactNext(event,''+mid+'')"><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p>';}
+  }else if(phase===2){
+    if(respEl){respEl.textContent='The chain is visible now.';respEl.style.opacity='1';respEl.classList.add('show');}
+    if(btn)btn.style.display='none';
+  }
+}
+
+/* STABILITY CHECK */
+function selectStability(choice,mid){
+  var opts=document.getElementById('sc-'+mid);
+  if(opts)opts.querySelectorAll('.sc-btn').forEach(function(b){b.disabled=true;b.style.opacity='.3';b.classList.remove('on');});
+  var btn=opts?opts.querySelector('.sc-btn[onclick*="''+choice+''"]'):null;
+  if(btn){btn.style.opacity='1';btn.classList.add('on');}
+  var resp=document.getElementById('scr-'+mid);
+  if(choice==='distant'||choice==='unsettled'){
+    if(resp)resp.textContent=choice==='distant'?'Opening the grounding drawer.':'Nothing needs to happen.';
+    if(resp)resp.classList.add('show');
+    setTimeout(function(){showGround();},600);
+  }else{
+    if(resp){resp.textContent='Continue when ready.';resp.classList.add('show');}
+  }
+}
+
 </script>
 
 <script type="application/ld+json">
@@ -671,6 +767,12 @@ var J=[
             'Without fixing on any point, notice the entire visual field at once.',
             'Try to find the center of what is seen.'],
      iact:'fieldExp',prompt:'Did the field have a center? What happened when you looked?'},
+    {id:'m23',title:'Attention Itself',
+     instr:'Investigate attention directly.',
+     steps:['Let your gaze rest anywhere.',
+            'Notice when attention shifts. You did not choose where it went.',
+            'Is attention something you do, or something that happens?'],
+     iact:'attnWatch',prompt:'What did you notice about how attention moves?'},
     {id:'m05',title:'Emotion Without Story',
      instr:'Notice the physical sensation of emotion, separated from its narrative.',
      steps:['Recall a mild recent emotion.',
@@ -717,12 +819,25 @@ var J=[
             'Where is it happening? The past -- or here, now, as a thought?',
             'Notice: where is the past right now? What can actually be found?'],
      iact:'memTransform',prompt:'Did this change anything about how the past feels?'},
+    {id:'m24',title:'Language Dissolving',
+     instr:'Examine the relationship between description and experience.',
+     steps:['Notice what you are experiencing right now.',
+            'Type it.',
+            'Watch the words disappear.',
+            'The experience continues.'],
+     iact:'langDissolve',prompt:'What is the relationship between the description and the thing it described?'},
     {id:'m12',title:'Agency Simulation',
      instr:'Examine the mechanics of choice.',
      steps:['Decide to press a button.',
             'Notice: the decision to decide -- where did that come from?',
             'Before the thought "I will press," was there a prior thought?'],
      iact:'agencyTest',prompt:'Where does the sense of "I chose this" come from?'},
+    {id:'m25',title:'Reactivity Loop',
+     instr:'Notice how reactivity forms.',
+     steps:['Notice something mildly irritating or uncomfortable.',
+            'What happens in the body first?',
+            'What thought follows? What impulse follows that thought?'],
+     iact:'reactChain',prompt:'Which part felt automatic?'},
     {id:'m13',title:'Identity Construction',
      instr:'Examine how a self is assembled.',
      steps:['Notice the roles you carry: your name, profession, relationships.',
@@ -734,12 +849,29 @@ var J=[
      steps:['Consider the possibility that this body will cease.',
             'Sit with that possibility without resolving it.'],
      iact:'contemp',prompt:'What, if anything, was present when you sat with this?'},
+    {id:'m26',title:'',
+     instr:'',
+     steps:[],
+     iact:'stabilityCheck',prompt:''},
+    {id:'m27',title:'This Is a Screen',
+     instr:'',
+     steps:['You are looking at glass.',
+            'Light is entering your eyes.',
+            'Words are guiding attention.',
+            'Notice this.'],
+     iact:'screenAware',prompt:'What changed when the medium became visible?'},
     {id:'m15',title:'Narrative vs Sensation',
      instr:'Notice the difference between story and direct experience.',
      steps:['Attend to what is present.',
             'What else arises around it?',
             'Attend to the sensation directly, before the commentary arrives.'],
      iact:'narToggle',prompt:'What is sensation without interpretation?'},
+    {id:'m28',title:'Waking From Dream',
+     instr:'Investigate the dissolution of a world.',
+     steps:['Recall this morning, the moment you woke.',
+            'There was a world. Then it wasn't there.',
+            'What changed -- the world, or something else?'],
+     iact:'dreamDissolve',prompt:'What is the difference between a world that is real and one that isn't?'},
     {id:'m16',title:'Silence Interruption',
      instr:'Investigate the space between sounds.',
      steps:['Notice the presence of sound.',
@@ -751,11 +883,19 @@ var J=[
      steps:['No new concept is introduced here.',
             'Review what you have noticed across these modules.',
             'What, if anything, has shifted in how experience appears?'],
-     iact:'reviewInt',prompt:'What, if anything, stood out?<br><br>Across all of this, was anything constant?'}
+     iact:'reviewInt',silent:true,prompt:'What, if anything, stood out?<br><br>Across all of this, was anything constant?'}
    ]
   },
   {id:'int',title:'Ordinary',purpose:'Examine dissociation and spiritual identity.',
    mods:[
+    {id:'m29',title:'',
+     instr:'',
+     steps:['Notice if you are waiting for something to happen.'],
+     iact:'contemp',prompt:''},
+    {id:'m30',title:'',
+     instr:'',
+     steps:[],
+     iact:'stabilityCheck',prompt:''},
     {id:'m18',title:'Functioning Without a Center',
      instr:'Examine how ordinary activity continues without a fixed self.',
      steps:['Notice that actions occur: words appear, hands move, decisions happen.',
@@ -768,11 +908,22 @@ var J=[
             'Select the closest match.',
             'Stay with what is present without trying to change it.'],
      iact:'emotPres',prompt:'What emotion is here right now? Can you stay with it without changing it?'},
+    {id:'m31',title:'Kind Attention',
+     instr:'Examine the quality of warmth directly.',
+     steps:['Bring to mind someone you care about.',
+            'Notice the warmth that appears in the body.',
+            'Stay with the warmth itself, not the image.'],
+     iact:'kindWarmth',prompt:'What is warmth without a story?'},
     {id:'m20',title:'Relationships Without Superiority',
      instr:'Examine inquiry in the context of ordinary relationships.',
      steps:['Bring someone to mind.',
             'Notice what arises.'],
      iact:'contempCheck',prompt:'Has anything here created a subtle comparison with someone else?'},
+    {id:'m32',title:'Comparison as Sensation',
+     instr:'Examine comparison before the narrative forms.',
+     steps:['Recall a recent moment of comparison.',
+            'Before the story -- what was the sensation?'],
+     iact:'compSens',prompt:'What is comparison before the narrative forms?'},
     {id:'m21',title:'Curiosity Over Certainty',
      instr:'Maintain inquiry as a way of being, not a conclusion.',
      steps:['Consider what you have concluded from these modules.',
@@ -1054,6 +1205,14 @@ function buildIact(type,mid){
   if(type==='emotPres')return '<p class="dim mb2" style="font-size:.875rem">Name what is here, without commentary.</p><div class="body-map">'+['Calm','Uneasy','Tender','Heavy','Alert','Open'].map(function(e){return '<div class="bz" onclick="selEmotion(this,\''+mid+'\')">'+e+'</div>';}).join('')+'</div><div class="bz-note show" id="bzn-'+mid+'">Select what is present. Then stay with it.</div>';
   if(type==='certainty')return '<p class="dim mb2" style="font-size:.875rem">What have you concluded from these modules?</p><input class="sk-input" id="cci-'+mid+'" placeholder="I am now certain that..." onkeydown="checkCert(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="checkCert({key:\'Enter\'},\''+mid+'\')">Examine</button><div class="sk-resp" id="ccr-'+mid+'"></div>';
   if(type==='returnSt')return '<div class="return-text">Nothing special is required.<br><br>The next ordinary moment<br>is the practice.</div><p style="text-align:center;font-size:.875rem;color:var(--dim);opacity:.55;margin-top:2rem">Close this. Go outside.</p>';
+  if(type==='attnWatch')return '<p class="dim mb2" style="font-size:.875rem">Tap when you notice attention shift.</p><div class="attn-field" id="af-'+mid+'" onclick="tapAttn(''+mid+'')" ontouchstart="tapAttn(''+mid+'')"><div class="attn-dot" id="attn-dot-'+mid+'"></div></div><p class="attn-count dim" id="attn-count-'+mid+'">0 shifts noticed</p><p class="attn-resp dim" id="attn-resp-'+mid+'" style="min-height:1.5rem"></p>';
+  if(type==='langDissolve')return '<p class="dim mb2" style="font-size:.875rem">Type what is present.</p><div class="t-row"><input class="t-input" id="ldi-'+mid+'" placeholder="What is present..." onkeydown="submitLangD(event,''+mid+'')"><button class="btn btn-ghost btn-sm" onclick="submitLangD({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="lang-display" id="ldp-'+mid+'"></p><p class="lang-after dim" id="lda-'+mid+'" style="opacity:0;transition:opacity 1.5s ease;text-align:center;margin-top:1rem;font-size:.875rem"></p>';
+  if(type==='reactChain'){return '<div id="rc-'+mid+'"><p class="dim mb2" style="font-size:.875rem">What arose in the body?</p><div class="t-row"><input class="t-input" id="rci-'+mid+'" placeholder="A sensation..." onkeydown="reactNext(event,''+mid+'')"><button class="btn btn-ghost btn-sm" id="rcb-'+mid+'" onclick="reactNext({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="react-resp dim" id="rcr-'+mid+'" style="min-height:1.5rem;margin-top:.75rem"></p></div>';}
+  if(type==='stabilityCheck')return '<p class="dim mb2" style="font-size:.875rem">How does this moment feel?</p><div class="sc-opts" id="sc-'+mid+'"><button class="sc-btn" onclick="selectStability('clear',''+mid+'')">Clear</button><button class="sc-btn" onclick="selectStability('spacious',''+mid+'')">Spacious</button><button class="sc-btn" onclick="selectStability('unsettled',''+mid+'')">Unsettled</button><button class="sc-btn" onclick="selectStability('distant',''+mid+'')">Distant</button></div><p class="sc-resp dim" id="scr-'+mid+'" style="min-height:1.5rem;margin-top:1rem;text-align:center"></p>';
+  if(type==='screenAware')return '';
+  if(type==='dreamDissolve')return '<p class="dim mb2" style="font-size:.875rem">Type a fragment of the dream.</p><div class="t-row"><input class="t-input" id="ddi-'+mid+'" placeholder="A fragment..." onkeydown="submitDream(event,''+mid+'')"><button class="btn btn-ghost btn-sm" onclick="submitDream({key:'Enter'},''+mid+'')">&#8594;</button></div><p class="lang-display" id="ddp-'+mid+'"></p><p class="lang-after dim" id="dda-'+mid+'" style="opacity:0;transition:opacity 1.5s ease;text-align:center;margin-top:1rem;font-size:.875rem"></p>';
+  if(type==='kindWarmth')return '<p class="dim mb2" style="font-size:.875rem">Select where the warmth appears.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,''+mid+'')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
+  if(type==='compSens')return '<p class="dim mb2" style="font-size:.875rem">Select where the sensation was felt.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,''+mid+'')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
   return '<p class="dim">Sit quietly for a few moments.</p>';
 }
 
@@ -1061,6 +1220,7 @@ function initIact(type,mid){
   if(type==='narToggle')setNar('story',mid);
   if(type==='silSpace')setSil('sound',mid);
   if(type==='reviewInt'){var el=document.getElementById('rq-'+mid);if(el&&el.classList.contains('review-q-saved'))setTimeout(function(){el.style.opacity='1';},100);}
+  if(type==='attnWatch')startAttnMove(mid);
 }
 
 function submitThought(e,mid){
@@ -1183,13 +1343,28 @@ function transformMem(e,mid){
 }
 
 var agencyC=0;
+var _agencyFirst={};
 var AG_R=['Notice: before the press, something moved. What was that?',
   'The decision arose. Who decided to decide?',
   'Action occurred. Was there a clear moment of choosing?',
   'Where exactly does "I" appear in this sequence?'];
 function logAgency(mid){
-  agencyC++;
   var log=document.getElementById('al-'+mid);if(!log)return;
+  if(!_agencyFirst[mid]){
+    _agencyFirst[mid]=true;
+    var btn=document.querySelector('.agency-btn');
+    if(btn)btn.disabled=true;
+    setTimeout(function(){
+      var e=document.createElement('div');e.className='ag-e';
+      e.style.opacity='0';e.style.transition='opacity 1.5s ease';
+      e.textContent='Notice the impulse for something to happen.';
+      log.insertBefore(e,log.firstChild);
+      requestAnimationFrame(function(){requestAnimationFrame(function(){e.style.opacity='1';});});
+      if(btn)btn.disabled=false;
+    },4000);
+    return;
+  }
+  agencyC++;
   var e=document.createElement('div');e.className='ag-e';
   e.textContent=AG_R[(agencyC-1)%AG_R.length];log.insertBefore(e,log.firstChild);
 }
