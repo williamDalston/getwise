@@ -224,7 +224,7 @@ body.simplify .mod-continue-txt{display:none}
   outline:none;transition:border-color 300ms;touch-action:manipulation}
 .t-input:focus{border-color:var(--amber-b)}
 .t-bubble{position:absolute;font-size:.875rem;color:var(--dim);
-  opacity:0;transition:bottom 5s ease,opacity .6s ease;white-space:nowrap;max-width:88%}
+  opacity:0;transition:top 5s ease,opacity .6s ease;white-space:nowrap;max-width:88%}
 .t-bubble.up{opacity:.6}
 .own-q{font-size:1.125rem;color:var(--text);font-weight:300;text-align:center;padding:1rem 0;line-height:1.6}
 .own-opts{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;margin-top:1rem}
@@ -998,7 +998,7 @@ function prevMod(){
 function backToJourneys(){clearInterval(S.timerInt);document.body.classList.remove('immersion');document.body.classList.remove('simplify');resetBreath();if(S.audio){toggleAudio();}S.simp=false;nav('journey-select');}
 
 function buildIact(type,mid){
-  if(type==='thoughtStream')return '<div class="thought-field" id="tf-'+mid+'"></div><div class="t-row"><input class="t-input" id="ti-'+mid+'" placeholder="A thought..." onkeydown="submitThought(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitThought({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div>';
+  if(type==='thoughtStream')return '<p class="dim mb2" style="font-size:.875rem">Type a thought. Watch it drift.</p><div class="t-row"><input class="t-input" id="ti-'+mid+'" placeholder="A thought..." onkeydown="submitThought(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm" onclick="submitThought({key:\'Enter\'},\''+mid+'\')">&#8594;</button></div><div class="thought-field" id="tf-'+mid+'"></div>';
   if(type==='ownership')return '<p class="own-q">Think of the last thought you had before reading this sentence.</p><div class="own-opts"><button class="own-opt" onclick="selectOwn(this,\'mine\')">It felt like mine</button><button class="own-opt" onclick="selectOwn(this,\'appeared\')">It simply appeared</button></div><p class="own-resp" id="ownr-'+mid+'"></p>';
   if(type==='locationFinder')return '<p class="dim mb2" style="font-size:.875rem">Touch the exact location of the one who is looking.</p><div class="loc-canvas" onclick="handleLoc(event,this)" ontouchstart="handleLoc(event,this)" id="lc-'+mid+'"><div class="loc-grid"></div><div class="loc-marker" id="lm-'+mid+'"></div></div><div class="loc-resp" id="lr-'+mid+'"></div>';
   if(type==='fieldExp')return '<p class="dim mb2" style="font-size:.875rem">Touch anywhere to locate the center of the visual field.</p><div class="field-area" onclick="handleField(\''+mid+'\')" id="fa-'+mid+'"><div class="field-dot"></div><div class="field-ring"></div><div class="field-ring fr2"></div><div class="field-ring fr3"></div></div><div class="field-resp" id="fr-'+mid+'"></div>';
@@ -1007,7 +1007,7 @@ function buildIact(type,mid){
   if(type==='seeker')return '<p class="dim mb2" style="font-size:.875rem">Who is seeking? Type your answer.</p><input class="sk-input" id="ski-'+mid+'" placeholder="The seeker is..." onkeydown="submitSeeker(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="submitSeeker({key:\'Enter\'},\''+mid+'\')">Inquire</button><div class="sk-resp" id="skr-'+mid+'"></div>';
   if(type==='listening')return '<p class="dim mb2" style="font-size:.875rem">Hold while listening to whatever sounds exist in this space right now. Don\'t name them.</p><div class="sil-track"><div class="sil-fill" id="slf-'+mid+'"></div></div><p class="sil-count" id="slc-'+mid+'">0 seconds</p><button class="btn btn-ghost btn-sm mt2 w100" onmousedown="startListen(\''+mid+'\')" ontouchstart="startListen(\''+mid+'\')" onmouseup="stopListen()" ontouchend="stopListen()" onmouseleave="stopListen()">Hold to listen</button>';
   if(type==='bodyMap')return '<p class="dim mb2" style="font-size:.875rem">Touch a region. Notice what is actually there.</p><div class="body-map">'+['Head','Throat','Chest','Belly','Arms','Legs'].map(function(z){return '<div class="bz" onclick="selZone(this,\''+mid+'\')">'+z+'</div>';}).join('')+'</div><div class="bz-note" id="bzn-'+mid+'"></div>';
-  if(type==='memTransform')return '<p class="dim mb2" style="font-size:.875rem">Type a memory.</p><input class="mem-input" id="memi-'+mid+'" placeholder="A memory..." onkeydown="transformMem(event,\''+mid+'\')"><div class="mem-out" id="memo-'+mid+'"></div>';
+  if(type==='memTransform')return '<p class="dim mb2" style="font-size:.875rem">Type a memory.</p><input class="mem-input" id="memi-'+mid+'" placeholder="A memory..." onkeydown="transformMem(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="transformMem({key:'Enter'},\''+mid+'\')">&#8594;</button><div class="mem-out" id="memo-'+mid+'"></div>';
   if(type==='agencyTest')return '<p class="dim mb2" style="font-size:.875rem">Press when you decide to. Notice what happens before the press.</p><button class="agency-btn" onclick="logAgency(\''+mid+'\')">I am pressing this now</button><div class="agency-log" id="al-'+mid+'"></div>';
   if(type==='idStack')return '<div class="id-layers" id="il-'+mid+'">'+['Your name','Your occupation','Your relationships','Your beliefs','Your history'].map(function(l){return '<div class="id-layer"><span class="id-name">'+l+'</span><button class="id-rm" onclick="rmLayer(this,\''+mid+'\')">Remove</button></div>';}).join('')+'</div><div class="id-reveal mt2" id="idr-'+mid+'">What is present when the attributes are removed?</div>';
   if(type==='contemp')return '<div class="contemp"><p>Sit with this for a moment.<br>No analysis required.</p></div>';
@@ -1031,10 +1031,10 @@ function submitThought(e,mid){
   var txt=inp.value.trim();if(!txt)return;inp.value='';
   var field=document.getElementById('tf-'+mid);
   var b=document.createElement('div');b.className='t-bubble';
-  var lp=15+Math.random()*60;b.style.left=lp+'%';b.style.bottom='8px';b.textContent=txt;
+  var lp=15+Math.random()*60;b.style.left=lp+'%';b.style.top='8px';b.textContent=txt;
   field.appendChild(b);
   requestAnimationFrame(function(){requestAnimationFrame(function(){
-    b.style.bottom='calc(100% + 8px)';b.style.opacity='0.6';
+    b.style.top='calc(100% + 8px)';b.style.opacity='0.6';
   });});
   setTimeout(function(){b.style.opacity='0';},4500);
   setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b);},5500);
