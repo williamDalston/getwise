@@ -869,11 +869,15 @@ function renderJourneys(){
   rand.textContent='Random session';
   rand.onclick=function(){
     if(!J.length)return;
-    var ji=Math.floor(Math.random()*J.length);
-    var j=J[ji];
-    if(!j||!j.mods||!j.mods.length)return;
-    var mi=Math.floor(Math.random()*j.mods.length);
-    S.journey=ji;S.module=mi;loadModule();
+    var unseen=[];
+    J.forEach(function(j,ji){
+      j.mods.forEach(function(m,mi){
+        if(!localStorage.getItem('dm_d_'+m.id))unseen.push({ji:ji,mi:mi});
+      });
+    });
+    var pool=unseen.length?unseen:(function(){var a=[];J.forEach(function(j,ji){j.mods.forEach(function(_,mi){a.push({ji:ji,mi:mi});});});return a;})();
+    var pick=pool[Math.floor(Math.random()*pool.length)];
+    S.journey=pick.ji;S.module=pick.mi;loadModule();
   };
   body.appendChild(rand);
   var resetBtn=document.createElement('button');
@@ -908,6 +912,7 @@ function loadModule(skipEntry){
   document.body.classList.remove('immersion');S.imm=false;
   document.getElementById('imm-btn').classList.remove('on');
   nav('module');
+  syncAudioFreq();
   var dots=document.getElementById('mp-dots');
   dots.innerHTML=j.mods.map(function(_,i){
     var c='mpd';if(i<S.module)c+=' done';if(i===S.module)c+=' active';
@@ -1279,6 +1284,12 @@ function audioStart(){
   _osc.connect(_flt);_flt.connect(_gain);_gain.connect(AC.destination);
   _lfo.start();_osc.start();
   _gain.gain.setTargetAtTime(0.014,AC.currentTime,2.5);
+}
+function syncAudioFreq(){
+  if(_osc&&AC){
+    var freq=(J[S.journey]&&TONE[J[S.journey].id])||186;
+    _osc.frequency.setTargetAtTime(freq,AC.currentTime,1.5);
+  }
 }
 function audioStop(){
   if(!_osc)return;
