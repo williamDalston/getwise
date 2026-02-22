@@ -1344,6 +1344,7 @@ function syncAudioFreq(){
   }
 }
 function audioStop(){
+  stopBreathTone();
   if(!_osc)return;
   _gain.gain.setTargetAtTime(0,AC.currentTime,1.5);
   var o=_osc,l=_lfo;
