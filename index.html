@@ -198,7 +198,6 @@ body.tools-open #mod-content{opacity:0.92}
 .ref-saved{font-size:.875rem;color:var(--amber);opacity:0;transition:opacity 400ms}
 .ref-saved.show{opacity:1}
 .mod-foot{padding:2.5rem 0;text-align:center}
-.mod-continue-txt{font-size:.9375rem;color:var(--dim);display:block;margin-bottom:1.5rem}
 /* REFLECTIONS */
 .ref-list{flex:1;overflow-y:auto;padding:2rem 1.5rem;max-width:680px;margin:0 auto;width:100%}
 .ref-list::-webkit-scrollbar{width:2px}
@@ -1686,8 +1685,6 @@ function showGround(){
 function hideGround(){
   document.getElementById('ground-drawer').classList.remove('on');
   if(S.audio&&_gain&&AC)_gain.gain.setTargetAtTime(0.014,AC.currentTime,1.2);
-  var groundBtn=document.getElementById('ground-btn');
-  if(groundBtn)groundBtn.focus();
 }
 
 /* Rapid-interaction detection */
