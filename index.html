@@ -226,6 +226,9 @@ body.simplify .mod-continue-txt{display:none}
 .t-bubble{position:absolute;font-size:.875rem;color:var(--dim);
   opacity:0;transition:top 5s ease,opacity .6s ease;white-space:nowrap;max-width:88%}
 .t-bubble.up{opacity:.6}
+.t-ghost{display:block;text-align:center;color:var(--dim);opacity:.3;cursor:pointer;font-size:1.5rem;line-height:1;margin-top:.5rem;transition:opacity .3s ease;user-select:none}
+.t-ghost:hover{opacity:.6}
+.t-echo{text-align:center;font-size:.8125rem;color:var(--dim);opacity:.4;margin-top:.75rem;font-style:italic;line-height:1.6}
 .own-q{font-size:1.125rem;color:var(--text);font-weight:300;text-align:center;padding:1rem 0;line-height:1.6}
 .own-opts{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;margin-top:1rem}
 .own-opt{padding:.625rem 1.25rem;border:1px solid var(--b);border-radius:3px;
@@ -328,6 +331,7 @@ body.simplify .mod-continue-txt{display:none}
 .cc-label:has(.cc-box:checked){color:var(--text)}
 .review-q{padding:.75rem 0;border-bottom:1px solid var(--b);font-size:.9375rem;color:var(--dim);line-height:1.65}
 .review-q:last-child{border-bottom:none}
+.review-q-saved{border-bottom:none;font-size:1.125rem;color:var(--text);font-style:italic;line-height:1.8;padding:.5rem 0}
 .return-text{font-size:1.125rem;color:var(--text);font-weight:300;line-height:1.75;text-align:center;padding:.5rem 0}
 .gold-state{padding:1rem;background:var(--base);border:1px solid var(--b);
   border-radius:3px;font-size:.9375rem;color:var(--dim);line-height:1.65;min-height:3em;margin-bottom:.75rem}
@@ -678,7 +682,7 @@ var J=[
      steps:['Where is the past, right now?',
             'Where is the future, right now?',
             'What is here, if anything, that is not memory or anticipation?'],
-     iact:'nowTrack',prompt:'Is now something you found, or something already always here?'},
+     iact:'nowTrack',prompt:'What did you find when you looked for now?'},
     {id:'m07',title:'Who Is Seeking?',
      instr:'Turn the search back on the searcher.',
      steps:['Notice the impulse to find something -- clarity, understanding, peace.',
@@ -757,7 +761,7 @@ var J=[
      steps:['Notice that actions occur: words appear, hands move, decisions happen.',
             'Do these require a persistent center to coordinate them?',
             'Where exactly does "the one coordinating" show up, if it shows up?'],
-     iact:'contemp',prompt:'What does functioning feel like when the center is not in focus?'},
+     iact:'contemp',prompt:'What did you find when you looked for the one coordinating?'},
     {id:'m19',title:'Emotional Grounding',
      instr:'Ensure that open inquiry does not create disconnection.',
      steps:['What emotion is present right now?',
@@ -919,7 +923,8 @@ function loadModule(skipEntry){
     return '<div class="'+c+'"></div>';
   }).join('');
   var pfill=document.getElementById('mod-pfill');if(pfill)pfill.style.width=((S.module/j.mods.length)*100)+'%';
-  document.getElementById('mod-timer').style.visibility=(S.journey===2)?'hidden':'visible';
+  window._jMids=j.mods.map(function(x){return x.id;});
+  document.getElementById('mod-timer').style.visibility=(S.journey===2||m.id==='m09')?'hidden':'visible';
   var entry=document.getElementById('mod-entry');
   var meText=document.getElementById('me-text');
   var meBtn=document.getElementById('me-btn');
@@ -1034,7 +1039,18 @@ function buildIact(type,mid){
   if(type==='contempCheck')return '<div class="contemp-check"><label class="cc-label"><input type="checkbox" class="cc-box"><span>I can think of someone right now.</span></label></div>';
   if(type==='narToggle')return '<div class="toggle-pair"><button class="t-opt on" id="nts-'+mid+'" onclick="setNar(\'story\',\''+mid+'\')">Story</button><button class="t-opt" id="ntx-'+mid+'" onclick="setNar(\'sens\',\''+mid+'\')">Sensation</button></div><p class="t-desc dim" id="ntd-'+mid+'">Story: "I felt anxious because of what she said, and now I am worried about tomorrow."</p>';
   if(type==='silSpace')return '<div class="toggle-pair"><button class="t-opt on" id="sss-'+mid+'" onclick="setSil(\'sound\',\''+mid+'\')">Sound</button><button class="t-opt" id="ssl-'+mid+'" onclick="setSil(\'sil\',\''+mid+'\')">Silence</button></div><p class="t-desc dim" id="ssd-'+mid+'">Notice: right now, there is sound. And it appears within something.</p>';
-  if(type==='reviewInt'){var rqs=['Where did you expect to find the observer?','What was the emotion without the story?','What remained when the layers were removed?','Across all of this, was anything constant?'];var ri=Math.floor(Math.random()*rqs.length);return '<p class="review-q" id="rq-'+mid+'">'+rqs[ri]+'</p><button class="btn-link" id="rn-'+mid+'" style="display:block;font-size:.8125rem;margin-top:1rem;opacity:.45" onclick="nextReview(\''+mid+'\','+ri+')">Show another</button>';}
+  if(type==='reviewInt'){
+    var mids=window._jMids||[];var saved=[];
+    mids.forEach(function(id){try{var d=JSON.parse(localStorage.getItem('dm_r_'+id));if(d&&d.text&&d.text.trim())saved.push(d.text.trim());}catch{}});
+    var rqs=['Where did you expect to find the observer?','What was the emotion without the story?','What remained when the layers were removed?','Across all of this, was anything constant?'];
+    if(saved.length){
+      var si=Math.floor(Math.random()*saved.length);
+      return '<p class="review-q review-q-saved" id="rq-'+mid+'" style="opacity:0;transition:opacity 2s ease">'+saved[si]+'</p><button class="btn-link" id="rn-'+mid+'" style="display:block;font-size:.8125rem;margin-top:1rem;opacity:.35" onclick="nextReview(\''+mid+'\','+si+',true)">Show another</button>';
+    }else{
+      var ri=Math.floor(Math.random()*rqs.length);
+      return '<p class="review-q" id="rq-'+mid+'">'+rqs[ri]+'</p><button class="btn-link" id="rn-'+mid+'" style="display:block;font-size:.8125rem;margin-top:1rem;opacity:.35" onclick="nextReview(\''+mid+'\','+ri+',false)">Show another</button>';
+    }
+  }
   if(type==='emotPres')return '<p class="dim mb2" style="font-size:.875rem">Name what is here, without commentary.</p><div class="body-map">'+['Calm','Uneasy','Tender','Heavy','Alert','Open'].map(function(e){return '<div class="bz" onclick="selEmotion(this,\''+mid+'\')">'+e+'</div>';}).join('')+'</div><div class="bz-note show" id="bzn-'+mid+'">Select what is present. Then stay with it.</div>';
   if(type==='certainty')return '<p class="dim mb2" style="font-size:.875rem">What have you concluded from these modules?</p><input class="sk-input" id="cci-'+mid+'" placeholder="I am now certain that..." onkeydown="checkCert(event,\''+mid+'\')"><button class="btn btn-ghost btn-sm mt2" onclick="checkCert({key:\'Enter\'},\''+mid+'\')">Examine</button><div class="sk-resp" id="ccr-'+mid+'"></div>';
   if(type==='returnSt')return '<div class="return-text">Nothing special is required.<br><br>The next ordinary moment<br>is the practice.</div><p style="text-align:center;font-size:.875rem;color:var(--dim);opacity:.55;margin-top:2rem">Close this. Go outside.</p>';
@@ -1044,6 +1060,7 @@ function buildIact(type,mid){
 function initIact(type,mid){
   if(type==='narToggle')setNar('story',mid);
   if(type==='silSpace')setSil('sound',mid);
+  if(type==='reviewInt'){var el=document.getElementById('rq-'+mid);if(el&&el.classList.contains('review-q-saved'))setTimeout(function(){el.style.opacity='1';},100);}
 }
 
 function submitThought(e,mid){
@@ -1051,6 +1068,8 @@ function submitThought(e,mid){
   var inp=document.getElementById('ti-'+mid);
   var txt=inp.value.trim();if(!txt)return;inp.value='';
   var field=document.getElementById('tf-'+mid);
+  // remove any existing ghost
+  var old=field.querySelector('.t-ghost');if(old)old.parentNode.removeChild(old);
   var b=document.createElement('div');b.className='t-bubble';
   var lp=15+Math.random()*60;b.style.left=lp+'%';b.style.top='8px';b.textContent=txt;
   field.appendChild(b);
@@ -1058,7 +1077,17 @@ function submitThought(e,mid){
     b.style.top='calc(100% + 8px)';b.style.opacity='0.6';
   });});
   setTimeout(function(){b.style.opacity='0';},4500);
-  setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b);},5500);
+  setTimeout(function(){
+    if(b.parentNode)b.parentNode.removeChild(b);
+    var g=document.createElement('span');g.className='t-ghost';g.textContent='\u00b7';
+    var captured=txt;
+    g.onclick=function(){
+      g.parentNode.removeChild(g);
+      var echo=document.createElement('p');echo.className='t-echo';echo.textContent=captured;
+      field.appendChild(echo);
+    };
+    field.appendChild(g);
+  },5500);
 }
 
 function selectOwn(btn,choice){
@@ -1190,14 +1219,23 @@ function setSil(mode,mid){
   if(l)l.classList.toggle('on',mode==='sil');
   if(d)d.textContent=mode==='sound'?'Notice: right now, there is sound. And it appears within something.':'There is silence between sounds. What is the relationship between sound and silence?';
 }
-function nextReview(mid,used){
-  var rqs=['Where did you expect to find the observer?','What was the emotion without the story?','What remained when the layers were removed?','Across all of this, was anything constant?'];
-  var pool=rqs.filter(function(_,i){return i!==used;});
-  var q=pool[Math.floor(Math.random()*pool.length)];
+function nextReview(mid,used,isSaved){
   var el=document.getElementById('rq-'+mid);
   var btn=document.getElementById('rn-'+mid);
-  if(el)el.textContent=q;
   if(btn)btn.style.display='none';
+  if(isSaved){
+    var mids=window._jMids||[];var saved=[];
+    mids.forEach(function(id){try{var d=JSON.parse(localStorage.getItem('dm_r_'+id));if(d&&d.text&&d.text.trim())saved.push(d.text.trim());}catch{}});
+    var pool=saved.filter(function(_,i){return i!==used;});
+    if(pool.length&&el){
+      el.style.opacity='0';
+      setTimeout(function(){el.textContent=pool[Math.floor(Math.random()*pool.length)];el.style.opacity='1';},400);
+    }
+  }else{
+    var rqs=['Where did you expect to find the observer?','What was the emotion without the story?','What remained when the layers were removed?','Across all of this, was anything constant?'];
+    var pool2=rqs.filter(function(_,i){return i!==used;});
+    if(el)el.textContent=pool2[Math.floor(Math.random()*pool2.length)];
+  }
 }
 
 var CERT_R=['Hold that conclusion lightly. Could the opposite also have something true in it?',
@@ -1319,16 +1357,36 @@ function toggleAudio(){
 }
 
 /* BREATH PACER */
+var _breathToneT=null,_breathPhase=0;
+function _breathBeep(){
+  if(!AC)return;
+  var freq=_breathPhase===0?396:330;_breathPhase=(_breathPhase+1)%2;
+  var o=AC.createOscillator(),g=AC.createGain();
+  o.connect(g);g.connect(AC.destination);
+  o.type='sine';o.frequency.value=freq;
+  g.gain.setValueAtTime(0,AC.currentTime);
+  g.gain.linearRampToValueAtTime(0.035,AC.currentTime+0.12);
+  g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+0.9);
+  o.start(AC.currentTime);o.stop(AC.currentTime+0.9);
+}
+function startBreathTone(){
+  if(_breathToneT)return;
+  _breathPhase=0;
+  _breathToneT=setInterval(_breathBeep,5000);
+}
+function stopBreathTone(){clearInterval(_breathToneT);_breathToneT=null;}
 function toggleBreath(){
   S.breath=!S.breath;
   document.getElementById('breath-btn').classList.toggle('on',S.breath);
   document.getElementById('breath-ring').classList.toggle('on',S.breath);
+  if(S.breath)startBreathTone();else stopBreathTone();
 }
 function resetBreath(){
   if(!S.breath)return;
   S.breath=false;
   document.getElementById('breath-btn').classList.remove('on');
   document.getElementById('breath-ring').classList.remove('on');
+  stopBreathTone();
 }
 function showPause(){
   var overlay=document.getElementById('pause-overlay');
