@@ -161,7 +161,10 @@ small{font-size:.8125rem;color:var(--dim);line-height:1.4;display:block}
 .mpd{width:5px;height:5px;border-radius:50%;background:var(--b2);transition:background 400ms}
 .mpd.done{background:rgba(180,138,74,0.4)}
 .mpd.active{background:var(--amber)}
-.mod-timer{font-size:.8125rem;color:var(--dim);font-variant-numeric:tabular-nums;min-width:3ch}
+.mod-timer{font-size:.8125rem;color:var(--dim);font-variant-numeric:tabular-nums;min-width:3ch;opacity:0;transition:opacity 400ms ease}
+.mod-timer.visible{opacity:.4}
+#timer-toggle{opacity:.25;font-size:.875rem;transition:opacity 400ms ease}
+#timer-toggle.active{opacity:.5}
 .mod-controls{display:flex;gap:.625rem}
 #tools-overlay{position:fixed;bottom:0;left:0;right:0;background:var(--base);border-top:1px solid var(--b);padding:1.5rem;display:flex;justify-content:center;gap:1rem;opacity:0;pointer-events:none;transition:opacity 400ms ease;z-index:15}
 #tools-overlay.show{opacity:1;pointer-events:all}
@@ -602,6 +605,7 @@ body.simplify .iact,body.simplify .ref-prompt,body.simplify .ref-area{display:no
       <div class="mp-dots" id="mp-dots"></div>
     </div>
     <div class="flex fi g2">
+      <button class="icon-btn" id="timer-toggle" onclick="toggleTimer()" title="Timer" aria-label="Toggle timer">&#9201;</button>
       <span class="mod-timer" id="mod-timer">0:00</span>
       <div class="mod-controls">
         <button class="icon-btn" id="audio-btn" onclick="toggleAudio()" title="Audio" aria-label="Toggle audio">&#9834;</button>
@@ -1094,7 +1098,6 @@ function loadModule(skipEntry){
   }).join('');
   var pfill=document.getElementById('mod-pfill');if(pfill)pfill.style.width=((S.module/j.mods.length)*100)+'%';
   window._jMids=j.mods.map(function(x){return x.id;});
-  document.getElementById('mod-timer').style.visibility=(S.journey===2||m.id==='m09'||m.id==='m14'||m.airlock)?'hidden':'visible';
   var entry=document.getElementById('mod-entry');
   var meText=document.getElementById('me-text');
   var meBtn=document.getElementById('me-btn');
@@ -1614,6 +1617,12 @@ function audioStop(){
   var o=_osc,l=_lfo;
   setTimeout(function(){try{o.stop();l.stop();}catch{}},5000);
   _osc=null;_lfo=null;_gain=null;_lfoGain=null;_flt=null;
+}
+function toggleTimer(){
+  var t=document.getElementById('mod-timer');
+  var btn=document.getElementById('timer-toggle');
+  var vis=t.classList.toggle('visible');
+  btn.classList.toggle('active',vis);
 }
 function toggleAudio(){
   S.audio=!S.audio;
