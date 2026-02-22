@@ -1511,11 +1511,15 @@ function saveRef(mid){
   var s=document.getElementById('rs-'+mid);
   if(s){s.classList.add('show');setTimeout(function(){s.classList.remove('show');},2500);}
 }
+var _autoSaveT={};
 function autoSaveRef(mid){
-  var area=document.getElementById('ra-'+mid);if(!area)return;
-  var txt=area.value;
-  var j=J[S.journey],m=j?j.mods[S.module]:null;
-  if(txt.trim()){localStorage.setItem('dm_r_'+mid,JSON.stringify({text:txt,title:m?m.title:mid,date:new Date().toLocaleDateString()}));}
+  clearTimeout(_autoSaveT[mid]);
+  _autoSaveT[mid]=setTimeout(function(){
+    var area=document.getElementById('ra-'+mid);if(!area)return;
+    var txt=area.value;
+    var j=J[S.journey],m=j?j.mods[S.module]:null;
+    if(txt.trim()){localStorage.setItem('dm_r_'+mid,JSON.stringify({text:txt,title:m?m.title:mid,date:new Date().toLocaleDateString()}));}
+  },300);
 }
 function getSavedRef(mid){
   try{var d=JSON.parse(localStorage.getItem('dm_r_'+mid));return d?d.text:'';}catch{return '';}
