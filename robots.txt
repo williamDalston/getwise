@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://williamDalston.github.io/getwise/sitemap.xml
+Sitemap: https://quietwisdom.space/sitemap.xml
